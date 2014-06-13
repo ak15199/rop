@@ -12,13 +12,11 @@ class Art:
 
     def _seekFortune(self):
         index = randint(0, self.length)
-        print "seek fortune", index
         self.file.seek(index)
         while self.file.readline()[0] != "%":
             pass
 
     def _readFortune(self):
-        print "read fortune"
         buffer = ""
         while True:
             line = self.file.readline()

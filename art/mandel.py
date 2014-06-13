@@ -3,6 +3,8 @@ from opc.hue import hsvToRgb
 
 from random import randrange
 
+# XXX: This one is a work in progress and doesn't work super well yet :)
+
 class Art:
 
     def __init__(self, matrix):

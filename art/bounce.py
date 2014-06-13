@@ -41,10 +41,6 @@ class Art:
         else:
             self.dy = self.dy / accel
         
-
-        print self.x, self.y, self.dx, self.dy
-        
-
         self._ball(matrix, RED)
         matrix.copy(self.matrix)
   
