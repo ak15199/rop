@@ -77,16 +77,17 @@ class OPCMatrix:
         return self._height
 
     def copy(self, source, x=None, y=None):
-        #if x == None and y == None:
-        self._scaledCopy(source)
-
-        #self._panCopy(source, x, y)
+        if x == None and y == None:
+            self._scaledCopy(source)
+        else:
+            self._panCopy(source, x, y)
 
     def _panCopy(self, source, ox, oy):
         for x in range(self._width):
             for y in range(self._height):
                 src = source.getPixel(x + ox, y + oy)
-                self.drawPixel(x, y, src)
+                if src is not None:
+                    self.drawPixel(x, y, src)
 
     def _scaledCopy(self, source):
         ratio = source._width / self._width
@@ -132,8 +133,11 @@ class OPCMatrix:
         return x+y*self._width
 
     def getPixel(self, x, y):
-        addr = self._getAddress(x, y)
-        return self.buffer[addr]
+        if 0 <= x < self._width and 0 <= y < self._height:
+            addr = self._getAddress(x, y)
+            return self.buffer[addr]
+
+        return None
         
     def drawPixel(self, x, y, color):
         addr = self._getAddress(x, y)
@@ -165,7 +169,8 @@ class OPCMatrix:
         self.buffer = OPCBuffer(self.numpix(), color)
 
     def show(self, channel=0):
-        self.client.put_pixels(self.buffer.getPixels(), channel=channel)
+        pixels = self.buffer.getPixels()
+        self.client.put_pixels(pixels, channel=channel)
 
     def _line(self, x0, y0, x1=None, y1=None):
 
