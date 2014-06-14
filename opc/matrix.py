@@ -77,10 +77,10 @@ class OPCMatrix:
         return self._height
 
     def copy(self, source, x=None, y=None):
-        if x == None and y == None:
-            self._scaledCopy(source)
+        #if x == None and y == None:
+        self._scaledCopy(source)
 
-        self._panCopy(source, x, y)
+        #self._panCopy(source, x, y)
 
     def _panCopy(self, source, ox, oy):
         for x in range(self._width):
@@ -228,6 +228,8 @@ class OPCMatrix:
         self.drawLineRelative(x, y, color)
 
     def fillRect(self, x1, y1, w, h, color):
+        x1, y1 = int(x1), int(y1)
+        w, h = int(w), int(h)
         x2, y2 = (x1+w-1, y1+h-1)
         x1, y1 = self._clip(x1, y1)
         x2, y2 = self._clip(x2, y2)
