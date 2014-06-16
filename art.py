@@ -15,7 +15,7 @@ if __name__ == "__main__":
         exit(1)
 
     while True:
-        seed(time)
+        seed(time())
 
         for art in arts:
             matrix.setFirmwareConfig()
