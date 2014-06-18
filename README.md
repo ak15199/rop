@@ -31,5 +31,14 @@ The directories are:
 Check out the existing animations for use as examples, and
 please commit back code that you create!
 
+
+OTHER PEOPLE'S WORK
+----
+
 Hopefully attriibutions are correct, if you see one missing,
 then please let me know and I'll fix.
+
+One specific that is not covered elsewhere:
+
+opc/opc.py is taken from https://github.com/scanlime/fadecandy
+and should be unchanged from the original.
