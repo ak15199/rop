@@ -1,58 +1,107 @@
 from opc.matrix import OPCMatrix
 from opc.hue import hsvToRgb
 from math import sin, cos
+from utils.frange import frange
+from utils.fractools import Mandelbrot, Region
 
-from random import randrange
+from copy import copy
+from random import randrange, random
 
-# XXX: This one is a work in progress and doesn't work super well yet :)
+ZOOMSTEPS = 24
+ITERSTEPS = 30
+DEBUG = False
 
 class Art:
 
     def __init__(self, matrix):
-        scale = 4
-        self.matrix = OPCMatrix(scale*matrix.width(), scale*matrix.height(), None, False)
+        self.mandel = Mandelbrot(matrix.width(), matrix.height(), ITERSTEPS)
+        # this gives a pretty good view of the artifact at max zoom
+        self.origin = Region(-2.0, -1.5, 1.0, 1.5)
+        self._begin(matrix)
+
+        self.i = 0
 
     def start(self, matrix):
-        max = 30
-        self.angle = 0
-        for x in range(self.matrix.width()):
-            for y in range(self.matrix.height()):
-                px = (2.0 * x)/self.matrix.width()-1
-                py = (2.0 * y)/self.matrix.height()-1
-                point = self._point(px, py, max)
+        #matrix.setFirmwareConfig(nointerp=True)
+        pass
+
+    def _begin(self, matrix):
+        self.target = copy(self.origin)
+
+        self.current = copy(self.target)
+        self.delta = Region(0.000000, 0.000000, -0.093750, -0.093750)
+
+        self.stateExecute = self._drawBig
+        self.stepsDown = 0
+        self._render(matrix, self.target)
+
+    def _text(self, grid):
+        map = [ "X", "x", "O", "o", "+", "-", "'", ",", "." ]
+        for x in grid:
+            for y in x:
+                if y is None or y>=9:
+                    print " ",
+                elif y<9:
+                    print map[y],
+            print
+
+    def _render(self, matrix, target):
+        grid = self.mandel.draw(target)
+
+        matrix.clear()
+
+        for x in range(matrix.width()):
+            for y in range(matrix.height()):
+                point = grid[x][y]
                 if point is not None:
-                    hue = (0.0+point)/max
-                    self.matrix.drawPixel(x, y, hsvToRgb(hue))
+                    hue = (0.0+point)/self.mandel.maxsteps
+                    matrix.drawPixel(x, y, hsvToRgb(hue))
+                    
+    def _forward(self):
+        self.stepsDown += 1
+        self.zoomRemaining = ZOOMSTEPS
+        self.delta = self.current.delta(self.target, ZOOMSTEPS)
 
-    def _point(self, x, y, max):
-        n=0
-        u=x
-        v=y
-        
-        while True:
-            a = u*u
-            b = v*v
-            if a+b >= 4:
-                #print x, y, n
-                return n
+    def _reverse(self):
+        self.target = copy(self.origin)
+        self.zoomRemaining = self.stepsDown * ZOOMSTEPS/4
+        self.delta = self.current.delta(self.origin, self.zoomRemaining)
 
-            n += 1
-            if n == max:
-                return None
+    def _drawBig(self, matrix):
+        """
+        draw, then figure out which is the most interesting
+        """
+        self.current = copy(self.target)
+        self.target = self.mandel.mostInteresting(self.target)
+        if self.target is None:
+            self._reverse()
+        else:
+            self._forward()
 
-            a = a-b+x
-            v = 2*u*v+y
-            u = a
+        if DEBUG: print " Origin:", self.origin
+        if DEBUG: print "   From:", self.current
+        if DEBUG: print "     To:", self.target
+        if DEBUG: print "  Steps:", self.delta
 
+        # move to next state
+        return self._zoomToTarget(matrix)
+
+    def _zoomToTarget(self, matrix):
+        """
+        iteratively zoom towards the target until we fill the display
+        """
+        if self.zoomRemaining:
+            self.current.increment(self.delta)
+            self._render(matrix, self.current)
+            self.zoomRemaining -= 1
+            return self._zoomToTarget
+
+        # when we have reached our target, begin the process over
+        return self._drawBig
 
     def refresh(self, matrix):
-        center = self.matrix.width()/3
-        x = center + center*sin(self.angle)
-        y = center + center*cos(self.angle)
-        matrix.copy(self.matrix, x=x, y=y)
-
-        self.angle += 0.1
+        self.stateExecute = self.stateExecute(matrix)
   
     def interval(self):
-        return 200
+        return 100
 
