@@ -1,12 +1,16 @@
-from time import sleep, time
-import dpyinfo
-from opc.matrix import OPCMatrix
 from random import seed
 import sys
+from time import sleep, time
+
+import dpyinfo
 from importer import ImportPlugins
+from opc.matrix import OPCMatrix
+
+from art.mandel import Art
+
+FLIPTIME = 30
 
 if __name__ == "__main__":
-    FLIPTIME = 30
 
     matrix = OPCMatrix(dpyinfo.WIDTH, dpyinfo.HEIGHT, dpyinfo.ADDRESS, dpyinfo.ZIGZAG)
     arts = ImportPlugins("art", ["template.py"], sys.argv[1:], matrix)
@@ -15,7 +19,7 @@ if __name__ == "__main__":
         exit(1)
 
     while True:
-        seed(time)
+        seed(time())
 
         for art in arts:
             matrix.setFirmwareConfig()
