@@ -23,7 +23,8 @@ class Art:
         self.matrix.fillRect(self.x, self.y, DIAMETER, DIAMETER, color)
 
     def refresh(self, matrix):
-        self._ball(matrix, BLACK)
+        #self._ball(matrix, BLACK)
+        self.matrix.shift(ds=0.4, dv=0.9)
 
         self.x = self.x + self.dx
         self.y = self.y + self.dy
@@ -45,5 +46,5 @@ class Art:
         matrix.copy(self.matrix)
   
     def interval(self):
-        return 200
+        return 100
 
