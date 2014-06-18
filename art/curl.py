@@ -43,7 +43,7 @@ class Art:
 
         self.ang += DELTA_ANG
  
-        extent = matrix.width() / 2
+        extent = matrix.width / 2
         amp = sin(self.amp)
 
         tx = amp * sin (self.ang)

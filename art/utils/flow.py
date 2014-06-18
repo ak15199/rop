@@ -54,8 +54,8 @@ class Flow:
     def refresh(self, matrix):
         xmin=0
         ymin=0
-        xmax=matrix.width()
-        ymax=matrix.height()
+        xmax=matrix.width
+        ymax=matrix.height
         x=xmax-1
         y=0
         index=self.offset

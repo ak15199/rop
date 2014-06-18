@@ -58,8 +58,8 @@ class OPCMatrix:
                 exit(1)
 
         self.pixelDebug = pixelDebug
-        self._width = width
-        self._height = height
+        self.width = width
+        self.height = height
         self.buffer = OPCBuffer(self.numpix())
         self.zigzag = zigzag
         self.setCursor()
@@ -68,13 +68,7 @@ class OPCMatrix:
         self.client.setFirmwareConfig(nodither, nointerp, manualled, ledonoff)
 
     def numpix(self):
-        return self._width * self._height
-
-    def width(self):
-        return self._width
-
-    def height(self):
-        return self._height
+        return self.width * self.height
 
     def copy(self, source, x=None, y=None):
         if x == None and y == None:
@@ -83,19 +77,19 @@ class OPCMatrix:
             self._panCopy(source, x, y)
 
     def _panCopy(self, source, ox, oy):
-        for x in range(self._width):
-            for y in range(self._height):
+        for x in range(self.width):
+            for y in range(self.height):
                 src = source.getPixel(x + ox, y + oy)
                 if src is not None:
                     self.drawPixel(x, y, src)
 
     def _scaledCopy(self, source):
-        ratio = source._width / self._width
+        ratio = source.width / self.width
         if ratio < 1:
             return
 
-        for x in range(self._width):
-            for y in range(self._height):
+        for x in range(self.width):
+            for y in range(self.height):
                 condensed = [0, 0, 0]
                 for x0 in range(ratio):
                     for y0 in range(ratio):
@@ -121,19 +115,19 @@ class OPCMatrix:
     def _getAddress(self, x, y):
         x, y = int(x), int(y)
         
-        if x<0 or y<0 or x>=self._width or y>=self._height:
+        if x<0 or y<0 or x>=self.width or y>=self.height:
             if self.pixelDebug:
                 raise Exception("Invaid Index (%d, %d)" % (x, y))
             else:
                 return None
 
         if self.zigzag and y%2 == 1:
-            x = (self._width-x)-1
+            x = (self.width-x)-1
 
-        return x+y*self._width
+        return x+y*self.width
 
     def getPixel(self, x, y):
-        if 0 <= x < self._width and 0 <= y < self._height:
+        if 0 <= x < self.width and 0 <= y < self.height:
             addr = self._getAddress(x, y)
             return self.buffer[addr]
 
@@ -146,8 +140,8 @@ class OPCMatrix:
 
     def _clip(self, x, y):
         return (
-                max(min(x, self._width), 0),
-                max(min(y, self._height), 0),
+                max(min(x, self.width), 0),
+                max(min(y, self.height), 0),
             )
 
     def shift(self, dh=1.0, ds=1.0, dv=1.0):

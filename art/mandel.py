@@ -14,7 +14,7 @@ DEBUG = False
 class Art:
 
     def __init__(self, matrix):
-        self.mandel = Mandelbrot(matrix.width(), matrix.height(), ITERSTEPS)
+        self.mandel = Mandelbrot(matrix.width, matrix.height, ITERSTEPS)
         # this gives a pretty good view of the artifact at max zoom
         self.origin = Region(-2.0, -1.5, 1.0, 1.5)
         self._begin(matrix)
@@ -50,8 +50,8 @@ class Art:
 
         matrix.clear()
 
-        for x in range(matrix.width()):
-            for y in range(matrix.height()):
+        for x in range(matrix.width):
+            for y in range(matrix.height):
                 point = grid[x][y]
                 if point is not None:
                     hue = (0.0+point)/self.mandel.maxsteps

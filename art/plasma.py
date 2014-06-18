@@ -18,8 +18,8 @@ class Art:
     def refresh(self, matrix):
         minval, maxval = (10, -10)
 
-        for y in range(matrix.height()):
-            for x in range(matrix.width()):
+        for y in range(matrix.height):
+            for x in range(matrix.width):
                 hue = (
                     sin(self._dist(x + self.base, y, 128.0, 128.0) / 8.0)
                   + sin(self._dist(y, y, 64.0, 64.0) / 8.0)

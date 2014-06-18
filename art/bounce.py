@@ -9,9 +9,9 @@ class Art:
 
     def __init__(self, matrix):
         self.scale = 4
-        self.matrix = OPCMatrix(self.scale*matrix.width(), self.scale*matrix.height(), None, True)
+        self.matrix = OPCMatrix(self.scale*matrix.width, self.scale*matrix.height, None, True)
         self.x = 0
-        self.y = self.matrix.height()
+        self.y = self.matrix.height
         self.dx = 1
         self.dy = -1.4
 
@@ -28,11 +28,11 @@ class Art:
         self.x = self.x + self.dx
         self.y = self.y + self.dy
 
-        if self.x < 0 or self.x >= (self.matrix.width()-DIAMETER):
+        if self.x < 0 or self.x >= (self.matrix.width-DIAMETER):
             self.dx = -self.dx
 
-        if self.y < 0 or self.y >= self.matrix.height():
-            self.y = min(max(self.y, 0), (self.matrix.height()-DIAMETER))
+        if self.y < 0 or self.y >= self.matrix.height:
+            self.y = min(max(self.y, 0), (self.matrix.height-DIAMETER))
             self.dy = -self.dy
 
         accel = 1.2

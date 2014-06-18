@@ -11,10 +11,10 @@ class Art:
 
     def __init__(self, matrix):
         self.pens = [
-                Pen(matrix.width(), matrix.height(), 2, 3, 1.0, 1.1),
-                Pen(matrix.width(), matrix.height(), 5, 0, 1.2, 1.0),
-                Pen(matrix.width(), matrix.height(), 8, 15, 0.9, 1.1),
-                Pen(matrix.width(), matrix.height(), 14, 1, 1.0, 0.9),
+                Pen(matrix.width, matrix.height, 2, 3, 1.0, 1.1),
+                Pen(matrix.width, matrix.height, 5, 0, 1.2, 1.0),
+                Pen(matrix.width, matrix.height, 8, 15, 0.9, 1.1),
+                Pen(matrix.width, matrix.height, 14, 1, 1.0, 0.9),
             ]
 
         for pen in self.pens:

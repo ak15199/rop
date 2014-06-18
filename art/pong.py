@@ -55,7 +55,7 @@ class Art:
 
     def __init__(self, matrix):
         self.paddley = [4, 10]
-        self.paddlex = [0, matrix.width()-1]
+        self.paddlex = [0, matrix.width-1]
         self._restart()
 
     def start(self, matrix):
@@ -88,7 +88,7 @@ class Art:
         return None
 
     def _drawNet(self, matrix):
-        for y in range(matrix.width()):
+        for y in range(matrix.width):
             if ((1+y)/2) % 2 == 0:
                 matrix.drawLine(7, y, 8, y, rgb["gray30"])
 
@@ -98,7 +98,7 @@ class Art:
 
     def _updateBat(self, matrix, id):
         if random() > .7:
-            self.paddley[id] = min(matrix.height()-2, max(2, int(self.paddley[id] + self.v)))
+            self.paddley[id] = min(matrix.height-2, max(2, int(self.paddley[id] + self.v)))
 
         matrix.drawLine(self.paddlex[id], self.paddley[id]-2, self.paddlex[id], self.paddley[id]+2, rgb["yellow"])
 
@@ -114,7 +114,7 @@ class Art:
         if accel is not None:
             self.h = -self.h
             self.v = accel
-        elif newx<0 or newx>=matrix.width():
+        elif newx<0 or newx>=matrix.width:
             if self.scores[0].bump():
                 self._restart()
 
@@ -122,7 +122,7 @@ class Art:
         else:
             self.x = newx
 
-        if newy<0 or newy>=matrix.height():
+        if newy<0 or newy>=matrix.height:
             self.v = -self.v
         else:
             self.y = newy

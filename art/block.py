@@ -22,8 +22,8 @@ class Art:
             max = 7
 
         matrix.fillRect(
-            randrange(0, matrix.width()),
-            randrange(0, matrix.height()),
+            randrange(0, matrix.width),
+            randrange(0, matrix.height),
             randrange(min, max),
             randrange(min, max),
             color,

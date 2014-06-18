@@ -88,7 +88,7 @@ class OPCText:
         for char in list(string):
             xpos = x+offset
             if xpos>=-7:
-                if xpos-7<matrix.width():
+                if xpos-7<matrix.width:
                     self.drawLetter(matrix, xpos, y, char, fg, bg)
                 else:
                     return None

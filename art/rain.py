@@ -15,9 +15,9 @@ class Art:
             speed = (1.0+pen)/PENS
 
             # height is longer than the height of the screen, so drops stay away for a little while
-            height = int(matrix.height()*1.3)
+            height = int(matrix.height*1.3)
 
-            pen = Pen(matrix.width(), height, 0, randrange(matrix.height()), speed, 0, persist=False)
+            pen = Pen(matrix.width, height, 0, randrange(matrix.height), speed, 0, persist=False)
             pen.setValue(speed)
             pen.setBumpStrategy(pen.randomreset, x=True)
             pen.setBumpStrategy(pen.none, y=True)

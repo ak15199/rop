@@ -12,9 +12,9 @@ class Art:
         self.astep = pi/48
         self.hstep = pi/1024
 
-        self.radius = matrix.width()/2.2
-        self.x0 = matrix.width()/2
-        self.y0 = matrix.height()/2
+        self.radius = matrix.width/2.2
+        self.x0 = matrix.width/2
+        self.y0 = matrix.height/2
 
     def start(self, matrix):
         matrix.clear()
@@ -22,8 +22,8 @@ class Art:
     def refresh(self, matrix):
         matrix.fade(0.995)
 
-        y0 = matrix.height()/2
-        x0 = matrix.width()/2
+        y0 = matrix.height/2
+        x0 = matrix.width/2
 
         if self.angle >= pi:
             x0 -= 1
