@@ -1,6 +1,6 @@
-WIDTH=16                    # width, obviously
-HEIGHT=16                   # height
+WIDTH=24                    # width, obviously
+HEIGHT=24                   # height
 PIX=(WIDTH*HEIGHT)
-#ADDRESS='ansi'
-ADDRESS='localhost:7890'    # OPC port
+ADDRESS='ansi-2'
+#ADDRESS='localhost:7890'    # OPC port
 ZIGZAG=True                 # whether display reverses direction, line to line

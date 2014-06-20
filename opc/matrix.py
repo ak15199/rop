@@ -51,24 +51,25 @@ class OPCBuffer:
 
 class OPCMatrix:
     def __init__(self, width, height, address, zigzag=False, pixelDebug=False):
-        if address == None:
-            self.client = None
-        elif address == 'ansi':
-            self.client = None
-            self.ansi = AnsiClient(width, height, zigzag)
-        else:
-            self.ansi = None
-            self.client = opc.Client(address)
-            if not self.client.can_connect():
-                print "can't conect to %s" % address
-                exit(1)
-
         self.pixelDebug = pixelDebug
         self.width = width
         self.height = height
         self.buffer = OPCBuffer(self.numpix())
         self.zigzag = zigzag
         self.setCursor()
+
+        if address == None:
+            self.client = None
+        elif address[0:4] == 'ansi':
+            self.client = None
+            self.ansi = AnsiClient(width, height, address)
+            self.zigzag = False
+        else:
+            self.ansi = None
+            self.client = opc.Client(address)
+            if not self.client.can_connect():
+                print "can't conect to %s" % address
+                exit(1)
 
     def setFirmwareConfig(self, nodither=False, nointerp=False, manualled=False, ledonoff=True):
         if self.client is not None:
