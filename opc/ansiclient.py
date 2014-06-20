@@ -1,6 +1,20 @@
 #from dict import iteritems
 
-MAP10 = " .:-=+*#%@"
+
+class Ansi_1:
+    MAP10 = " .:-=+*#%@"
+
+    def _shortAnsi(self, v):
+        return self.MAP10[min(9,max(v,0))]
+
+    def convert(self, color):
+        total = 0
+        for v in color:
+            total = v + 1.1*total
+
+        total /= 100
+
+        return self._shortAnsi(int(total))
 
 class AnsiClient:
     """
@@ -17,17 +31,7 @@ class AnsiClient:
         self.height = height
         self.zigzag = zigzag
 
-    def _shortAnsi(self, v):
-        return MAP10[min(9,max(v,0))]
-
-    def _rgb2ansi(self, color):
-        total = 0
-        for v in color:
-            total = v + 1.1*total
-
-        total /= 100
-
-        return self._shortAnsi(int(total))
+        self.converter = Ansi_1()
 
     def show(self, pixels):
         print '\033[1;1H\033[J'
@@ -39,7 +43,7 @@ class AnsiClient:
             else:
                 start, stop, step = 0, self.width, 1
 
-            row = [ self._rgb2ansi(pixels[x+y*self.height]) for x in range(start, stop, step) ]
+            row = [ self.converter.convert(pixels[x+y*self.height]) for x in range(start, stop, step) ]
 
             print ' | ' + ''.join(row) + ' |'
 
