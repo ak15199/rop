@@ -57,6 +57,7 @@ class OPCMatrix:
             self.client = None
             self.ansi = AnsiClient(width, height, zigzag)
         else:
+            self.ansi = None
             self.client = opc.Client(address)
             if not self.client.can_connect():
                 print "can't conect to %s" % address
