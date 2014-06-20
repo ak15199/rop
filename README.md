@@ -31,6 +31,15 @@ The directories are:
 Check out the existing animations for use as examples, and
 please commit back code that you create!
 
+If you don't have a display handy, then you can still get an idea
+of the animations. Assuming that you have an ANSI compliant tty,
+Setting
+
+    ADDRESS='ansi'
+
+in dpyinfo.py will cause output to be rendered to the controlling
+terminal. The present version is super lossy, as it reduces 24 bit
+color to ten distinct ascii-art characters.
 
 OTHER PEOPLE'S WORK
 ----

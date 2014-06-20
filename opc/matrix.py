@@ -2,6 +2,8 @@ from hue import rgbToHsv, hsvToRgb
 import opc
 from colors import BLACK
 
+from ansiclient import  AnsiClient
+
 """
 This is loosely based on the Adafruit GFX library, although there
 are a ton of differences. Some of the differences are where features
@@ -51,6 +53,9 @@ class OPCMatrix:
     def __init__(self, width, height, address, zigzag=False, pixelDebug=False):
         if address == None:
             self.client = None
+        elif address == 'ansi':
+            self.client = None
+            self.ansi = AnsiClient(width, height, zigzag)
         else:
             self.client = opc.Client(address)
             if not self.client.can_connect():
@@ -65,7 +70,8 @@ class OPCMatrix:
         self.setCursor()
 
     def setFirmwareConfig(self, nodither=False, nointerp=False, manualled=False, ledonoff=True):
-        self.client.setFirmwareConfig(nodither, nointerp, manualled, ledonoff)
+        if self.client is not None:
+            self.client.setFirmwareConfig(nodither, nointerp, manualled, ledonoff)
 
     def numpix(self):
         """
@@ -196,7 +202,10 @@ class OPCMatrix:
         write the buffer to the display device
         """
         pixels = self.buffer.getPixels()
-        self.client.put_pixels(pixels, channel=channel)
+        if self.ansi is not None:
+            self.ansi.show(pixels)
+        else:
+            self.client.put_pixels(pixels, channel=channel)
 
     def _line(self, x0, y0, x1=None, y1=None):
 
