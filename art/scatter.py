@@ -2,7 +2,7 @@ from opc.hue import hsvToRgb
 from opc.matrix import OPCMatrix
 
 from random import random
-from utils.lfsr import lfsr
+from utils.lfsr import lfsr256
 
 class Art:
 
@@ -18,7 +18,7 @@ class Art:
         try:
             pos = self.random.next()
         except:
-            self.random = lfsr()
+            self.random = lfsr256()
             self.hue = random()
             pos = self.random.next()
             

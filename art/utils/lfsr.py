@@ -7,7 +7,7 @@
 def bit(value, bit):
     return (value >> bit) & 1
 
-def lfsr(seed=0x8, bits=8):
+def lfsr256(seed=0x8, bits=8):
     lfsr = seed
     period = 0
  
