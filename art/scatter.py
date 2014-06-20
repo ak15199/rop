@@ -10,7 +10,7 @@ class Art:
         pass
 
     def start(self, matrix):
-        self.random = lfsr()
+        self.random = lfsr256()
         self.hue = random()
         matrix.clear()
 
