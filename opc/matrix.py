@@ -11,7 +11,7 @@ Others are additional effects that are here because they seemed
 pretty cool. Like setting firmware configs on a connection, or
 performing a HSV shift on the array.
 
-check out text.py for text drawing.
+check out text.py for additional functions to draw text.
 """
 
 class OPCBuffer:
@@ -68,9 +68,23 @@ class OPCMatrix:
         self.client.setFirmwareConfig(nodither, nointerp, manualled, ledonoff)
 
     def numpix(self):
+        """
+        Return the number of pixels in the display
+        """
         return self.width * self.height
 
     def copy(self, source, x=None, y=None):
+        """
+        XXX: This assumes that the source matrix is larger than
+        the destination.
+
+        Copy one matrix to another. The default behavior is 
+        to scale down the source matrix to fit the target
+        matrix. 
+
+        Alternatively, supplying x and y will render the
+        source matrix from the given (x, y) to fill the target.
+        """
         if x == None and y == None:
             self._scaledCopy(source)
         else:
@@ -102,14 +116,11 @@ class OPCMatrix:
 
                 self.drawPixel(x, y, condensed)
 
-    def setCursor(self, pos=(0,0)):
-        x, y = pos
-        self.cursor = (x, y)
-
-    def getCursor(self):
-        return self.cursor
-
     def setStripPixel(self, z, color):
+        """
+        Exposed helper method that sets a given pixel in the
+        unrolled strip of LEDs. 
+        """
         self.buffer[z] = color
 
     def _getAddress(self, x, y):
@@ -127,6 +138,10 @@ class OPCMatrix:
         return x+y*self.width
 
     def getPixel(self, x, y):
+        """
+        Retrieve the color tuple of the pixel from the
+        specified location
+        """
         if 0 <= x < self.width and 0 <= y < self.height:
             addr = self._getAddress(x, y)
             return self.buffer[addr]
@@ -134,6 +149,9 @@ class OPCMatrix:
         return None
         
     def drawPixel(self, x, y, color):
+        """
+        Set the pixel tuple at the specified location
+        """
         addr = self._getAddress(x, y)
         if addr is not None:
             self.buffer[addr] = color
@@ -145,6 +163,11 @@ class OPCMatrix:
             )
 
     def shift(self, dh=1.0, ds=1.0, dv=1.0):
+        """
+        Shift any of hue, saturation, and value on the
+        matrix, specifying the attributes that you'd like
+        to adjust
+        """
         for i in range(self.numpix()):
             r = self.buffer[i][0]
             g = self.buffer[i][1]
@@ -153,6 +176,9 @@ class OPCMatrix:
             self.buffer[i] = hsvToRgb(h*dh, s*ds, v*dv)
                 
     def fade(self, divisor):
+        """
+        Special case of shift, that's optimized for speed. 
+        """
         for i in range(self.numpix()):
             r = self.buffer[i][0] * divisor
             g = self.buffer[i][1] * divisor
@@ -160,9 +186,15 @@ class OPCMatrix:
             self.buffer[i] = (r, g, b)
 
     def clear(self, color=BLACK):
+        """
+        Wipe the matrix to any color, defaulting to black
+        """
         self.buffer = OPCBuffer(self.numpix(), color)
 
     def show(self, channel=0):
+        """
+        write the buffer to the display device
+        """
         pixels = self.buffer.getPixels()
         self.client.put_pixels(pixels, channel=channel)
 
@@ -206,16 +238,41 @@ class OPCMatrix:
 
         return points
 
+    def setCursor(self, pos=(0,0)):
+        """
+        Set the cursor position. This is used by draw relative
+        operations
+        """
+        x, y = pos
+        self.cursor = (x, y)
+
+    def getCursor(self):
+        """
+        Get the current cursor position
+        """
+        return self.cursor
+
     def drawLineRelative(self, x1, y1, color):
+        """
+        Draw a line from the current cursor position to the
+        specified address
+        """
         path = self._line(x1, y1)
         for x, y in path:
             self.drawPixel(x, y, color)
 
     def drawLine(self, x1, y1, x2, y2, color):
+        """
+        Draw a line between the two coordinate pairs
+        specified
+        """
         for x, y in self._line(x1, y1, x2, y2):
             self.drawPixel(x, y, color)
 
     def drawPoly(self, points, color):
+        """
+        Draw a polygon described by the array of coordinates
+        """
         origin = points.pop(0)
 
         self.setCursor(origin)
@@ -227,6 +284,9 @@ class OPCMatrix:
         self.drawLineRelative(x, y, color)
 
     def fillRect(self, x1, y1, w, h, color):
+        """
+        Draw a filled rectangle
+        """
         x1, y1 = int(x1), int(y1)
         w, h = int(w), int(h)
         x2, y2 = (x1+w-1, y1+h-1)
@@ -238,6 +298,9 @@ class OPCMatrix:
                 self.drawPixel(x, y, color)
 
     def drawRect(self, x1, y1, w, h, color):
+        """
+        Draw a rectangle
+        """
         self.drawPoly( [
                 (x1, y1), (x1+w, y1), (x1+w, y1+h), (x1, y1+h)
             ], color)
