@@ -13,7 +13,7 @@ FLIPTIME = 30
 if __name__ == "__main__":
 
     matrix = OPCMatrix(dpyinfo.WIDTH, dpyinfo.HEIGHT, dpyinfo.ADDRESS, dpyinfo.ZIGZAG)
-    arts = ImportPlugins("art", ["template.py"], sys.argv[1:], matrix)
+    arts = ImportPlugins("art", ["maze.py", "template.py"], sys.argv[1:], matrix)
     if len(arts) == 0:
         print "Couldn't find any art to execute"
         exit(1)
@@ -29,4 +29,3 @@ if __name__ == "__main__":
                 art.refresh(matrix)
                 matrix.show()
                 sleep(art.interval()/1000.0)
-                
