@@ -4,7 +4,18 @@ ANSI_RESTORE = "\033[0m"
 ANSI_BRIGHT = "\033[1m"
 ANSI_NORMAL = "\033[22m"
 
-class Ansi_1(object):
+class Ansi_0(object):
+
+    def __init__(self, ratio=1.1):
+        self.border = False
+
+    def convert(self, x, color):
+        return ""
+
+    def reset(self):
+        return ""
+
+class Ansi_1(Ansi_0):
 
     """
     Basic ansi controls and ten step ascii gradients.
@@ -14,6 +25,7 @@ class Ansi_1(object):
 
     def __init__(self, ratio=1.1):
         # we use ratio to add some differentation between the guns
+        self.border = True
         self.ratio = ratio
 
     def _shortAnsi(self, v):
@@ -130,6 +142,7 @@ class AnsiClient:
 
     clients = {
             "ansi": Ansi_1,
+            "ansi-0": Ansi_0,
             "ansi-1": Ansi_1,
             "ansi-2": Ansi_2,
         }
@@ -141,11 +154,14 @@ class AnsiClient:
         self.converter = self.clients[address]()
 
     def show(self, pixels):
+        if not self.converter.border:
+            return
+
         print ANSI_HOME+ANSI_CLEAR
         print " + " + "-"*self.width + " +"
 
         for y in range(self.height):
-            row = [ self.converter.convert(x, pixels[x+y*self.height]) for x in range(self.width) ]
+            row = [ self.converter.convert(x, pixels[x+y*self.width]) for x in range(self.width) ]
 
             print ' | ' + ''.join(row) + self.converter.reset() + ' |'
 

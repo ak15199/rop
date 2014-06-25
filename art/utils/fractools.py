@@ -53,7 +53,7 @@ class Mandelbrot:
         self.width = width
         self.height = height
         self.maxsteps = maxsteps
-        self.detail = [[0 for x in range(self.width)] for y in range(self.height)]
+        self.detail = [[0 for y in range(self.height)] for x in range(self.width)]
 
     def _point(self, x, y):
         n, u, v = 0, x, y
@@ -93,8 +93,11 @@ class Mandelbrot:
         dx, dy = region.dxdy(self.width, self.height)
 
         total = 0
-        for x in range(self.width):
-            for y in range(self.height):
+        x_range = range(self.width)
+        y_range = range(self.height)
+
+        for x in x_range:
+            for y in y_range:
                 point = self._point(region.x0+dx*x, region.y0+dy*y)
                 self.detail[x][y] = point
                 if point is not None:
