@@ -1,6 +1,7 @@
 from hue import rgbToHsv, hsvToRgb
 import opc
 from colors import BLACK
+from copy import deepcopy
 
 from ansiclient import  AnsiClient
 
@@ -81,6 +82,9 @@ class OPCMatrix:
         """
         return self.width * self.height
 
+    def clone(self):
+        return deepcopy(self)
+        
     def copy(self, source, x=None, y=None):
         """
         XXX: This assumes that the source matrix is larger than

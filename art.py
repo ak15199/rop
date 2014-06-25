@@ -6,14 +6,12 @@ import dpyinfo
 from importer import ImportPlugins
 from opc.matrix import OPCMatrix
 
-from art.mandel import Art
-
 FLIPTIME = 30
 
 if __name__ == "__main__":
 
     matrix = OPCMatrix(dpyinfo.WIDTH, dpyinfo.HEIGHT, dpyinfo.ADDRESS, dpyinfo.ZIGZAG)
-    arts = ImportPlugins("art", ["maze.py", "template.py"], sys.argv[1:], matrix)
+    arts = ImportPlugins("art", ["template.py"], sys.argv[1:], matrix)
     if len(arts) == 0:
         print "Couldn't find any art to execute"
         exit(1)
