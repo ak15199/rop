@@ -47,8 +47,6 @@ class Flow:
 
     def plot(self, matrix, x, y):
         color=self._color()
-        if color == (255, 255, 255):
-            print "art %d, %d" % (x,y)
         matrix.drawPixel(x, y, color)
 
     def refresh(self, matrix):

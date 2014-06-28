@@ -14,9 +14,10 @@ class Art:
 
     """
     See http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking
-    which assumes that walls can be represented on a per-cell basis, which doesn't
-    really work in our case. So we have a little extra work to do in that cells can
-    either be path elements, or wall elements.
+    for a rough idea on how this works. That approach assumes that walls can be
+    represented on a per-cell basis, which doesn't really work in our case. So we
+    have a little extra work to do in that cells can either be path elements, or wall
+    elements.
 
     XXX: there's a problem here, in that it really only looks ok for odd number of
          cells in each direction (because of the scaffold). For now, we fudge it and
@@ -84,25 +85,25 @@ class Art:
         return False
 
     def _step(self, matrix, x, y):
+        # zeroth, if the cell is occupied, then we're done
         if not self._isFree(x, y):
             return False
 
-        # zeroth, we make sure we have a random order of operations
+        # first, we make sure we have a random order of operations
         shuffle(self.directions)
         directions = deepcopy(self.directions)
 
-        # first, we mark the cell in the map
+        # second, we mark the cell in the map
         self._mark(matrix, x, y, MZ_PATH)
-        print x, y
 
-        # second, we check for neighbors that could bridge the path if a
+        # third, we check for neighbors that could bridge the path if a
         # connection is added
         for direction in directions:
             nx, ny = x + direction["x"], y + direction["y"] 
             if self._isFree(nx, ny) and self._causesPathLoop(nx, ny):
                 self._mark(matrix, nx, ny, MZ_WALL)
 
-        # third, we add new places to explore to the stack
+        # forth, we add new places to explore to the stack
         for direction in directions:
             nx, ny = x + direction["x"], y + direction["y"] 
             self.steps.append((nx, ny))

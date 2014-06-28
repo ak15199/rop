@@ -69,26 +69,6 @@ class Mandelbrot:
 
             v, u = 2*u*v+y, a-b+x
 
-    def _text(self, m1, m2):
-        map = [ "@", "#", "%", "=", "+", "-", "'", ",", "." ]
-        i = 0
-        for x in self.detail:
-            i += 1
-            for y in x:
-                if y is None or y>=9:
-                    print " ",
-                elif y<9:
-                    print map[y],
-            print "|   ",
-            if i == 1:
-                print m1
-            elif i == 2:
-                print m2
-            else:
-                print
-
-        print
-
     def draw(self, region):
         dx, dy = region.dxdy(self.width, self.height)
 

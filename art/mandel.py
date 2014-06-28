@@ -35,16 +35,6 @@ class Art:
         self.stepsDown = 0
         self._render(matrix, self.target)
 
-    def _text(self, grid):
-        map = [ "X", "x", "O", "o", "+", "-", "'", ",", "." ]
-        for x in grid:
-            for y in x:
-                if y is None or y>=9:
-                    print " ",
-                elif y<9:
-                    print map[y],
-            print
-
     def _render(self, matrix, target):
         grid = self.mandel.draw(target)
 
@@ -78,10 +68,10 @@ class Art:
         else:
             self._forward()
 
-        if DEBUG: print " Origin:", self.origin
-        if DEBUG: print "   From:", self.current
-        if DEBUG: print "     To:", self.target
-        if DEBUG: print "  Steps:", self.delta
+        logging.debug(" Origin:", self.origin)
+        logging.debug("   From:", self.current)
+        logging.debug("     To:", self.target)
+        logging.debug("  Steps:", self.delta)
 
         # move to next state
         return self._zoomToTarget(matrix)
