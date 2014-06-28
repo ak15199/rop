@@ -320,3 +320,6 @@ class OPCMatrix:
                 (x1, y1), (x1+w, y1), (x1+w, y1+h), (x1, y1+h)
             ], color)
 
+    def terminate(self):
+        if self.ansi is not None:
+            self.ansi.terminate()
