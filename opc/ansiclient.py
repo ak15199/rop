@@ -1,37 +1,38 @@
-ANSI_HOME = "\033[1;1H"
-ANSI_CLEAR = "\033[J"
-ANSI_RESTORE = "\033[0m"
-ANSI_BRIGHT = "\033[1m"
-ANSI_NORMAL = "\033[22m"
+#encoding: utf-8
+
+import curses
+import logging
+
+def initCurses():
+    global stdscr
+
+    stdscr = curses.initscr()
+    curses.start_color()
+
+def exitCurses():
+    curses.endwin()
 
 class Ansi_0(object):
 
-    def __init__(self, ratio=1.1):
-        self.border = False
+    def __init__(self):
+        pass
 
     def convert(self, x, color):
-        return ""
-
-    def reset(self):
-        return ""
+        pass
 
 class Ansi_1(Ansi_0):
 
-    """
-    Basic ansi controls and ten step ascii gradients.
-    """
-
-    MAP10 = " .:-=+*#%@"
+    MAP10 = " .:-=+*#%@"    # ten step asciiart gradient
+    MAP8 = u" ⡀⢂⡢⢕⢷⢷⣽⣿"     # nine step braille gradient
 
     def __init__(self, ratio=1.1):
         # we use ratio to add some differentation between the guns
-        self.border = True
         self.ratio = ratio
 
     def _shortAnsi(self, v):
         return self.MAP10[min(9,max(v,0))]
 
-    def convert(self, x, color):
+    def _convert(self, x, color):
         total = 0
         for v in color:
             total = v + self.ratio*total
@@ -40,130 +41,116 @@ class Ansi_1(Ansi_0):
 
         return self._shortAnsi(int(total))
 
-    def reset(self):
-        return ""
+    def convert(self, x, color):
+        stdscr.addstr(self._convert(x, color))
 
 class Ansi_2(Ansi_1):
 
     """
-    An ansi client that supports 16 colors. This extends the basic ansi
-    client, adding a few colors to the ascii art.
+    An ansi client that supports 16 colors. This extends the basic implementation,
+    adding some color to the ascii art.
     """
-    ANSI16_BRIGHT = 16
-    ANSI16_BLACK = 0
-    ANSI16_RED = 1
-    ANSI16_GREEN = 2
-    ANSI16_YELLOW = 3
-    ANSI16_BLUE = 4
-    ANSI16_MAGENTA = 5
-    ANSI16_CYAN = 6
-    ANSI16_WHITE = 7
-
-    CODES = {
-            "000":    ANSI16_BLACK,
-            "001":    ANSI16_BLUE,
-            "002":    ANSI16_BLUE+ANSI16_BRIGHT,
-            "010":    ANSI16_GREEN,
-            "011":    ANSI16_CYAN,
-            "012":    ANSI16_CYAN,                  # approx
-            "020":    ANSI16_GREEN+ANSI16_BRIGHT,
-            "021":    ANSI16_CYAN,                  # approx
-            "022":    ANSI16_CYAN+ANSI16_BRIGHT,
-            "100":    ANSI16_RED,
-            "101":    ANSI16_MAGENTA,
-            "102":    ANSI16_MAGENTA,               # approx
-            "110":    ANSI16_YELLOW,
-            "111":    ANSI16_WHITE,
-            "112":    ANSI16_BLUE+ANSI16_BRIGHT,    # approx
-            "120":    ANSI16_YELLOW,                # approx
-            "121":    ANSI16_GREEN+ANSI16_BRIGHT,   # approx
-            "122":    ANSI16_CYAN+ANSI16_BRIGHT,    # approx
-            "200":    ANSI16_RED+ANSI16_BRIGHT,
-            "201":    ANSI16_RED+ANSI16_BRIGHT,     # approx
-            "202":    ANSI16_MAGENTA+ANSI16_BRIGHT,
-            "210":    ANSI16_YELLOW,                # approx
-            "211":    ANSI16_RED+ANSI16_BRIGHT,     # approx
-            "212":    ANSI16_MAGENTA+ANSI16_BRIGHT, # approx
-            "220":    ANSI16_YELLOW+ANSI16_BRIGHT,
-            "221":    ANSI16_YELLOW+ANSI16_BRIGHT,  # approx
-            "222":    ANSI16_WHITE+ANSI16_BRIGHT,
-        }
-
     def __init__(self):
         super(Ansi_2, self).__init__(1)
 
-    def _ansi16_color(self, value):
-        return "\033[" + str(30+value) + "m"
+        COLOR_WHITE = 0 # curses has white locked in postition 0
+        COLOR_BLACK = 1
+        COLOR_RED = 2
+        COLOR_GREEN = 3
+        COLOR_YELLOW = 4
+        COLOR_BLUE = 5
+        COLOR_MAGENTA = 6
+        COLOR_CYAN = 7
 
-    def _ansi16_bright(self, bright):
-        if bright:
-            return ANSI_BRIGHT
+        self.CODES = {
+                "000":    curses.color_pair(COLOR_BLACK),
+                "001":    curses.color_pair(COLOR_BLUE),
+                "002":    curses.color_pair(COLOR_BLUE)+curses.A_BOLD,
+                "010":    curses.color_pair(COLOR_GREEN),
+                "011":    curses.color_pair(COLOR_CYAN),
+                "012":    curses.color_pair(COLOR_CYAN),                  # approx
+                "020":    curses.color_pair(COLOR_GREEN)+curses.A_BOLD,
+                "021":    curses.color_pair(COLOR_CYAN),                  # approx
+                "022":    curses.color_pair(COLOR_CYAN)+curses.A_BOLD,
+                "100":    curses.color_pair(COLOR_RED),
+                "101":    curses.color_pair(COLOR_MAGENTA),
+                "102":    curses.color_pair(COLOR_MAGENTA),               # approx
+                "110":    curses.color_pair(COLOR_YELLOW),
+                "111":    curses.color_pair(COLOR_WHITE),
+                "112":    curses.color_pair(COLOR_BLUE)+curses.A_BOLD,    # approx
+                "120":    curses.color_pair(COLOR_YELLOW),                # approx
+                "121":    curses.color_pair(COLOR_GREEN)+curses.A_BOLD,   # approx
+                "122":    curses.color_pair(COLOR_CYAN)+curses.A_BOLD,    # approx
+                "200":    curses.color_pair(COLOR_RED)+curses.A_BOLD,
+                "201":    curses.color_pair(COLOR_RED)+curses.A_BOLD,     # approx
+                "202":    curses.color_pair(COLOR_MAGENTA)+curses.A_BOLD,
+                "210":    curses.color_pair(COLOR_YELLOW),                # approx
+                "211":    curses.color_pair(COLOR_RED)+curses.A_BOLD,     # approx
+                "212":    curses.color_pair(COLOR_MAGENTA)+curses.A_BOLD, # approx
+                "220":    curses.color_pair(COLOR_YELLOW)+curses.A_BOLD,
+                "221":    curses.color_pair(COLOR_YELLOW)+curses.A_BOLD,  # approx
+                "222":    curses.color_pair(COLOR_WHITE)+curses.A_BOLD,
+            }
 
-        return ANSI_NORMAL
+        color = [
+                curses.COLOR_WHITE,
+                curses.COLOR_BLACK,
+                curses.COLOR_RED,
+                curses.COLOR_GREEN,
+                curses.COLOR_YELLOW,
+                curses.COLOR_BLUE,
+                curses.COLOR_MAGENTA,
+                curses.COLOR_CYAN,
+            ]
+            
+        for index in range(1, 8):
+            curses.init_pair(index, color[index], curses.COLOR_BLACK) 
+
+    def _cursesAttr(self, color):
+        """
+        build an array describing a down-sampled version of the
+        color as a three character string, with each gun being
+        described with a value in the range 0..2, then map this to attrs
+        """
+        map = "".join([ str(int(round(v/128))) for v in color ])
+        return self.CODES[map]
 
     def convert(self, x, color):
-        result = ""
-        if x == 0:
-            self.lastshade = None
-            self.lastbright = None
-
-        # build an array describing a down-sampled version of the
-        # color as a three character string, with each gun being
-        # described with a [012] value
-        map = "".join([ str(int(round(v/128))) for v in color ])
-        code = self.CODES[map]
-        shade = code & 7
-        bright = (code & 16) != 0
-
-        if self.lastshade != shade:
-            result += self._ansi16_color(shade)
-        if self.lastbright != bright:
-            result += self._ansi16_bright(bright)
-
-        self.lastshade = shade
-        self.lastbright = bright
-        
-        return result + super(Ansi_2, self).convert(x, color)
-
-    def reset(self):
-        return ANSI_RESTORE
+        stdscr.addstr(super(Ansi_2, self)._convert(x, color), self._cursesAttr(color))
 
 class AnsiClient:
     """
     Simple text based client that displays a LED string as asciiart. There
-    are several versions that can be specified, each requiring a varying
-    degree of functionality from the terminal. See the specific
-    implementations for details.
+    are several ways to do this, depending on the capability level of the
+    terminal. See the specific implementations for details.
 
-    TODO: Although not all terminal emulators support this more advanced
-            version would use the xterm-256 color set, presumably as an
-            Ansi-3 class.
+    TODO: add support for xterm-256
     """
-
-    clients = {
-            "ansi": Ansi_1,
-            "ansi-0": Ansi_0,
-            "ansi-1": Ansi_1,
-            "ansi-2": Ansi_2,
-        }
 
     def __init__(self, width, height, address):
         self.width = width
         self.height = height
 
-        self.converter = self.clients[address]()
+        initCurses()
+        stdscr.clear()
+        if curses.has_colors():
+            self.converter = Ansi_2()
+        else:
+            self.converter = Ansi_1()
 
     def show(self, pixels):
-        if not self.converter.border:
-            return
-
-        print ANSI_HOME+ANSI_CLEAR
-        print " + " + "-"*self.width + " +"
-
-        for y in range(self.height):
-            row = [ self.converter.convert(x, pixels[x+y*self.width]) for x in range(self.width) ]
-
-            print ' | ' + ''.join(row) + self.converter.reset() + ' |'
-
-        print " + " + "-"*self.width + " +"
+        stdscr.addstr(0, 0, " + " + "-"*self.width + " +\n")
         
+        for y in range(self.height):
+            stdscr.addstr(" | ")
+            for x in range(self.width):
+                self.converter.convert(x, pixels[x+y*self.width])
+
+            stdscr.addstr(" | \n")
+
+        stdscr.addstr(" + " + "-"*self.width + " +\n")
+
+        stdscr.refresh() 
+
+    def terminate(self):
+        exitCurses()
