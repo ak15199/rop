@@ -110,11 +110,12 @@ class Mandelbrot:
                     imax = max(point, imax)
                     imin = min(point, imin)
 
-        # if the quadrant is all black then we didn't find jack
-        if not found:
+        # if the quadrant is all black then we didn't find jack. Also, if
+        # it's all just one color, then that really isn't any better.
+        if not found or imin == imax:
             return 0
 
-        # quadrants with some black though, is definitely prefersble
+        # quadrants with some black though, are definitely preferable
         if hasnone:
             imax += 3
 

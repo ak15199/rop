@@ -1,10 +1,11 @@
 from opc.matrix import OPCMatrix
 from opc.hue import hsvToRgb
-from math import sin, cos
 from utils.frange import frange
 from utils.fractools import Mandelbrot, Region
 
 from copy import copy
+from math import sin, cos
+import logging
 from random import randrange, random
 
 ZOOMSTEPS = 24
@@ -55,7 +56,7 @@ class Art:
     def _reverse(self):
         self.target = copy(self.origin)
         self.zoomRemaining = self.stepsDown * ZOOMSTEPS/4
-        self.delta = self.current.delta(self.origin, self.zoomRemaining)
+        self.delta = self.current.delta(self.target, self.zoomRemaining)
 
     def _drawBig(self, matrix):
         """
@@ -68,19 +69,19 @@ class Art:
         else:
             self._forward()
 
-        logging.debug(" Origin:", self.origin)
-        logging.debug("   From:", self.current)
-        logging.debug("     To:", self.target)
-        logging.debug("  Steps:", self.delta)
+        logging.debug(" Origin:"+str(self.origin))
+        logging.debug("   From:"+str(self.current))
+        logging.debug("     To:"+str(self.target))
+        logging.debug("  Steps:"+str(self.delta))
 
         # move to next state
         return self._zoomToTarget(matrix)
 
     def _zoomToTarget(self, matrix):
         """
-        iteratively zoom towards the target until we fill the display
+        iteratively zoom towards the target, refresh by refresh
         """
-        if self.zoomRemaining:
+        if self.zoomRemaining > 0:
             self.current.increment(self.delta)
             self._render(matrix, self.current)
             self.zoomRemaining -= 1
