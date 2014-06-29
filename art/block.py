@@ -12,14 +12,11 @@ class Art:
 
     def refresh(self, matrix):
 
-        if randrange(0,3) == 0:
-            color = (0, 0, 0)
-            min = 6
-            max = 12
-        else:
-            color = (randrange(0, 256), randrange(0, 256), randrange(0, 256))
-            min = 2
-            max = 7
+        matrix.fade(0.95)
+
+        color = (randrange(0, 256), randrange(0, 256), randrange(0, 256))
+        min = 2
+        max = 7
 
         matrix.fillRect(
             randrange(0, matrix.width),
