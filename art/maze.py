@@ -5,9 +5,9 @@ from time import sleep
 from random import randrange, random, shuffle
 from copy import deepcopy
 
-MZ_FREE = { "name": "Free", "color": (156, 156, 156) }
-MZ_WALL = { "name": "Wall", "color": BLUE }
-MZ_PATH = { "name": "Path", "color": WHITE }
+MZ_FREE = { "name": "Free", "color": GRAY70 }
+MZ_WALL = { "name": "Wall", "color": WHITE }
+MZ_PATH = { "name": "Path", "color": BLUE }
 MZ_DOOR = { "name": "Door", "color": RED }
 
 class Art:
@@ -50,7 +50,7 @@ class Art:
         self.steps = []
 
         self.maze = [ [MZ_FREE for y in range(self.height)] for x in range(self.width)]
-        self.matrix.fillRect(0, 0, self.width, self.height, MZ_FREE["color"])
+        self.matrix.clear(MZ_FREE["color"])
         
         # build a scaffold that the paths will run amongst.
         for x in range(1, self.width, 2):
