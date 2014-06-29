@@ -2,6 +2,9 @@ This project is designed to generate a number of distinctive animations on
 a 16x16 grid of LEDs via OPC, to a FadeCandy board, and with just a few
 exceptions the code will mostly work with other grid sizes as well
 
+If you're not already familiar, go check out
+https://github.com/scanlime/fadecandy for more background on this project.
+
 The code has been run on OSX with Python 2.7 with just the standard
 modules. Hopefully it works on other platforms, but your mileage may vary.
 
