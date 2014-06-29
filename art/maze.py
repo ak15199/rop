@@ -5,24 +5,26 @@ from time import sleep
 from random import randrange, random, shuffle
 from copy import deepcopy
 
-MZ_FREE = { "name": "Free", "color": GRAY70 }
+MZ_FREE = { "name": "Free", "color": GRAY40 }
 MZ_WALL = { "name": "Wall", "color": WHITE }
-MZ_PATH = { "name": "Path", "color": BLUE }
+MZ_PATH = { "name": "Path", "color": None } # chosen on the fly
 MZ_DOOR = { "name": "Door", "color": RED }
+
+MZ_PRIMARIES = [ RED, BLUE, GREEN, MAGENTA ]
 
 class Art:
 
     """
     See http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking
-    for a rough idea on how this works. That approach assumes that walls can be
-    represented on a per-cell basis, which doesn't really work in our case. So we
-    have a little extra work to do in that cells can either be path elements, or wall
-    elements.
+    for a rough idea on how this works. That approach assumes that walls
+    can be represented on a per-cell basis, which doesn't really work in
+    our case.  So we have a little extra work to do in that cells can
+    either be path elements or wall elements.
 
-    XXX: there's a problem here, in that it really only looks ok for odd number of
-         cells in each direction (because of the scaffold). For now, we fudge it and
-         subtract one from the (assumed) even number of cells in each direction, but
-         this needs some work.
+    XXX: there's a problem here, in that it really only looks ok for odd
+    number of cells in each direction (because of the scaffold). For now,
+    we fudge it and subtract one from the (assumed) even number of cells in
+    each direction, but this needs some work.
     """
 
     def __init__(self, matrix):
@@ -52,6 +54,9 @@ class Art:
         self.maze = [ [MZ_FREE for y in range(self.height)] for x in range(self.width)]
         self.matrix.clear(MZ_FREE["color"])
         
+        shuffle(MZ_PRIMARIES)
+        MZ_PATH["color"] = MZ_PRIMARIES[0]
+
         # build a scaffold that the paths will run amongst.
         for x in range(1, self.width, 2):
             for y in range(1, self.height, 2):
