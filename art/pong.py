@@ -4,36 +4,45 @@ from opc.matrix import OPCMatrix
 from random import randrange, random
 from math import copysign
 
-class Score:
+WINTHRESH = 9
+
+def coinToss():
+    return random()>=.5
+
+class Net:
+
+    COLOR = rgb["gray30"]
+    FREQ  = 2               # on|off dash frequency
+
+    def __init__(self):
+        pass
+
+    def display(self, matrix):
+        for y in range(matrix.width):
+            if ((1+y)/self.FREQ) % self.FREQ == 0:
+                matrix.drawLine(matrix.width/2-1, y, matrix.width/2, y, self.COLOR)
+
+class Digit:
 
     # condensed numeric characters, with two rows of pixels
     # per byte in a 4x6 grid
     charmap = [
-        (105, 153, 150), # 0
-        (38, 34, 39), # 1
-        (105, 18, 79), # 2
-        (105, 33, 150), # 3
-        (136, 170, 242), # 4
-        (248, 241, 150), # 5
-        (120, 233, 150), # 6
-        (241, 36, 68), # 7
-        (105, 105, 150), # 8
-        (105, 113, 22), # 9
+        (105, 153, 150),    # 0
+        (38, 34, 39),       # 1
+        (105, 18, 79),      # 2
+        (105, 33, 150),     # 3
+        (136, 170, 242),    # 4
+        (248, 241, 150),    # 5
+        (120, 233, 150),    # 6
+        (241, 36, 68),      # 7
+        (105, 105, 150),    # 8
+        (105, 113, 22),     # 9
         ]
 
     def __init__(self, x, y, color):
         self.x = x
         self.y = y
-        self.score = 0
         self.color = color
-        self.win_thresh = 9
-
-    def reset(self):
-        self.score = 0
-
-    def bump(self):
-        self.score += 1
-        return self.score > self.win_thresh
 
     def _draw(self, matrix, y, line):
         x = self.x 
@@ -43,97 +52,227 @@ class Score:
             line = line >> 1
             x += 1
 
-    def display(self, matrix):
-        bytes = self.charmap[self.score]
+    def display(self, matrix, value):
+        bytes = self.charmap[value]
         y = self.y
         for byte in bytes:
             self._draw(matrix, y-0, byte >> 4)
             self._draw(matrix, y-1, byte & 15)
             y -= 2
 
+class Score:
+
+    COLOR = rgb["red4"]
+
+    def __init__(self, width, height, isLeft):
+        if isLeft:
+            x = width/2 - 6
+        else:
+            x = width/2 + 2
+
+        y = height/2 + 2
+
+        self.score = 0
+        self.digit = Digit(x, y, self.COLOR)
+
+    def reset(self):
+        self.score = 0
+
+    def goal(self):
+        self.score += 1
+
+    def wins(self, winthresh):
+        return self.score >= winthresh
+
+    def display(self, matrix):
+        self.digit.display(matrix, self.score)
+
+class Bat:
+
+    COLOR = rgb["yellow"]
+    RADIUS = 2              # half the size of the bat
+
+    def __init__(self, width, height, isLeft):
+        self.width = width
+        self.height = height
+        self.y = self.height/2 - self.RADIUS
+        if isLeft:
+            self.x = width - 1
+        else:
+            self.x = 0
+
+    def up(self):
+        self.y = min(self.y+1, self.height-self.RADIUS-1)
+
+    def down(self):
+        self.y = max(self.y-1, self.RADIUS)
+
+    def display(self, matrix):
+        matrix.drawLine(self.x, self.y-self.RADIUS, self.x, self.y+self.RADIUS, self.COLOR)
+
+    def intersects(self, x, y):
+        a = abs(x - self.x)
+        return abs(x - self.x) == 1 and self.y-self.RADIUS < y and y < self.y+self.RADIUS
+
+    def behind(self, x, isLeft):
+        if isLeft:
+            if x <= 0:
+                return True
+        else:
+            if x >= self.width:
+                return True
+
+        return False
+
+    def _bounceDirection(self, ball_y):
+        if ball_y > self.y:
+            return -1
+        elif ball_y < self.y:
+            return 1
+
+        if coinToss():
+            return 1
+
+        return -1
+
+    def bounceAngle(self, ball_y):
+        direction = self._bounceDirection(ball_y)
+
+        if ball_y == self.y:
+            return direction * random()
+        
+        return direction * abs(self.y-ball_y)
+
+class Player:
+
+    def __init__(self, width, height, isLeft):
+        self.bat   = Bat(width, height, isLeft)
+        self.score = Score(width, height, isLeft)
+        self.left  = isLeft
+        self.width = width
+
+    def _mySide(self, ball_y):
+        if self.left:
+            if ball_y >= self.width/2:
+                return True
+        elif ball_y < self.width/2:
+            return True
+
+        return False
+
+    def move(self, ball_x, ball_y):
+        if (coinToss() and coinToss()) or not self._mySide(ball_x):
+            return
+
+        if ball_y > self.bat.y:
+            self.bat.up()
+        elif ball_y < self.bat.y:
+            self.bat.down()
+
+    def opponent(self):
+        return not self.left
+
+    def ballIntersectsBat(self, ball_x, ball_y):
+        return self.bat.intersects(ball_x, ball_y)
+
+    def ballIntersectsWall(self, ball_x, ball_y):
+        return self.bat.behind(ball_x, self.left)
+
+    def bounceAngle(self, ball_x, ball_y):
+        return self.bat.bounceAngle(ball_y)
+
+    def display(self, matrix):
+        self.bat.display(matrix)
+        self.score.display(matrix)
+
+class Ball:
+
+    SERVEMARGIN = 4
+
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def serve(self, serveFromLeft, y=None):
+        if y is None:
+            self.y = randrange(self.SERVEMARGIN, self.height-self.SERVEMARGIN)
+        else:
+            self.y = y
+
+        if serveFromLeft:
+            self.x = self.SERVEMARGIN
+            self.h = 1
+        else:
+            self.x = self.width-self.SERVEMARGIN
+            self.h = -1
+
+        if coinToss():
+            self.v =  randrange(1, 2)
+        else:
+            self.v = -randrange(1, 2)
+
+    def bounce(self, acceleration):
+        self.h = -self.h
+        self.v = acceleration
+
+    def move(self):
+        self.x += self.h
+        self.y += self.v
+
+        # take into account bouncing off top or bottom while the
+        # ball is in flight
+        if self.y <= 0:
+            self.v = abs(self.v)
+        elif self.y >= self.height-1:
+            self.v = -abs(self.v)
+
+    def display(self, matrix):
+        matrix.drawPixel(self.x, self.y, rgb["white"])
+
 class Art:
 
     def __init__(self, matrix):
-        self.paddley = [4, 10]
-        self.paddlex = [0, matrix.width-1]
-        self._restart()
+        self.ball = Ball(matrix.width, matrix.height)
+        self.net  = Net()
+
+        self.players = {}
+        for left in [ True, False ]:
+            self.players[left] = Player(matrix.width, matrix.height, left)
+            
+        self._newGame()
 
     def start(self, matrix):
         matrix.setFirmwareConfig(nointerp=True)
 
-    def _restart(self):
-        self.scores = [ Score(3, 10, rgb["red4"]), Score(9, 10, rgb["red4"]) ]
-        self._serve(random()-0.5)
+    def _newGame(self):
+        for player in self.players.values():
+            player.score.reset()
 
-    def _serve(self, direction):
-        self.x = randrange(5, 12)
-        self.y = randrange(5, 12)
-        self.h = copysign(1, direction)
-        self.v = randrange(1, 2)
-
-    def _intersect(self, newx, newy, id):
-        if self.paddlex[id] == newx:
-            delta = self.paddley[id] - newy
-            if abs(delta) < 3:
-                return delta
-
-        return None
-
-    def _intersects(self, newx, newy):
-        for paddle in range(2):
-            accel = self._intersect(newx, newy, paddle)
-            if accel is not None:
-                return accel
-
-        return None
-
-    def _drawNet(self, matrix):
-        for y in range(matrix.width):
-            if ((1+y)/2) % 2 == 0:
-                matrix.drawLine(7, y, 8, y, rgb["gray30"])
-
-    def _drawScore(self, matrix):
-        for score in self.scores:
-            score.display(matrix)
-
-    def _updateBat(self, matrix, id):
-        if random() > .7:
-            self.paddley[id] = min(matrix.height-2, max(2, int(self.paddley[id] + self.v)))
-
-        matrix.drawLine(self.paddlex[id], self.paddley[id]-2, self.paddlex[id], self.paddley[id]+2, rgb["yellow"])
-
-    def _drawBats(self, matrix):
-        for paddle in range(2):
-            self._updateBat(matrix, paddle)
-  
-    def _drawBall(self, matrix):
-        matrix.drawPixel(self.x, self.y, rgb["white"])
-        newx, newy = (self.x + self.h, self.y + self.v)
-
-        accel = self._intersects(newx, newy)
-        if accel is not None:
-            self.h = -self.h
-            self.v = accel
-        elif newx<0 or newx>=matrix.width:
-            if self.scores[0].bump():
-                self._restart()
-
-            self._serve(self.h)
-        else:
-            self.x = newx
-
-        if newy<0 or newy>=matrix.height:
-            self.v = -self.v
-        else:
-            self.y = newy
+        self.ball.serve(coinToss())
 
     def refresh(self, matrix):
+
+        for player in self.players.values():
+            opponent = self.players[player.opponent()]
+            if opponent.score.wins(WINTHRESH):
+                self._newGame()
+
+            player.move(self.ball.x, self.ball.y)
+            if player.ballIntersectsBat(self.ball.x, self.ball.y):
+                bounceAngle = player.bounceAngle(self.ball.x, self.ball.y)
+                self.ball.bounce(bounceAngle)
+            elif player.ballIntersectsWall(self.ball.x, self.ball.y):
+                opponent.score.goal()
+                self.ball.serve(player.left, player.bat.y)
+            
+        self.ball.move()
         matrix.clear()
 
-        self._drawNet(matrix)
-        self._drawScore(matrix)
-        self._drawBats(matrix)
-        self._drawBall(matrix)
+        for player in self.players.values():
+            player.display(matrix)
+
+        self.net.display(matrix)
+        self.ball.display(matrix)
 
     def interval(self):
         return 200
