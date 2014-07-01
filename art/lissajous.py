@@ -21,8 +21,8 @@ class Art:
         self.phase_z += DELTA_Z
 
         color = self.hue.next()
-        xcenter = matrix.width/2
-        ycenter = matrix.height/2
+        xcenter = matrix.width/2.0
+        ycenter = matrix.height/2.0
         theta = sin(self.phase_z)
         if theta < 0:
             theta_x, theta_y = 1, 1 - 2*theta
