@@ -43,14 +43,15 @@ class Art:
 
         self.ang += DELTA_ANG
  
-        extent = matrix.width / 2
+        xcenter = matrix.width / 2.0
+        ycenter = matrix.height / 2.0
         amp = sin(self.amp)
 
         tx = amp * sin (self.ang)
         ty = amp * cos (self.ang)
 
-        x = extent + extent * tx 
-        y = extent + extent * ty 
+        x = xcenter + xcenter * tx 
+        y = ycenter + ycenter * ty 
         color = hsvToRgb(fmod(self.hue, 1), 1, 1)
         
         matrix.drawPixel(x, y, color)
