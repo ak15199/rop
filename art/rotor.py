@@ -12,7 +12,7 @@ class Art:
         self.astep = pi/48
         self.hstep = pi/1024
 
-        self.radius = matrix.width/2.2
+        self.radius = min(matrix.width, matrix.height)/2.2
         self.x0 = matrix.width/2
         self.y0 = matrix.height/2
 
