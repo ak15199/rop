@@ -62,11 +62,11 @@ class Pen:
             matrix.drawPixel(self.x, self.y, BLACK)
 
         self.x += self.dx
-        if (self.x < 1 and self.dx < 0) or (self.x >= self.h-1 and self.dx > 0):
+        if (self.x < 1 and self.dx < 0) or (self.x >= self.w-1 and self.dx > 0):
             self.ax(x=True)
         
         self.y += self.dy
-        if (self.y < 1 and self.dy < 0) or (self.y >= self.w-1 and self.dy > 0):
+        if (self.y < 1 and self.dy < 0) or (self.y >= self.h-1 and self.dy > 0):
             self.ay(y=True)
         
         matrix.drawPixel(self.x, self.y, hsvToRgb(self.hue, v=self.value))
