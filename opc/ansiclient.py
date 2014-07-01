@@ -3,6 +3,8 @@
 import curses
 import logging
 
+from error import TtyTooSmall
+
 def initCurses():
     global stdscr
 
@@ -138,7 +140,7 @@ class AnsiClient:
         else:
             self.converter = Ansi_1()
 
-    def show(self, pixels):
+    def _show(self, pixels):
         stdscr.addstr(0, 0, " + " + "-"*self.width + " +\n")
         
         for y in range(self.height):
@@ -151,6 +153,16 @@ class AnsiClient:
         stdscr.addstr(" + " + "-"*self.width + " +\n")
 
         stdscr.refresh() 
+
+    def show(self, pixels):
+        try:
+            self._show(pixels)
+        except curses.error:
+            ttyheight, ttywidth = stdscr.getmaxyx()
+            message = \
+                "Your screen (%d, %d) is too small to support this size matrix (%d, %d)" % (ttywidth, ttyheight, self.width, self.height)
+
+            raise TtyTooSmall(message)
 
     def terminate(self):
         exitCurses()

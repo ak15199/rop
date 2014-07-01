@@ -7,6 +7,7 @@ from traceback import format_exception
 import dpyinfo
 from importer import ImportPlugins
 from opc.matrix import OPCMatrix
+from opc.error import TtyTooSmall
 
 FLIPTIME = 30
 
@@ -14,13 +15,16 @@ matrix = None
 
 import logging; logging.basicConfig(filename='art.log',level=logging.DEBUG)
 
-def exceptionHandler(type, value, tb):
+def exceptionHandler(etype, evalue, etraceback):
     global matrix
     if matrix is not None:
         matrix.terminate()
 
-    for line in format_exception(type, value, tb):
+    for line in format_exception(etype, evalue, etraceback):
         logging.error('Exception: '+line.rstrip('\n'))
+
+    if type(etype) is type(TtyTooSmall):
+        print evalue
 
 def main():
     global matrix
