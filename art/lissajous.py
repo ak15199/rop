@@ -21,7 +21,8 @@ class Art:
         self.phase_z += DELTA_Z
 
         color = self.hue.next()
-        center = matrix.width/2
+        xcenter = matrix.width/2
+        ycenter = matrix.height/2
         theta = sin(self.phase_z)
         if theta < 0:
             theta_x, theta_y = 1, 1 - 2*theta
@@ -29,8 +30,8 @@ class Art:
             theta_x, theta_y = 1 + 2*theta, 1
 
         for angle in frange(0, 2*pi, 0.01):
-            x = center + center * sin(theta_x * angle)
-            y = center + center * cos(theta_y * angle)
+            x = xcenter + xcenter * sin(theta_x * angle)
+            y = ycenter + ycenter * cos(theta_y * angle)
             matrix.drawPixel(x, y, color)
         
     def interval(self):
