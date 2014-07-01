@@ -4,20 +4,28 @@ from random import randrange
 
 class Art:
 
+    GRIDSIZE = 8
+
     def __init__(self, matrix):
         pass
 
     def start(self, matrix):
-        matrix.fillRect(0,0,16,16,(96,64,24));
-        matrix.drawRect(2,2,11,11,(128,128,128));
+        matrix.clear((96,64,24))
 
-        for x in range(0, 8):
-            for y in range(0, 8):
+        xcorner = matrix.width/2 - (self.GRIDSIZE/2)
+        ycorner = matrix.height/2 - (self.GRIDSIZE/2)
+
+        matrix.drawRect(xcorner-1, ycorner-1, self.GRIDSIZE+1, self.GRIDSIZE+1, (128,128,128))
+
+        for x in range(self.GRIDSIZE):
+            for y in range(self.GRIDSIZE):
                 black = (x&1) ^ (y&1);
                 if black:
-                    matrix.drawPixel(4+x,4+y, (192,0,0))
+                    color = (192, 0, 0)
                 else:
-                    matrix.drawPixel(4+x,4+y, (0,0,192))
+                    color = (0, 0, 192)
+
+                matrix.drawPixel(xcorner+x, ycorner+y, color)
 
         matrix.show();
 
