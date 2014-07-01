@@ -320,6 +320,41 @@ class OPCMatrix:
                 (x1, y1), (x1+w, y1), (x1+w, y1+h), (x1, y1+h)
             ], color)
 
+    
+    def _circlePair(self, x1, y1, x2, y2, color, isFilled):
+        if isFilled:
+            self.drawLine(x1, y1, x2, y2, color)
+        else:
+            self.drawPixel(x1, y1, color)
+            self.drawPixel(x2, y2, color)
+
+    def _circleHelper(self, x0, y0, radius, color, isFilled):
+        """
+        See http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
+        """
+        x = radius
+        y = 0
+        radiusError = 1-x
+
+        while x >= y:
+            self._circlePair(x + x0, y + y0, -x + x0, y + y0, color, isFilled)
+            self._circlePair(y + x0, x + y0, -y + x0, x + y0, color, isFilled)
+            self._circlePair(-y + x0, -x + y0, y + x0, -x + y0, color, isFilled)
+            self._circlePair(-x + x0, -y + y0, x + x0, -y + y0, color, isFilled)
+
+            y += 1
+            if radiusError<0:
+              radiusError += 2 * y + 1
+            else:
+              x -= 1
+              radiusError += 2 * (y - x + 1)
+
+    def drawCircle(self, x, y, radius, color):
+        self._circleHelper(x, y, radius, color, False)
+
+    def fillCircle(self, x, y, radius, color):
+        self._circleHelper(x, y, radius, color, True)
+
     def terminate(self):
         if self.ansi is not None:
             self.ansi.terminate()
