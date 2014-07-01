@@ -18,19 +18,20 @@ modules in the art directory, for example:
 
     % python art.py rain.py fortune.py
 
-If you don't have a display handy, then that's okay and you don't need to
-make any modifications to dpyinfo.py. The default output is to the
-controlling tty, so even if you're just checking this stuff out or on the
-road, then you can still get an idea of the animations. The code will
-auto-detect whether the terminal supports color and use it if it can.
+If you don't have a display handy, then that's okay. The default output is
+to the controlling tty, so even if you're just checking this stuff out
+or on the road, then you can still get an idea of the animations. The code
+will auto-detect whether the terminal supports color and use it if it can.
 
 Be aware that the down-sampled image is super lossy, since it's reducing
 24 bit color to a handful of ascii-art characters. Also, don't be too
-adventurous in trying to render to areas larger than the tty, as you'll
-see curses choke.
+adventurous in trying to render to areas larger than the tty, as curses
+will choke, and you'll see a message saying that the terminal is too
+small. *The terminal needs to be three lines taller than the matrix in
+order to work*.
 
-Most textual output is now delivered to art.log. If something doesn't look
-right, then check in here for exceptions and other diagnostics.
+Most textual logging is now delivered to art.log. If something doesn't
+look right, then check in here for exceptions and other diagnostics.
 
 The directories are:
 
