@@ -95,5 +95,5 @@ class Flow:
                 self.hues[i]=random()
   
     def interval(self):
-        return 700
+        return 500
 

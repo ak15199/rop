@@ -157,7 +157,7 @@ class AnsiClient:
     def show(self, pixels):
         try:
             self._show(pixels)
-        except curses.error:
+        except curses.error as e:
             ttyheight, ttywidth = stdscr.getmaxyx()
             message = \
                 "Your screen (%d, %d) is too small to support this size matrix (%d, %d)" % (ttywidth, ttyheight, self.width, self.height)
