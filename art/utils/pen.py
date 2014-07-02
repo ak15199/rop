@@ -7,7 +7,7 @@ from math import fmod, sin, cos
 
 HUEDELTA = 0.0005
 
-class Pen:
+class Pen(object):
     def __init__(self, width, height, x, y, dx=1, dy=1, persist=True):
         self.hue = random()
         self.value = 1
@@ -23,17 +23,20 @@ class Pen:
         self.angle = 0
         self.theta = 0.01
 
-
     def setValue(self, value):
         self.value = value
+
+    def trap(self, x=False, y=False):
+        raise Exception("Bump strategy not set (%d, %d)"%(x, y))
 
     def setBumpStrategy(self, func, x=False, y=False):
         if x: self.ax = func
         if y: self.ay = func
 
-    def trap(self, x=False, y=False):
-        raise Exception("Bump strategy not set (%d, %d)"%(x, y))
-
+    # Here are our bumpstrategies that can be reused. Simply put, you pick
+    # one of these to execute when the pen reaches the limits of the display.
+    # you can also set your own bump strategy by providing a method or 
+    # methods.
     def randomreset(self, x=False, y=False):
         if x: self.x = self.x0
         if y: self.y = self.y0
@@ -61,6 +64,8 @@ class Pen:
         if not self.persist:
             matrix.drawPixel(self.x, self.y, BLACK)
 
+        matrix.drawPixel(self.x, self.y, hsvToRgb(self.hue, v=self.value))
+
         self.x += self.dx
         if (self.x < 1 and self.dx < 0) or (self.x >= self.w-1 and self.dx > 0):
             self.ax(x=True)
@@ -69,5 +74,4 @@ class Pen:
         if (self.y < 1 and self.dy < 0) or (self.y >= self.h-1 and self.dy > 0):
             self.ay(y=True)
         
-        matrix.drawPixel(self.x, self.y, hsvToRgb(self.hue, v=self.value))
         self.hue = fmod(self.hue + HUEDELTA, 1)
