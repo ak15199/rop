@@ -1,50 +1,59 @@
 from opc.colors import *
+from opc.hue import hsvToRgb
 from opc.matrix import OPCMatrix
 
-from random import randrange
+from random import random
+from math import fabs
 
-DIAMETER = 8
+import logging
+
 
 class Art:
 
     def __init__(self, matrix):
-        self.scale = 4
-        self.matrix = OPCMatrix(self.scale*matrix.width, self.scale*matrix.height, None, True)
-        self.x = 0
-        self.y = self.matrix.height
-        self.dx = 1
-        self.dy = -1.4
+        self.radius = 1.5
+        self.x = self.radius
+        self.dx = 5
+        self.timeslice = 50 # ms
+        self.scale = 0.1
+        self.dt = 100/self.timeslice*self.scale
+        self.accel = 9.8
+        self._reset(matrix)
 
     def start(self, matrix):
         matrix.setFirmwareConfig(nointerp=True)
         matrix.clear()
 
-    def _ball(self, matrix, color):
-        self.matrix.fillRect(self.x, self.y, DIAMETER, DIAMETER, color)
+    def _reset(self, matrix):
+        self.color = random()
+        self.y = matrix.height - 1 - self.radius
+        self.dy = -1.3
 
     def refresh(self, matrix):
-        #self._ball(matrix, BLACK)
-        self.matrix.shift(ds=0.4, dv=0.9)
+        matrix.shift(ds=0.4, dv=0.9)
 
-        self.x = self.x + self.dx
-        self.y = self.y + self.dy
+        self.x = self.x + self.dx*self.dt
+        self.y = self.y + self.dy*self.dt
 
-        if self.x < 0 or self.x >= (self.matrix.width-DIAMETER):
-            self.dx = -self.dx
+        absdx, absdy = fabs(self.dx), fabs(self.dy)
 
-        if self.y < 0 or self.y >= self.matrix.height:
-            self.y = min(max(self.y, 0), (self.matrix.height-DIAMETER))
-            self.dy = -self.dy
+        if self.x < self.radius:
+            self.dx = absdx
+        elif self.x >= (matrix.width-self.radius-1):
+            self.dx = -absdx
 
-        accel = 1.2
-        if self.dy < 1:
-            self.dy = self.dy * accel
+        if self.y < self.radius:
+            self.dy = absdy
+        elif self.dy < 0.2 and self.dy > 0:
+            self.dy = -absdy
+
+        self.dy = self.dy - self.accel*self.dt
+
+        if self.dy < 0 and self.y < self.radius:
+            self._reset(matrix)
         else:
-            self.dy = self.dy / accel
-        
-        self._ball(matrix, RED)
-        matrix.copy(self.matrix)
+            matrix.fillCircle(self.x, matrix.height-self.y-1, self.radius, hsvToRgb(self.color))
   
     def interval(self):
-        return 100
+        return self.timeslice
 
