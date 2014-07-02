@@ -10,7 +10,7 @@ class Shrapnel(Pen):
         self.centery = matrix.height/2.0
 
         # we will reset some params to sensible values in a minute, so let's
-        # not fuss with them now
+        # not fuss with x, y, dx, dy now
         super(Shrapnel, self).__init__(
                 matrix.width,
                 matrix.height,
@@ -28,6 +28,7 @@ class Shrapnel(Pen):
         self.paused = False
         angle = random()*2*pi
 
+        # determined by experiment
         averageSize = (matrix.width+matrix.height)/2
         velocity = (averageSize/8+random()*4)/8
 
@@ -38,7 +39,6 @@ class Shrapnel(Pen):
         self.y = self.centery
         self.dx = velocityx
         self.dy = velocityy
-        #print "set initial, x, y, dx, dy = ", initial, self.x, self.y, self.dx, self.dy
 
     def clock(self, matrix):
         super(Shrapnel, self).clock(matrix)
@@ -57,7 +57,7 @@ class Art:
 
         self.shrapnel=[]
         for i in range(self.PIECES):
-            self.shrapnel.append( Shrapnel(matrix))
+            self.shrapnel.append(Shrapnel(matrix))
 
     def start(self, matrix):
         matrix.setFirmwareConfig(nointerp=True)
@@ -84,4 +84,3 @@ class Art:
 
     def interval(self):
         return 50
-
