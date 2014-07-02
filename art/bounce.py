@@ -21,7 +21,6 @@ class Art:
         self._reset(matrix)
 
     def start(self, matrix):
-        matrix.setFirmwareConfig(nointerp=True)
         matrix.clear()
 
     def _reset(self, matrix):
@@ -30,7 +29,7 @@ class Art:
         self.dy = -1.3
 
     def refresh(self, matrix):
-        matrix.shift(ds=0.4, dv=0.9)
+        matrix.shift(ds=0.75, dv=0.9)
 
         self.x = self.x + self.dx*self.dt
         self.y = self.y + self.dy*self.dt
