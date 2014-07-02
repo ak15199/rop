@@ -42,6 +42,8 @@ class Shrapnel(Pen):
 
     def clock(self, matrix):
         super(Shrapnel, self).clock(matrix)
+        self.dx *= 0.99
+        self.dy *= 0.99
         return self.paused
 
 class Art:
