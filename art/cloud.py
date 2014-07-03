@@ -16,7 +16,7 @@ class Art:
         self.matrix = OPCMatrix(self.width, self.height, None, zigzag=matrix.zigzag)
         self.ticks = 100
 
-        self.values = [ [None for y in range(self.height)] for x in range(self.width)]
+        self.values = [ [0 for y in range(self.height)] for x in range(self.width)]
 
     def start(self, matrix):
         matrix.clear()
