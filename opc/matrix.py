@@ -32,6 +32,9 @@ class OPCBuffer:
     def __setitem__(self, index, color):
         self.buffer[index] = color
 
+    def _sameSize(self, other):
+        return len(self.buffer) == len(other.buffer)
+
     def __len__(self):
         return len(self.buffer)
 
@@ -46,6 +49,20 @@ class OPCBuffer:
 
     def __and___(self, other):
         pass
+
+    def _avg(self, other, i, gun):
+        return (self.buffer[i][gun] + other.buffer[i][gun])/2
+
+    def avg(self, other):
+        if not self._sameSize(other):
+            return
+
+        for i in range(len(self.buffer)):
+            self.buffer[i] = (
+                    self._avg(other, i, 0),
+                    self._avg(other, i, 1),
+                    self._avg(other, i, 2),
+                    )
 
     def getPixels(self):
         return self.buffer
