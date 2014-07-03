@@ -4,6 +4,8 @@ from opc.hue import hsvToRgb, getHueGen
 
 class Art:
 
+    description = "Clouds drawn with the diamond square algorithm"
+
     """
     ported from http://www.bluh.org/code-the-diamond-square-algorithm/
     """

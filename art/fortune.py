@@ -10,6 +10,8 @@ FILE = "assets/fortunes.txt"
 
 class Art:
 
+    description = "Scroll classic fortunes across the display"
+
     def _seekFortune(self):
         index = randint(0, self.length)
         self.file.seek(index)

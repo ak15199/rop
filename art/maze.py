@@ -14,6 +14,8 @@ MZ_PRIMARIES = [ RED, BLUE, GREEN, MAGENTA ]
 
 class Art:
 
+    description = "Recursive backtracking maze generation"
+
     """
     See http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking
     for a rough idea on how this works. That approach assumes that walls

@@ -4,6 +4,8 @@ from random import randrange
 
 class Art:
 
+    description = "Random colored rectangles that fade with time"
+
     def __init__(self, matrix):
         pass
 

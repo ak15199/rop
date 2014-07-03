@@ -14,6 +14,8 @@ DEBUG = False
 
 class Art:
 
+    description = "Auto-zooming mandelbrot"
+
     def __init__(self, matrix):
         self.mandel = Mandelbrot(matrix.width, matrix.height, ITERSTEPS)
         # this gives a pretty good view of the artifact at max zoom

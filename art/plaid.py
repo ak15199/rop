@@ -9,6 +9,8 @@ PENS = 4
 
 class Art:
 
+    description = "Bouncy balls with trail"
+
     def __init__(self, matrix):
         self.pens = [
                 Pen(matrix.width, matrix.height, 2, 3, 1.0, 1.1),

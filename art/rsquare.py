@@ -7,6 +7,8 @@ from math import sin, cos, pi
 
 class Art:
 
+    description = "Use a higher resolution image downsampled to giver better clarity"
+
     def __init__(self, matrix):
         self.hue = getHueGen(0.001)
         self.theta = 0.0

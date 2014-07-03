@@ -9,6 +9,8 @@ DELTA_Z = 0.05
 
 class Art:
 
+    description = "Lissajous figures"
+
     def __init__(self, matrix):
         self.hue = getHueGen(0.01)
         self.phase_z = 0

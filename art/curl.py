@@ -25,6 +25,8 @@ TRAIN_LEN = 16
 
 class Art:
 
+    description = "Loop the loop"
+
     def __init__(self, matrix):
         self.hue = 0
         self.ang = 0

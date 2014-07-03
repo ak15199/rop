@@ -18,14 +18,19 @@ def ImportPlugins(dir, excludes, includes, args):
     excludes.append("__init__.py")
 
     for plugin in getPluginList(dir, excludes, includes):
-        print "import", plugin
+        print plugin+":",
         try:
             module = __import__(dir+'.'+plugin, globals(), locals(), ["Art"], -1)
-            object = module.Art(args)
-        except Exception as e:
-            print "import %s failed: %s" % (plugin, str(e))
-            raise e
+            obj = module.Art(args)
 
-        plugins.append(object)
+            desc =  getattr(obj, "description", None)
+            if desc is not None:
+                print desc
+            else:
+                print "[done]"
+
+            plugins.append(obj)
+        except Exception as e:
+            print "import failed:", str(e)
 
     return plugins

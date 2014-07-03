@@ -4,6 +4,8 @@ from random import randrange
 
 class Art:
 
+    description = "A silly boring chess board"
+
     GRIDSIZE = 8
 
     def __init__(self, matrix):

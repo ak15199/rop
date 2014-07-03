@@ -6,6 +6,8 @@ import dpyinfo
 
 class Art:
 
+    description = "Classic plasma (almost)"
+
     def __init__(self, matrix):
         self.base=128000
 

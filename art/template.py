@@ -6,6 +6,8 @@ Make sure that your art has implementations for these.
 """
 class Art:
 
+    description = "Your description goes right here"
+
     def __init__(self, matrix):
         pass
 

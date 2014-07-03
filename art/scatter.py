@@ -6,6 +6,8 @@ from utils.lfsr import lfsr256
 
 class Art:
 
+    description = "Use a 256 bit LFSR to 'randomly' fill the display"
+
     def __init__(self, matrix):
         pass
 

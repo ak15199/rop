@@ -48,6 +48,8 @@ class Shrapnel(Pen):
 
 class Art:
 
+    description = "And then it exploded..."
+
     PIECES = 32
 
     PAUSE_CYCLES = 10

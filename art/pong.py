@@ -231,6 +231,8 @@ class Ball:
 
 class Art:
 
+    description = "Automated pong"
+
     def __init__(self, matrix):
         self.ball = Ball(matrix.width, matrix.height)
         self.net  = Net()

@@ -3,6 +3,8 @@ from opc.hue import hsvToRgb
 
 class Art:
 
+    description = "Slow transition of hues across the display"
+
     def __init__(self, matrix):
         self.base = 0;
 

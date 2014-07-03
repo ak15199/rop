@@ -6,6 +6,8 @@ from math import sin, cos, fmod, pi
 
 class Art:
 
+    description = "Radar-like, but without the enemy planes"
+
     def __init__(self, matrix):
         self.angle = 0.0
         self.hue = 0

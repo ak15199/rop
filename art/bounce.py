@@ -10,6 +10,8 @@ import logging
 
 class Art:
 
+    description = "Bouncy ball"
+
     def __init__(self, matrix):
         self.radius = 1.5
         self.x = self.radius

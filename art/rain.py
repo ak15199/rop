@@ -8,6 +8,8 @@ PENS = 8
 
 class Art:
 
+    description = "Rain falling down the display"
+
     def __init__(self, matrix):
         hue = random()
         self.pens = []
