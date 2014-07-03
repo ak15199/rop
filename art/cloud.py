@@ -11,12 +11,11 @@ class Art:
         self.width = matrix.width
         self.height = matrix.height
         self.hue = random()
-        self.matrix = OPCMatrix(self.width, self.height, None, zigzag=matrix.zigzag)
 
         self.values = [ [None for y in range(self.height)] for x in range(self.width)]
 
     def start(self, matrix):
-        matrix.clear()
+        pass
 
     def _getSample(self, x, y):
         return self.values[x % self.width][y % self.height]
@@ -90,14 +89,11 @@ class Art:
         vscale = 1.0/(vmax-vmin)
         self.hue += 0.01
 
-        self.matrix.clear()
         for x in range(self.width):
             for y in range(self.height):
                 value = vscale * (self.values[x][y] - vmin)
                 color = hsvToRgb(self.hue+value/5, 1, value)
-                self.matrix.drawPixel(x, y, color)
-
-        matrix.buffer.avg(self.matrix.buffer)
+                matrix.drawPixel(x, y, color)
 
     def interval(self):
         return 400
