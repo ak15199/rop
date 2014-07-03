@@ -6,7 +6,8 @@ from math import fmod
 
 class Bilinear(object):
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, bits=None):
+        self.bits = bits
         self.cornerValueDeltas = [
                 self._delta(), self._delta(), self._delta(), self._delta(),
             ]
@@ -59,6 +60,9 @@ class Bilinear(object):
         for i in range(4):
             new = self.cornerValues[i] + self.cornerValueDeltas[i]
             self.cornerValues[i] = fmod(new, 1.0)
+
+        if self.bits is not None:
+            matrix.buffer.downSample(self.bits)
 
     def interval(self):
         return 100

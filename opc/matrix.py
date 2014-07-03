@@ -66,6 +66,14 @@ class OPCBuffer:
                     self._avg(other, i, weight, 2),
                     )
 
+    def downSample(self, bits):
+        for i in range(len(self.buffer)):
+            self.buffer[i] = (
+                    int(self.buffer[i][0]) & bits,
+                    int(self.buffer[i][1]) & bits,
+                    int(self.buffer[i][2]) & bits,
+                    )
+
     def getPixels(self):
         return self.buffer
 
