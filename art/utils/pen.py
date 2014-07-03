@@ -64,8 +64,6 @@ class Pen(object):
         if not self.persist:
             matrix.drawPixel(self.x, self.y, BLACK)
 
-        matrix.drawPixel(self.x, self.y, hsvToRgb(self.hue, v=self.value))
-
         self.x += self.dx
         if (self.x < 1 and self.dx < 0) or (self.x >= self.w-1 and self.dx > 0):
             self.ax(x=True)
@@ -74,4 +72,6 @@ class Pen(object):
         if (self.y < 1 and self.dy < 0) or (self.y >= self.h-1 and self.dy > 0):
             self.ay(y=True)
         
+        matrix.drawPixel(self.x, self.y, hsvToRgb(self.hue, v=self.value))
+
         self.hue = fmod(self.hue + HUEDELTA, 1)
