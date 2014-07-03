@@ -11,10 +11,14 @@ class Art:
 
     def refresh(self, matrix):
         self.base += 1
-        for x in range(0, matrix.width):
+        for x in range(matrix.width):
             hue = ((self.base+32*x) % 1024)/1024.0
-            matrix.drawLine(x, 0, x, matrix.height, hsvToRgb(hue))
+            for y in range(matrix.height):
+                pcent50 = 0.50*float(y)/(matrix.height-1)
+                sat = .5 + pcent50
+                val = 1 - pcent50
+                matrix.drawPixel(x, y, hsvToRgb(hue, sat, val))
   
     def interval(self):
-        return 200
+        return 100
 
