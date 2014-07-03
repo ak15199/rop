@@ -40,6 +40,7 @@ The directories are:
                     You'll notice a template.py file for the bare
                     bones
     ./art/utils     helper modules shared between animations
+    ./art/basecls   base classes that animations may derive from
     ./assets        files that are used by the animations
     ./opc           an extended interface for using OPC via python
 
