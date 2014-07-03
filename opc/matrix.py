@@ -50,18 +50,20 @@ class OPCBuffer:
     def __and___(self, other):
         pass
 
-    def _avg(self, other, i, gun):
-        return (self.buffer[i][gun] + other.buffer[i][gun])/2
+    def _avg(self, other, i, weight, gun):
+        v0 = self.buffer[i][gun] * weight
+        v1 = other.buffer[i][gun] * (1.0-weight)
+        return v0 + v1
 
-    def avg(self, other):
+    def avg(self, other, weight=.5):
         if not self._sameSize(other):
             return
 
         for i in range(len(self.buffer)):
             self.buffer[i] = (
-                    self._avg(other, i, 0),
-                    self._avg(other, i, 1),
-                    self._avg(other, i, 2),
+                    self._avg(other, i, weight, 0),
+                    self._avg(other, i, weight, 1),
+                    self._avg(other, i, weight, 2),
                     )
 
     def getPixels(self):

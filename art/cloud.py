@@ -11,11 +11,13 @@ class Art:
         self.width = matrix.width
         self.height = matrix.height
         self.hue = random()
+        self.matrix = OPCMatrix(self.width, self.height, None, zigzag=matrix.zigzag)
+        self.ticks = 100
 
         self.values = [ [None for y in range(self.height)] for x in range(self.width)]
 
     def start(self, matrix):
-        pass
+        matrix.clear()
 
     def _getSample(self, x, y):
         return self.values[x % self.width][y % self.height]
@@ -58,25 +60,22 @@ class Art:
                 self._sampleDiamond(x + halfstep, y, stepsize, self._rand() * scale)
                 self._sampleDiamond(x, y + halfstep, stepsize, self._rand() * scale)
 
-    def _seed(self, featureSize):
-        for y in range(0, self.height, featureSize):
-            for x in range(0, self.width, featureSize):
-                self._setSample(x, y, self._rand())
-
     def _generate(self, featureSize):
         samplesize = featureSize
         scale = 1.0
 
+        # seed initial values
+        for y in range(0, self.height, featureSize):
+            for x in range(0, self.width, featureSize):
+                self._setSample(x, y, self._rand())
+
+        # iterate through the intermediate spaces
         while samplesize > 1:
             self._diamondSquare(samplesize, scale)
             samplesize /= 2
             scale /= 2.0
 
-    def refresh(self, matrix):
-        featureSize = (matrix.width+matrix.height)/4
-        self._seed(featureSize)
-        self._generate(featureSize)
-
+    def _translate(self, matrix):
         vmin =  100.0
         vmax = -100.0
 
@@ -95,5 +94,18 @@ class Art:
                 color = hsvToRgb(self.hue+value/5, 1, value)
                 matrix.drawPixel(x, y, color)
 
+    def refresh(self, matrix):
+        # ticks allow us to keep track of how much time has passed
+        # since the last generation. This gives us opportunity for
+        # both a smooth transition, and time to observe the result
+        if self.ticks == 350:
+            self._generate((matrix.width+matrix.height)/4)
+            self._translate(self.matrix)
+            self.ticks = 0
+
+        self.ticks += 10
+
+        matrix.buffer.avg(self.matrix.buffer, 0.9)
+
     def interval(self):
-        return 400
+        return 100
