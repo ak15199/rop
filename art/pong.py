@@ -50,7 +50,7 @@ class Digit:
             if line & 1:
                 matrix.drawPixel(x, y, self.color)
             line = line >> 1
-            x += 1
+            x -= 1
 
     def display(self, matrix, value):
         bytes = self.charmap[value]
@@ -66,9 +66,9 @@ class Score:
 
     def __init__(self, width, height, isLeft):
         if isLeft:
-            x = width/2 - 6
+            x = width/2 - 3
         else:
-            x = width/2 + 2
+            x = width/2 + 5
 
         y = height/2 + 2
 
@@ -277,5 +277,5 @@ class Art:
         self.ball.display(matrix)
 
     def interval(self):
-        return 200
+        return 140
 

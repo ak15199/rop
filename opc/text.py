@@ -1,6 +1,7 @@
 from matrix import OPCMatrix
 
 typeface_bbc = {
+    "description": "Typeface from the Acorn BBC Computer",
     "geometry": { "width": 8, "height": 8},
     "bitmaps": [
 
@@ -66,8 +67,8 @@ class OPCText:
 
     def drawHalfLetter(self, matrix, x, y, letter, offset, fg, bg):
         word = self.typeface["bitmaps"][2*letter+offset]
-        ybase = y + 4*(offset)
-        for window in reversed(range(4)):
+        ybase = y + 4*(1-offset)
+        for window in range(4):
             byte = word & 0xff
             word = word >> 8
             for bit in reversed(range(8)):

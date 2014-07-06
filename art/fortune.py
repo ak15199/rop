@@ -58,10 +58,12 @@ class Art:
     def refresh(self, matrix):
         matrix.clear()
 
-        end = self.typeface.drawText(matrix, 0-self.base, 5, self.message, (192, 192,255), BLUE)
+        y = matrix.height/2 - 4
+
+        end = self.typeface.drawText(matrix, 0-self.base, y, self.message, (192, 192,255), BLUE)
         if end is not None:
             # if the text finishes part way across the display, then do it again!
-            self.typeface.drawText(matrix, end, 5, self.message, (192, 192, 255), BLUE)
+            self.typeface.drawText(matrix, end, y, self.message, (192, 192, 255), BLUE)
             if end == 1:
                 self.base = -1
 

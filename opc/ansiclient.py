@@ -25,26 +25,31 @@ class Ansi_0(object):
 class Ansi_1(Ansi_0):
 
     MAP10 = " .:-=+*#%@"    # ten step asciiart gradient
-    MAP8 = u" ⡀⢂⡢⢕⢷⢷⣽⣿"     # nine step braille gradient
+    MAP8 = u" ⡀⢂⢌⢕⡫⢷⣽⣿"     # nine step braille gradient, but
+                            # don't even bother before python 3.3
+                            # and libncursesw.so.5
 
     def __init__(self, ratio=1.1):
-        # we use ratio to add some differentation between the guns
+        # we use ratio to add some differentation between guns
         self.ratio = ratio
 
-    def _shortAnsi(self, v):
-        return self.MAP10[min(9,max(v,0))]
+    def _shortAnsi(self, v, chars):
+        return chars[min(len(chars)-1,max(v,0))]
 
-    def _convert(self, x, color):
+    def _convert(self, x, color, chars):
+        if chars == None:
+            chars = self.MAP10
+
         total = 0
         for v in color:
             total = v + self.ratio*total
 
         total /= 100
 
-        return self._shortAnsi(int(total))
+        return self._shortAnsi(int(total), chars)
 
-    def convert(self, x, color):
-        stdscr.addstr(self._convert(x, color))
+    def convert(self, x, color, chars=None):
+        stdscr.addstr(self._convert(x, color, chars))
 
 class Ansi_2(Ansi_1):
 
@@ -117,8 +122,8 @@ class Ansi_2(Ansi_1):
         map = "".join([ str(int(round(v/128))) for v in color ])
         return self.CODES[map]
 
-    def convert(self, x, color):
-        stdscr.addstr(super(Ansi_2, self)._convert(x, color), self._cursesAttr(color))
+    def convert(self, x, color, chars=None):
+        stdscr.addstr(super(Ansi_2, self)._convert(x, color, chars), self._cursesAttr(color))
 
 class AnsiClient:
     """
@@ -143,7 +148,7 @@ class AnsiClient:
     def _show(self, pixels):
         stdscr.addstr(0, 0, " + " + "-"*self.width + " +\n")
         
-        for y in range(self.height):
+        for y in reversed(range(self.height)):
             stdscr.addstr(" | ")
             for x in range(self.width):
                 self.converter.convert(x, pixels[x+y*self.width])
