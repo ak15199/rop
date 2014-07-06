@@ -24,7 +24,7 @@ class Tetrimino(object):
                 3 2 1 0
 
     Consider this as a bitstream, where we always unpack in the same order
-    and then later on consider how to hydrate that bitstream in any given
+    and then later determine how to hydrate that bitstream in any given
     orientation.
 
     """
@@ -61,6 +61,18 @@ class Tetrimino(object):
 
         return block
 
+    def profile(self, hydrated):
+        columns = []
+        for x in range(len(hydrated)):
+            for y in range(len(hydrated[0])):
+                value = hydrated[x][y]
+
+                if value is not None:
+                    columns.append(y)
+                    break
+
+        return columns
+
 class InPlay(object):
 
     """
@@ -68,7 +80,8 @@ class InPlay(object):
     """
     def __init__(self, tetriminos, width, height):
         self.tetrimino = tetriminos[randrange(len(tetriminos))]
-        self.rotation = 0
+        self.rotation = 0*randrange(4)
+
         self.x = width/2
         self.y = height
 
@@ -78,7 +91,19 @@ class InPlay(object):
     def rotateAnti(self):
         self.rotation = (self.rotation - 1) & 3
 
+    def nudge(self):
+        """
+        nudge the piece sideways towards its target column
+        """
+        if self.x > self.targetX:
+            self.x -= 1
+        elif self.x < self.targetX:
+            self.x += 1
+
     def drop(self, direction):
+        """
+        make the piece descend
+        """
         self.y += direction
 
         return self.y
@@ -112,20 +137,61 @@ class InPlay(object):
 
         return True
 
+    def _getHydrated(self):
+        return self.tetrimino.hydrate(self.rotation)
+
     def operation(self, action, well):
         """
         perform an operation between the well and the piece in play. action
         determines the detail of that operation.
         """
-        hydrated = self.tetrimino.hydrate(self.rotation)
+        hydrated = self._getHydrated()
         for y in range(len(hydrated[0])):
             for x in range(len(hydrated)):
                 color = hydrated[x][y]
                 if color is not None:
-                    if action(well, self.x-x, self.y-y, color) is False:
+                    if action(well, self.x+x, self.y-y, color) is False:
                         return False
 
         return True
+
+    def _tryX(self, x, piece, wall):
+        """
+        "perfect fit" means that there are no gaps below. We prefer a higher
+        perfect fit to a lower imperfect fit
+        """
+        for w in range(len(piece)):
+            pass
+
+        return randrange(8), True
+
+    def xForBestFit(self, well):
+        """
+        Run left-right across the board, looking for the location of best fit
+        (best fit meaning that holes are filled with lowest y value).
+
+        For each prospective placement, scan from the bottom up and see if the
+        piece keys with the blocks in the well.
+        """
+        hydrated = self._getHydrated()
+        pieceProfile = self.tetrimino.profile(hydrated)
+        wellProfile = well.profile()
+        candidate = {
+                True:  { "y": well.height, "x": None },
+                False: { "y": well.height, "x": None },
+                }
+
+        #import pdb; pdb.set_trace()
+
+        for x in range(well.width-len(pieceProfile)):
+            y, perfect = self._tryX(x, pieceProfile, wellProfile)
+            if candidate[perfect]["y"] > y:
+                candidate[perfect] = { "y": y, "x": x }
+
+        if candidate[True]["x"] is not None:
+            return candidate[True]["x"]
+
+        return candidate[False]["x"]
 
 
 class Well(object):
@@ -133,7 +199,7 @@ class Well(object):
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.clear()
+        self.well = array([self.width, self.height], None)
 
     def add(self, tetrimino):
         pass
@@ -148,8 +214,15 @@ class Well(object):
                 if color is not None:
                     matrix.drawPixel(x, y, color)
 
-    def clear(self):
-        self.well = array([self.width, self.height], None)
+    def profile(self):
+        columns = [None] * self.width
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.well[x][y] is None:
+                    columns[x] = y
+                    break
+
+        return columns
 
 class Game(object):
 
@@ -165,7 +238,10 @@ class Game(object):
         self.finished = False
 
     def _pick(self):
-        return InPlay(self.tetriminos, self.width, self.height-1)
+        inplay = InPlay(self.tetriminos, self.width, self.height-1)
+        inplay.targetX = inplay.xForBestFit(self.well)
+
+        return inplay
 
     def clock(self, time):
         """
@@ -181,6 +257,7 @@ class Game(object):
         c = self.current # handy shorthand
 
         c.operation(c.modeErase, self.well.well)
+        c.nudge()
         c.drop(-1)
         if c.operation(c.modeIsPlacementValid, self.well.well):
             c.operation(c.modePlace, self.well.well)
@@ -210,6 +287,8 @@ class Art:
 
     def refresh(self, matrix):
         matrix.clear()
+
+        matrix.fillRect(11, 0, 6, 16, GRAY40)
 
         self.time += 1
         self.game.clock(self.time)
