@@ -170,7 +170,7 @@ class OPCMatrix:
             else:
                 return None
 
-        if self.zigzag and y%2 == 1:
+        if self.zigzag and y%2 == 0:
             x = (self.width-x)-1
 
         return x+y*self.width
