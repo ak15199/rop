@@ -114,15 +114,14 @@ class OPCMatrix:
         
     def copy(self, source, x=None, y=None):
         """
-        XXX: This assumes that the source matrix is larger than
-        the destination.
+        XXX: This assumes that the source matrix is larger than the
+        destination.
 
-        Copy one matrix to another. The default behavior is 
-        to scale down the source matrix to fit the target
-        matrix. 
+        Copy one matrix to another. The default behavior is to scale
+        down the source matrix to fit the target matrix. 
 
-        Alternatively, supplying x and y will render the
-        source matrix from the given (x, y) to fill the target.
+        Alternatively, supplying x and y will render the source matrix
+        from the given (x, y) to fill the target.
         """
         if x == None and y == None:
             self._scaledCopy(source)
@@ -157,8 +156,8 @@ class OPCMatrix:
 
     def setStripPixel(self, z, color):
         """
-        Exposed helper method that sets a given pixel in the
-        unrolled strip of LEDs. 
+        Exposed helper method that sets a given pixel in the unrolled strip
+        of LEDs. 
         """
         self.buffer[z] = color
 
@@ -178,8 +177,7 @@ class OPCMatrix:
 
     def getPixel(self, x, y):
         """
-        Retrieve the color tuple of the pixel from the
-        specified location
+        Retrieve the color tuple of the pixel from the specified location
         """
         if 0 <= x < self.width and 0 <= y < self.height:
             addr = self._getAddress(x, y)
@@ -189,10 +187,11 @@ class OPCMatrix:
         
     def drawPixel(self, x, y, color):
         """
-        Set the pixel tuple at the specified location
+        Set the pixel tuple at the specified location.  Perform no operation
+        if the color value is None
         """
         addr = self._getAddress(x, y)
-        if addr is not None:
+        if addr is not None and color is not None:
             self.buffer[addr] = color
 
     def _clip(self, x, y):
@@ -203,9 +202,8 @@ class OPCMatrix:
 
     def shift(self, dh=1.0, ds=1.0, dv=1.0):
         """
-        Shift any of hue, saturation, and value on the
-        matrix, specifying the attributes that you'd like
-        to adjust
+        Shift any of hue, saturation, and value on the matrix, specifying
+        the attributes that you'd like to adjust
         """
         for i in range(self.numpix()):
             r = self.buffer[i][0]
@@ -282,8 +280,7 @@ class OPCMatrix:
 
     def setCursor(self, pos=(0,0)):
         """
-        Set the cursor position. This is used by draw relative
-        operations
+        Set the cursor position. This is used by draw relative operations
         """
         x, y = pos
         self.cursor = (x, y)
@@ -296,8 +293,7 @@ class OPCMatrix:
 
     def drawLineRelative(self, x1, y1, color):
         """
-        Draw a line from the current cursor position to the
-        specified address
+        Draw a line from the current cursor position to the specified address
         """
         path = self._line(x1, y1)
         for x, y in path:
@@ -305,8 +301,7 @@ class OPCMatrix:
 
     def drawLine(self, x1, y1, x2, y2, color):
         """
-        Draw a line between the two coordinate pairs
-        specified
+        Draw a line between the two coordinate pairs specified
         """
         for x, y in self._line(x1, y1, x2, y2):
             self.drawPixel(x, y, color)
