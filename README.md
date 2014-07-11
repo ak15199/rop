@@ -36,7 +36,7 @@ look right, then check in here for exceptions and other diagnostics.
 The directories are:
 
     .               application directory
-    ./art           contains classes for each of the animationso
+    ./art           contains classes for each of the animations.
                     You'll notice a template.py file for the bare
                     bones
     ./art/utils     helper modules shared between animations
@@ -47,8 +47,13 @@ The directories are:
 Check out the existing animations for use as examples, and please commit
 back code that you create!
 
-OTHER PEOPLE'S WORK
-=====
+
+### Project Pictures
+
+A random assortment of images documenting the development of the hardware
+can be found on [Imgur](http://ak15199.imgur.com/all).
+
+### Other People's Work
 
 Hopefully attriibutions are correct, if you see one missing,
 then please let me know and I'll fix.
@@ -56,4 +61,4 @@ then please let me know and I'll fix.
 One specific that is not covered elsewhere:
 
 opc/opc.py is taken from https://github.com/scanlime/fadecandy
-and should be unchanged from the original.
+and should be unchanged from the original. 
