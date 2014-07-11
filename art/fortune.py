@@ -31,7 +31,7 @@ class Art:
                     return buffer 
 
             # Replace last character ('\n') with a space
-            line = line[:-1] + " "
+            line = line[:-1].append(" ")
             
             if line == "%":
                 return buffer 

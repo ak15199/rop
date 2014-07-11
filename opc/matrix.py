@@ -3,7 +3,7 @@ import opc
 from colors import BLACK
 from copy import deepcopy
 
-from ansiclient import  AnsiClient
+from ansiclient import AnsiClient
 
 """
 This is loosely based on the Adafruit GFX library, although there
@@ -16,6 +16,7 @@ performing a HSV shift on the array.
 
 check out text.py for additional functions to draw text.
 """
+
 
 class OPCBuffer:
     """
@@ -77,6 +78,7 @@ class OPCBuffer:
     def getPixels(self):
         return self.buffer
 
+
 class OPCMatrix:
     def __init__(self, width, height, address, zigzag=False, pixelDebug=False):
         self.pixelDebug = pixelDebug
@@ -86,7 +88,7 @@ class OPCMatrix:
         self.zigzag = zigzag
         self.setCursor()
 
-        if address == None:
+        if address is None:
             self.client = None
         elif address[0:4] == 'ansi':
             self.client = None
@@ -94,7 +96,7 @@ class OPCMatrix:
             self.zigzag = False
         else:
             self.ansi = None
-            self.client = opc.Client(address)
+            self.client = opc.Client(address, verbose=True)
             if not self.client.can_connect():
                 print "can't conect to %s" % address
                 exit(1)
@@ -111,19 +113,19 @@ class OPCMatrix:
 
     def clone(self):
         return deepcopy(self)
-        
+
     def copy(self, source, x=None, y=None):
         """
         XXX: This assumes that the source matrix is larger than the
         destination.
 
         Copy one matrix to another. The default behavior is to scale
-        down the source matrix to fit the target matrix. 
+        down the source matrix to fit the target matrix.
 
         Alternatively, supplying x and y will render the source matrix
         from the given (x, y) to fill the target.
         """
-        if x == None and y == None:
+        if x is None and y is None:
             self._scaledCopy(source)
         else:
             self._panCopy(source, x, y)
@@ -157,20 +159,20 @@ class OPCMatrix:
     def setStripPixel(self, z, color):
         """
         Exposed helper method that sets a given pixel in the unrolled strip
-        of LEDs. 
+        of LEDs.
         """
         self.buffer[z] = color
 
     def _getAddress(self, x, y):
         x, y = int(x), int(y)
-        
-        if x<0 or y<0 or x>=self.width or y>=self.height:
+
+        if x < 0 or y < 0 or x >= self.width or y >= self.height:
             if self.pixelDebug:
                 raise Exception("Invaid Index (%d, %d)" % (x, y))
             else:
                 return None
 
-        if self.zigzag and y%2 == 0:
+        if self.zigzag and y % 2 == 0:
             x = (self.width-x)-1
 
         return x+y*self.width
@@ -184,7 +186,7 @@ class OPCMatrix:
             return self.buffer[addr]
 
         return None
-        
+
     def drawPixel(self, x, y, color):
         """
         Set the pixel tuple at the specified location.  Perform no operation
@@ -211,10 +213,10 @@ class OPCMatrix:
             b = self.buffer[i][2]
             h, s, v = rgbToHsv(r, g, b)
             self.buffer[i] = hsvToRgb(h*dh, s*ds, v*dv)
-                
+
     def fade(self, divisor):
         """
-        Special case of shift, that's optimized for speed. 
+        Special case of shift, that's optimized for speed.
         """
         for i in range(self.numpix()):
             r = self.buffer[i][0] * divisor
@@ -247,21 +249,21 @@ class OPCMatrix:
 
         steep = abs(y1 - y0) > abs(x1 - x0)
         if steep:
-            x0, y0 = y0, x0  
+            x0, y0 = y0, x0
             x1, y1 = y1, x1
 
         if x0 > x1:
             x0, x1 = x1, x0
             y0, y1 = y1, y0
-            
+
         dx = x1 - x0
         dy = abs(y1 - y0)
         err = dx / 2
-            
+
         if y0 < y1:
-            ystep = 1;
+            ystep = 1
         else:
-            ystep = -1;
+            ystep = -1
 
         points = []
         while x0 <= x1:
@@ -269,16 +271,16 @@ class OPCMatrix:
                 points.append((y0, x0))
             else:
                 points.append((x0, y0))
-            x0 += 1
 
-            err -= dy;
+            x0 += 1
+            err -= dy
             if err < 0:
-              y0 += ystep;
-              err += dx;
+                y0 += ystep
+                err += dx
 
         return points
 
-    def setCursor(self, pos=(0,0)):
+    def setCursor(self, pos=(0, 0)):
         """
         Set the cursor position. This is used by draw relative operations
         """
@@ -316,7 +318,7 @@ class OPCMatrix:
         for point in points:
             x, y = point
             self.drawLineRelative(x, y, color)
-        
+
         x, y = origin
         self.drawLineRelative(x, y, color)
 
@@ -338,19 +340,18 @@ class OPCMatrix:
         """
         Draw a rectangle
         """
-        self.drawPoly( [
+        self.drawPoly([
                 (x1, y1), (x1+w, y1), (x1+w, y1+h), (x1, y1+h)
             ], color)
 
-    
-    def _circlePair(self, x1, y1, x2, y2, color, isFilled):
-        if isFilled:
+    def _circlePair(self, x1, y1, x2, y2, color, hasFill):
+        if hasFill:
             self.drawLine(x1, y1, x2, y2, color)
         else:
             self.drawPixel(x1, y1, color)
             self.drawPixel(x2, y2, color)
 
-    def _circleHelper(self, x0, y0, radius, color, isFilled):
+    def _circleHelper(self, x0, y0, radius, color, hasFill):
         """
         See http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
         """
@@ -359,17 +360,17 @@ class OPCMatrix:
         radiusError = 1-x
 
         while x >= y:
-            self._circlePair(x + x0, y + y0, -x + x0, y + y0, color, isFilled)
-            self._circlePair(y + x0, x + y0, -y + x0, x + y0, color, isFilled)
-            self._circlePair(-y + x0, -x + y0, y + x0, -x + y0, color, isFilled)
-            self._circlePair(-x + x0, -y + y0, x + x0, -y + y0, color, isFilled)
+            self._circlePair(x + x0, y + y0, -x + x0, y + y0, color, hasFill)
+            self._circlePair(y + x0, x + y0, -y + x0, x + y0, color, hasFill)
+            self._circlePair(-y + x0, -x + y0, y + x0, -x + y0, color, hasFill)
+            self._circlePair(-x + x0, -y + y0, x + x0, -y + y0, color, hasFill)
 
             y += 1
-            if radiusError<0:
-              radiusError += 2 * y + 1
+            if radiusError < 0:
+                radiusError += 2 * y + 1
             else:
-              x -= 1
-              radiusError += 2 * (y - x + 1)
+                x -= 1
+                radiusError += 2 * (y - x + 1)
 
     def drawCircle(self, x, y, radius, color):
         self._circleHelper(x, y, radius, color, False)

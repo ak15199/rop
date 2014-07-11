@@ -11,6 +11,7 @@ def array(dimensions, initial, depth=0):
 
     return [array(dimensions, initial, depth+1) for y in range(extent)]
 
+
 class Tetrimino(object):
 
     """
@@ -73,6 +74,7 @@ class Tetrimino(object):
 
         return columns
 
+
 class InPlay(object):
 
     """
@@ -80,7 +82,7 @@ class InPlay(object):
     """
     def __init__(self, tetriminos, width, height):
         self.tetrimino = tetriminos[randrange(len(tetriminos))]
-        self.rotation = 0*randrange(4)
+        self.rotation = randrange(1)
 
         self.x = width/2
         self.y = height
@@ -224,6 +226,7 @@ class Well(object):
 
         return columns
 
+
 class Game(object):
 
     def __init__(self, width, height):
@@ -255,10 +258,10 @@ class Game(object):
         over.
         """
         c = self.current # handy shorthand
-
         c.operation(c.modeErase, self.well.well)
         c.nudge()
         c.drop(-1)
+
         if c.operation(c.modeIsPlacementValid, self.well.well):
             c.operation(c.modePlace, self.well.well)
         else:
@@ -270,6 +273,7 @@ class Game(object):
 
     def draw(self, matrix):
         self.well.draw(matrix)
+
 
 class Art:
 

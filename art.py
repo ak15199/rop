@@ -1,4 +1,3 @@
-import curses
 from random import seed
 import sys
 from time import sleep, time
@@ -13,7 +12,8 @@ FLIPTIME = 30
 
 matrix = None
 
-import logging; logging.basicConfig(filename='art.log',level=logging.DEBUG)
+import logging; logging.basicConfig(filename='art.log', level=logging.DEBUG)
+
 
 def exceptionHandler(etype, evalue, etraceback):
     global matrix
@@ -26,12 +26,14 @@ def exceptionHandler(etype, evalue, etraceback):
     if type(etype) is type(TtyTooSmall):
         print evalue
 
+
 def main():
     global matrix
 
     sys.excepthook = exceptionHandler
 
-    matrix = OPCMatrix(dpyinfo.WIDTH, dpyinfo.HEIGHT, dpyinfo.ADDRESS, dpyinfo.ZIGZAG)
+    matrix = OPCMatrix(dpyinfo.WIDTH, dpyinfo.HEIGHT,
+                        dpyinfo.ADDRESS, dpyinfo.ZIGZAG)
     arts = ImportPlugins("art", ["template.py"], sys.argv[1:], matrix)
 
     if len(arts) == 0:

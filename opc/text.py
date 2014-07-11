@@ -1,8 +1,6 @@
-from matrix import OPCMatrix
-
 typeface_bbc = {
     "description": "Typeface from the Acorn BBC Computer",
-    "geometry": { "width": 8, "height": 8},
+    "geometry": {"width": 8, "height": 8},
     "bitmaps": [
 
         0x00000000, 0x00000000, 0x18181818, 0x18001800,	  #   !
@@ -56,6 +54,7 @@ typeface_bbc = {
     ],
 }
 
+
 class OPCText:
     """
     This implementation assumes an 8x8 pixel grid per character, with one
@@ -80,7 +79,7 @@ class OPCText:
                 byte = byte >> 1
 
     def drawLetter(self, matrix, x, y, char, fg, bg):
-        letter = ord(char) - 32 # printable ASCII starts at index 32
+        letter = ord(char) - 32  # printable ASCII starts at index 32
         self.drawHalfLetter(matrix, x, y, letter, 0, fg, bg)
         self.drawHalfLetter(matrix, x, y, letter, 1, fg, bg)
 
@@ -88,8 +87,8 @@ class OPCText:
         offset = 0
         for char in list(string):
             xpos = x+offset
-            if xpos>=-7:
-                if xpos-7<matrix.width:
+            if xpos >= -7:
+                if xpos-7 < matrix.width:
                     self.drawLetter(matrix, xpos, y, char, fg, bg)
                 else:
                     return None

@@ -1,9 +1,9 @@
 #encoding: utf-8
 
 import curses
-import logging
 
 from error import TtyTooSmall
+
 
 def initCurses():
     global stdscr
@@ -11,8 +11,10 @@ def initCurses():
     stdscr = curses.initscr()
     curses.start_color()
 
+
 def exitCurses():
     curses.endwin()
+
 
 class Ansi_0(object):
 
@@ -21,6 +23,7 @@ class Ansi_0(object):
 
     def convert(self, x, color):
         pass
+
 
 class Ansi_1(Ansi_0):
 
@@ -34,10 +37,10 @@ class Ansi_1(Ansi_0):
         self.ratio = ratio
 
     def _shortAnsi(self, v, chars):
-        return chars[min(len(chars)-1,max(v,0))]
+        return chars[min(len(chars)-1, max(v, 0))]
 
     def _convert(self, x, color, chars):
-        if chars == None:
+        if chars is None:
             chars = self.MAP10
 
         total = 0
@@ -51,6 +54,7 @@ class Ansi_1(Ansi_0):
     def convert(self, x, color, chars=None):
         stdscr.addstr(self._convert(x, color, chars))
 
+
 class Ansi_2(Ansi_1):
 
     """
@@ -60,7 +64,7 @@ class Ansi_2(Ansi_1):
     def __init__(self):
         super(Ansi_2, self).__init__(1)
 
-        COLOR_WHITE = 0 # curses has white locked in postition 0
+        COLOR_WHITE = 0  # curses has white locked in postition 0
         COLOR_BLACK = 1
         COLOR_RED = 2
         COLOR_GREEN = 3
@@ -75,27 +79,27 @@ class Ansi_2(Ansi_1):
                 "002":    curses.color_pair(COLOR_BLUE)+curses.A_BOLD,
                 "010":    curses.color_pair(COLOR_GREEN),
                 "011":    curses.color_pair(COLOR_CYAN),
-                "012":    curses.color_pair(COLOR_CYAN),                  # approx
+                "012":    curses.color_pair(COLOR_CYAN),                   # approx
                 "020":    curses.color_pair(COLOR_GREEN)+curses.A_BOLD,
-                "021":    curses.color_pair(COLOR_CYAN),                  # approx
+                "021":    curses.color_pair(COLOR_CYAN),                   # approx
                 "022":    curses.color_pair(COLOR_CYAN)+curses.A_BOLD,
                 "100":    curses.color_pair(COLOR_RED),
                 "101":    curses.color_pair(COLOR_MAGENTA),
-                "102":    curses.color_pair(COLOR_MAGENTA),               # approx
+                "102":    curses.color_pair(COLOR_MAGENTA),                # approx
                 "110":    curses.color_pair(COLOR_YELLOW),
                 "111":    curses.color_pair(COLOR_WHITE),
-                "112":    curses.color_pair(COLOR_BLUE)+curses.A_BOLD,    # approx
-                "120":    curses.color_pair(COLOR_YELLOW),                # approx
-                "121":    curses.color_pair(COLOR_GREEN)+curses.A_BOLD,   # approx
-                "122":    curses.color_pair(COLOR_CYAN)+curses.A_BOLD,    # approx
+                "112":    curses.color_pair(COLOR_BLUE)+curses.A_BOLD,     # approx
+                "120":    curses.color_pair(COLOR_YELLOW),                 # approx
+                "121":    curses.color_pair(COLOR_GREEN)+curses.A_BOLD,    # approx
+                "122":    curses.color_pair(COLOR_CYAN)+curses.A_BOLD,     # approx
                 "200":    curses.color_pair(COLOR_RED)+curses.A_BOLD,
-                "201":    curses.color_pair(COLOR_RED)+curses.A_BOLD,     # approx
+                "201":    curses.color_pair(COLOR_RED)+curses.A_BOLD,      # approx
                 "202":    curses.color_pair(COLOR_MAGENTA)+curses.A_BOLD,
-                "210":    curses.color_pair(COLOR_YELLOW),                # approx
-                "211":    curses.color_pair(COLOR_RED)+curses.A_BOLD,     # approx
-                "212":    curses.color_pair(COLOR_MAGENTA)+curses.A_BOLD, # approx
+                "210":    curses.color_pair(COLOR_YELLOW),                 # approx
+                "211":    curses.color_pair(COLOR_RED)+curses.A_BOLD,      # approx
+                "212":    curses.color_pair(COLOR_MAGENTA)+curses.A_BOLD,  # approx
                 "220":    curses.color_pair(COLOR_YELLOW)+curses.A_BOLD,
-                "221":    curses.color_pair(COLOR_YELLOW)+curses.A_BOLD,  # approx
+                "221":    curses.color_pair(COLOR_YELLOW)+curses.A_BOLD,   # approx
                 "222":    curses.color_pair(COLOR_WHITE)+curses.A_BOLD,
             }
 
@@ -109,9 +113,9 @@ class Ansi_2(Ansi_1):
                 curses.COLOR_MAGENTA,
                 curses.COLOR_CYAN,
             ]
-            
+
         for index in range(1, 8):
-            curses.init_pair(index, color[index], curses.COLOR_BLACK) 
+            curses.init_pair(index, color[index], curses.COLOR_BLACK)
 
     def _cursesAttr(self, color):
         """
@@ -119,11 +123,12 @@ class Ansi_2(Ansi_1):
         color as a three character string, with each gun being
         described with a value in the range 0..2, then map this to attrs
         """
-        map = "".join([ str(int(round(v/128))) for v in color ])
+        map = "".join([str(int(round(v/128))) for v in color])
         return self.CODES[map]
 
     def convert(self, x, color, chars=None):
         stdscr.addstr(super(Ansi_2, self)._convert(x, color, chars), self._cursesAttr(color))
+
 
 class AnsiClient:
     """
@@ -147,7 +152,7 @@ class AnsiClient:
 
     def _show(self, pixels):
         stdscr.addstr(0, 0, " + " + "-"*self.width + " +\n")
-        
+
         for y in reversed(range(self.height)):
             stdscr.addstr(" | ")
             for x in range(self.width):
@@ -157,7 +162,7 @@ class AnsiClient:
 
         stdscr.addstr(" + " + "-"*self.width + " +\n")
 
-        stdscr.refresh() 
+        stdscr.refresh()
 
     def show(self, pixels):
         try:
