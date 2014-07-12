@@ -96,7 +96,7 @@ class OPCMatrix:
             self.zigzag = False
         else:
             self.ansi = None
-            self.client = opc.Client(address, verbose=True)
+            self.client = opc.Client(address)
             if not self.client.can_connect():
                 print "can't conect to %s" % address
                 exit(1)
