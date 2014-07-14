@@ -53,7 +53,7 @@ class Art:
         if self.dy < 0 and self.y < self.radius:
             self._reset(matrix)
         else:
-            matrix.fillCircle(self.x, matrix.height-self.y-1, self.radius, hsvToRgb(self.color))
+            matrix.fillCircle(self.x, self.y, self.radius, hsvToRgb(self.color))
   
     def interval(self):
         return self.timeslice
