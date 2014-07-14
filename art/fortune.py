@@ -8,6 +8,7 @@ from time import time
 
 FILE = "assets/fortunes.txt"
 
+
 class Art:
 
     description = "Scroll classic fortunes across the display"
@@ -19,7 +20,7 @@ class Art:
             pass
 
     def _readFortune(self):
-        buffer = ""
+        buffer = "+++ "
         while True:
             line = self.file.readline()
             if line == "":
@@ -30,45 +31,50 @@ class Art:
                     # we have a fortune, but reached EOF. We're good.
                     return buffer 
 
-            # Replace last character ('\n') with a space
+            # Replace line termination with a space
             line = line[:-1]+" "
-            
-            if line == "%":
+
+            if line == "% ":
                 return buffer 
 
-            buffer += line
+            buffer += line.replace("\t", "  ")
 
     def _getFortune(self):
         self._seekFortune()
         return self._readFortune()
-        
+
     def __init__(self, matrix):
-        seed(time)
         stats = os.stat(FILE);
         self.length = stats.st_size
 
-        self.file = open(FILE, "r")
-        self.message = self._getFortune()
+        self.file = open(FILE, "U")
+        self.thisMessage = self._getFortune()
+        self.nextMessage = self._getFortune()
+
         self.typeface = OPCText(typeface_bbc)
         self.base = 0
 
     def start(self, matrix):
         matrix.setFirmwareConfig(nointerp=True)
-    
+
     def refresh(self, matrix):
         matrix.clear()
 
         y = matrix.height/2 - 4
 
-        end = self.typeface.drawText(matrix, 0-self.base, y, self.message, (192, 192,255), BLUE)
+        end = self.typeface.drawText(matrix, 0-self.base, y, self.thisMessage, (192, 192,255), BLUE)
+        # drawText returns None if the image ran to the end of the page. If it
+        # didn't, then it's time to bring in the new one.
         if end is not None:
-            # if the text finishes part way across the display, then do it again!
-            self.typeface.drawText(matrix, end, y, self.message, (192, 192, 255), BLUE)
+            self.typeface.drawText(matrix, end, y, self.nextMessage, (192, 192, 255), BLUE)
             if end == 1:
+                # this is the final pixel for the original text. So next time
+                # through, next message is the active messge.
+                self.thisMessage = self.nextMessage
+                self.nextMessage = self._getFortune()
                 self.base = -1
 
         self.base += 1
 
     def interval(self):
         return 80
-
