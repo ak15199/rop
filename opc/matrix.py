@@ -1,5 +1,6 @@
 from hue import rgbToHsv, hsvToRgb
 import opc
+from fastopc import FastOPC as Client
 from colors import BLACK
 from copy import deepcopy
 
@@ -78,7 +79,6 @@ class OPCBuffer:
     def getPixels(self):
         return self.buffer
 
-
 class OPCMatrix:
     def __init__(self, width, height, address, zigzag=False, pixelDebug=False):
         self.pixelDebug = pixelDebug
@@ -96,14 +96,12 @@ class OPCMatrix:
             self.zigzag = False
         else:
             self.ansi = None
-            self.client = opc.Client(address)
-            if not self.client.can_connect():
-                print "can't conect to %s" % address
-                exit(1)
+            self.client = Client(address)
 
     def setFirmwareConfig(self, nodither=False, nointerp=False, manualled=False, ledonoff=True):
         if self.client is not None:
-            self.client.setFirmwareConfig(nodither, nointerp, manualled, ledonoff)
+            data = chr(nodither | (nointerp << 1) | (manualled << 2) | (ledonoff << 3))
+            self.client.sysEx(0x0001, 0x0002, data)
 
     def numpix(self):
         """
@@ -238,7 +236,7 @@ class OPCMatrix:
         if self.ansi is not None:
             self.ansi.show(pixels)
         else:
-            self.client.put_pixels(pixels, channel=channel)
+            self.client.putPixels(channel, pixels)
 
     def _line(self, x0, y0, x1=None, y1=None):
 
