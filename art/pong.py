@@ -9,7 +9,8 @@ WINTHRESH = 9
 def coinToss():
     return random()>=.5
 
-class Net:
+
+class Net(object):
 
     COLOR = rgb["gray30"]
     FREQ  = 2               # on|off dash frequency
@@ -22,7 +23,8 @@ class Net:
             if ((1+y)/self.FREQ) % self.FREQ == 0:
                 matrix.drawLine(matrix.width/2-1, y, matrix.width/2, y, self.COLOR)
 
-class Digit:
+
+class Digit(object):
 
     # condensed numeric characters, with two rows of pixels
     # per byte in a 4x6 grid
@@ -60,7 +62,8 @@ class Digit:
             self._draw(matrix, y-1, byte & 15)
             y -= 2
 
-class Score:
+
+class Score(object):
 
     COLOR = rgb["red4"]
 
@@ -87,7 +90,8 @@ class Score:
     def display(self, matrix):
         self.digit.display(matrix, self.score)
 
-class Bat:
+
+class Bat(object):
 
     COLOR = rgb["yellow"]
     RADIUS = 2              # half the size of the bat
@@ -140,10 +144,11 @@ class Bat:
 
         if ball_y == self.y:
             return direction * random()
-        
+
         return direction * abs(self.y-ball_y)
 
-class Player:
+
+class Player(object):
 
     def __init__(self, width, height, isLeft):
         self.bat   = Bat(width, height, isLeft)
@@ -185,7 +190,7 @@ class Player:
         self.bat.display(matrix)
         self.score.display(matrix)
 
-class Ball:
+class Ball(object):
 
     SERVEMARGIN = 4
 
@@ -229,7 +234,8 @@ class Ball:
     def display(self, matrix):
         matrix.drawPixel(self.x, self.y, rgb["white"])
 
-class Art:
+
+class Art(object):
 
     description = "Automated pong"
 
@@ -240,7 +246,7 @@ class Art:
         self.players = {}
         for left in [ True, False ]:
             self.players[left] = Player(matrix.width, matrix.height, left)
-            
+
         self._newGame()
 
     def start(self, matrix):
@@ -266,7 +272,7 @@ class Art:
             elif player.ballIntersectsWall(self.ball.x, self.ball.y):
                 opponent.score.goal()
                 self.ball.serve(player.left, player.bat.y)
-            
+
         self.ball.move()
         matrix.clear()
 

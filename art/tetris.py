@@ -1,16 +1,9 @@
 from opc.matrix import OPCMatrix
 from opc.colors import *
 
+from utils.array import array
+
 from random import randrange
-
-def array(dimensions, initial, depth=0):
-    try:
-        extent = dimensions[depth]
-    except:
-        return initial
-
-    return [array(dimensions, initial, depth+1) for y in range(extent)]
-
 
 class Tetrimino(object):
 
@@ -52,7 +45,7 @@ class Tetrimino(object):
 
         w, h = self.order[rotation]["dim"]
 
-        block = array([w, h], None)
+        block = array([w, h])
         stream = self._stream()
 
         for y in self.order[rotation]["y"]:
@@ -275,7 +268,7 @@ class Game(object):
         self.well.draw(matrix)
 
 
-class Art:
+class Art(object):
 
     description = "Anyone for a game of Tetris?"
 
