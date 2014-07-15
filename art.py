@@ -24,8 +24,7 @@ def exceptionHandler(etype, evalue, etraceback):
         logging.error('Exception: '+line.rstrip('\n'))
 
     if type(etype) is type(TtyTooSmall):
-        print evalue
-
+        print "%s (see log for details)" % evalue
 
 def main():
     global matrix
@@ -39,6 +38,8 @@ def main():
     if len(arts) == 0:
         logging.error("Couldn't find any art to execute")
         exit(1)
+
+    sleep(3)
 
     while True:
         seed(time())
