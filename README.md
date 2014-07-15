@@ -5,8 +5,12 @@ exceptions the code will mostly work with other grid sizes as well
 If you're not already familiar, go check out
 https://github.com/scanlime/fadecandy for more background on this project.
 
-The code has been run on OSX with Python 2.7 with just the standard
-modules. Hopefully it works on other platforms, but your mileage may vary.
+The code has been run on OSX with Python 2.7, and the only extra you'll need
+is numpy in support of the fastopc module. Typically you'd run something like
+
+    # pip install numpy
+
+ s the super user to get this installed.
 
 To get started, update dpyinfo.py to suit your configuration, start the OPC
 service and connect your array. Then run:
