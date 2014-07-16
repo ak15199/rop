@@ -4,7 +4,7 @@ from opc.matrix import OPCMatrix
 
 from math import fmod, sin, cos
 
-class ClearTrain:
+class ClearTrain(object):
     def __init__(self, length):
         self.length = length
         self.points = [(0,0) for i in range(length)]
@@ -23,7 +23,7 @@ DELTA_ANG = 0.033
 DELTA_HUE = 0.006
 TRAIN_LEN = 16
 
-class Art:
+class Art(object):
 
     description = "Loop the loop"
 
