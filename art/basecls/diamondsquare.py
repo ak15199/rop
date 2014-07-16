@@ -18,7 +18,7 @@ class DiamondSquare(object):
         else:
             self.featureSize = featureSize
 
-        self.values = array([self.width, self.height])
+        self.values = array([self.width, self.height], 0.0)
 
     def _getSample(self, x, y):
         return self.values[x % self.width][y % self.height]
