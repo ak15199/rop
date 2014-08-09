@@ -1,7 +1,6 @@
 from copy import deepcopy
 import numpy as np
 import logging
-from time import time
 
 from colors import BLACK
 from hue import rgbToHsv, hsvToRgb
@@ -109,8 +108,6 @@ class OPCMatrix:
         self.buf = OPCBuffer(width, height)
         self.zigzag = zigzag
         self.setCursor()
-
-        self.spent = 0
 
         if address is None:
             self.client = None
@@ -223,14 +220,11 @@ class OPCMatrix:
         Set the pixel tuple at the specified location.  Perform no operation
         if the color value is None, or the address out of bounds
         """
-        t = time()
         if color is not None:
             try:
                 self.buf.buf[x, y] = color
             except IndexError:
                 pass
-
-        self.spent += (time()-t)
 
     @timefunc
     def _clip(self, x, y):

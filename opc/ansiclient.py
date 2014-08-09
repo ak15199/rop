@@ -3,7 +3,6 @@
 import curses
 import logging
 import numpy as np
-from time import time
 
 from error import TtyTooSmall
 from utils.prof import timefunc
@@ -37,7 +36,6 @@ class AnsiClient:
     def __init__(self, width, height, address, chars=None):
         self.width = width
         self.height = height
-        self.spent = 0
 
         initCurses()
         stdscr.clear()
@@ -122,8 +120,6 @@ class AnsiClient:
 
     @timefunc
     def _show(self, pixels):
-        t = time()
-
         stdscr.addstr(0, 0, " + " + "-"*self.width + " +\n")
 
         """
@@ -151,8 +147,6 @@ class AnsiClient:
             for pixel in row:
                 self._addstr(pixel)
             stdscr.addstr(" |\n")
-
-        self.spent += (time()-t)
 
         stdscr.addstr(" + " + "-"*self.width + " +\n")
         stdscr.refresh()
