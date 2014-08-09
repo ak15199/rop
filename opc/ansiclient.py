@@ -1,8 +1,12 @@
 #encoding: utf-8
 
 import curses
+import logging
+import numpy as np
+from time import time
 
 from error import TtyTooSmall
+from utils.prof import timefunc
 
 
 def initCurses():
@@ -16,53 +20,32 @@ def exitCurses():
     curses.endwin()
 
 
-class Ansi_0(object):
+class AnsiClient:
+    """
+    Simple text based client that displays a LED string as asciiart. There
+    are several ways to do this, depending on the capability level of the
+    terminal. See the specific implementations for details.
 
-    def __init__(self):
-        pass
+    TODO: add support for xterm-256
+    """
 
-    def convert(self, x, color):
-        pass
-
-
-class Ansi_1(Ansi_0):
-
-    MAP10 = " .:-=+*#%@"    # ten step asciiart gradient
-    MAP8 = u" ⡀⢂⢌⢕⡫⢷⣽⣿"     # nine step braille gradient, but
+    MAP10 = " .-=:+*#%@"    # ten step asciiart gradient
+    MAP9 = u" ⡀⢂⢌⢕⡫⢷⣽⣿"     # nine step braille gradient, but
                             # don't even bother before python 3.3
                             # and libncursesw.so.5
 
-    def __init__(self, ratio=1.1):
-        # we use ratio to add some differentation between guns
-        self.ratio = ratio
+    def __init__(self, width, height, address, chars=None):
+        self.width = width
+        self.height = height
+        self.spent = 0
 
-    def _shortAnsi(self, v, chars):
-        return chars[min(len(chars)-1, max(v, 0))]
+        initCurses()
+        stdscr.clear()
 
-    def _convert(self, x, color, chars):
-        if chars is None:
+        if chars == None:
             chars = self.MAP10
 
-        total = 0
-        for v in color:
-            total = v + self.ratio*total
-
-        total /= 100
-
-        return self._shortAnsi(int(total), chars)
-
-    def convert(self, x, color, chars=None):
-        stdscr.addstr(self._convert(x, color, chars))
-
-
-class Ansi_2(Ansi_1):
-
-    """
-    An ansi client that supports 16 colors. This extends the basic implementation,
-    adding some color to the ascii art.
-    """
-    def __init__(self):
-        super(Ansi_2, self).__init__(1)
+        self.chars = dict(enumerate(chars))
 
         COLOR_WHITE = 0  # curses has white locked in postition 0
         COLOR_BLACK = 1
@@ -73,7 +56,7 @@ class Ansi_2(Ansi_1):
         COLOR_MAGENTA = 6
         COLOR_CYAN = 7
 
-        self.CODES = {
+        self.colors = {
                 "000":    curses.color_pair(COLOR_BLACK),
                 "001":    curses.color_pair(COLOR_BLUE),
                 "002":    curses.color_pair(COLOR_BLUE)+curses.A_BOLD,
@@ -117,51 +100,61 @@ class Ansi_2(Ansi_1):
         for index in range(1, 8):
             curses.init_pair(index, color[index], curses.COLOR_BLACK)
 
-    def _cursesAttr(self, color):
-        """
-        build an array describing a down-sampled version of the
-        color as a three character string, with each gun being
-        described with a value in the range 0..2, then map this to attrs
-        """
-        map = "".join([str(int(round(v/128))) for v in color])
-        return self.CODES[map]
+    @timefunc
+    def _addstr(self, pixel):
+        stdscr.addstr(self.chars[pixel[0]], pixel[1])
 
-    def convert(self, x, color, chars=None):
-        stdscr.addstr(super(Ansi_2, self)._convert(x, color, chars), self._cursesAttr(color))
+    @timefunc
+    def _char(self, pixels):
+        return (np.sum(pixels, axis=2) / 85).astype(dtype=np.uint8)  
 
+    @timefunc
+    def _colorindex(self, pixels):
+        return np.char.mod('%c', np.ceil(pixels/128).astype(dtype=np.uint8)+48)
 
-class AnsiClient:
-    """
-    Simple text based client that displays a LED string as asciiart. There
-    are several ways to do this, depending on the capability level of the
-    terminal. See the specific implementations for details.
+    @timefunc
+    def _color(self, indices):
+        shape = indices.shape
+        reshaped = indices.reshape(shape[0]*shape[1], shape[2])
+        pixels = [self.colors["".join(pixel)] for pixel in reshaped]
 
-    TODO: add support for xterm-256
-    """
+        return np.asarray(pixels).reshape(shape[0], shape[1])
 
-    def __init__(self, width, height, address):
-        self.width = width
-        self.height = height
-
-        initCurses()
-        stdscr.clear()
-        if curses.has_colors():
-            self.converter = Ansi_2()
-        else:
-            self.converter = Ansi_1()
-
+    @timefunc
     def _show(self, pixels):
+        t = time()
+
         stdscr.addstr(0, 0, " + " + "-"*self.width + " +\n")
 
-        for y in reversed(range(self.height)):
-            stdscr.addstr(" | ")
-            for x in range(self.width):
-                self.converter.convert(x, pixels[x+y*self.width])
+        """
+          - sum the set on axis 2, then divide the result by 85. This'll
+            give a value in range where we can look up the ascii art shade.
+            85 is 256/3, and allows us to squish three 8-bit values into one.
+          - map value to ascii art symbol
 
-            stdscr.addstr(" | \n")
+          - divide each value so that each gun is in range 0..2, with zero
+            being off, 1-127 = 1, 128-255 = 2 (divide by 128, round up)
+          - convert the resultant (r, g, b) tuple into a string
+          - map the resultant string to a curses color
+
+          - combine the two result sets on a per pixel basis
+
+          - draw it!
+        """
+
+        char = self._char(pixels)
+        color = self._color(self._colorindex(pixels))
+
+        encoded = np.dstack((char, color))
+        for row in np.rot90(encoded):
+            stdscr.addstr(" | ")
+            for pixel in row:
+                self._addstr(pixel)
+            stdscr.addstr(" |\n")
+
+        self.spent += (time()-t)
 
         stdscr.addstr(" + " + "-"*self.width + " +\n")
-
         stdscr.refresh()
 
     def show(self, pixels):
@@ -169,8 +162,10 @@ class AnsiClient:
             self._show(pixels)
         except curses.error as e:
             ttyheight, ttywidth = stdscr.getmaxyx()
-            message = \
-                "Your screen (%d, %d) is too small to support this size matrix (%d, %d)" % (ttywidth, ttyheight, self.width, self.height)
+            message = (
+                "Your screen (%d, %d) is too small to support this size"
+                " matrix (%d, %d)" % (ttywidth, ttyheight, self.width, self.height)
+                )
 
             raise TtyTooSmall(message)
 

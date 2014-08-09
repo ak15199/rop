@@ -1,10 +1,19 @@
-from hue import rgbToHsv, hsvToRgb
-import opc
-from fastopc import FastOPC as Client
-from colors import BLACK
 from copy import deepcopy
+import numpy as np
+import logging
+from time import time
+
+from colors import BLACK
+from hue import rgbToHsv, hsvToRgb
 
 from ansiclient import AnsiClient
+from fastopc import FastOPC as Client
+
+import utils.pixelstream as pixelstream
+from utils.prof import timefunc
+
+
+DTYPE = np.uint8
 
 """
 This is loosely based on the Adafruit GFX library, although there
@@ -17,28 +26,24 @@ performing a HSV shift on the array.
 
 check out text.py for additional functions to draw text.
 """
-
-
 class OPCBuffer:
     """
-    OPCBuffer can often be considered an internal class. But it
-    comes in handy if you want to draw on a larger "virtual"
+    OPCBuffer is usually considered an internal class. But it
+    comes in handy (e.g.) if you want to draw on a larger "virtual"
     array, and scale down for rendering on a physical array.
     """
-    def __init__(self, numpix, color=BLACK):
-        self.buffer = [color]*numpix
 
-    def __getitem__(self, index):
-        return self.buffer[index]
-
-    def __setitem__(self, index, color):
-        self.buffer[index] = color
+    @timefunc
+    def __init__(self, width, height, color=BLACK):
+        shape = (width, height, 3)
+        self.buf = np.empty(shape=shape, dtype=DTYPE)
+        self.buf[:][:] = color
 
     def _sameSize(self, other):
-        return len(self.buffer) == len(other.buffer)
+        return self.buf.shape == other.buf.shape
 
     def __len__(self):
-        return len(self.buffer)
+        return len(self.buf)
 
     def __add___(self, other):
         pass
@@ -52,41 +57,60 @@ class OPCBuffer:
     def __and___(self, other):
         pass
 
-    def _avg(self, other, i, weight, gun):
-        v0 = self.buffer[i][gun] * weight
-        v1 = other.buffer[i][gun] * (1.0-weight)
-        return v0 + v1
+    @timefunc
+    def reds(self):
+        """
+        get all of the reds from the buffer
+        """
+        return self.buf[:,:,0]
 
+    @timefunc
+    def greens(self):
+        """
+        get all of the greens from the buffer
+        """
+        return self.buf[:,:,1]
+
+    @timefunc
+    def blues(self):
+        """
+        get all of the blues from the buffer
+        """
+        return self.buf[:,:,2]
+
+    @timefunc
     def avg(self, other, weight=.5):
+        """
+        Get a weighted average of two buffers.
+
+        XXX: This will fail silently if either the arrays are different
+            sizes, or if the weight isn't sensible. Should probably
+            raise exceptions.
+        """
         if not self._sameSize(other):
             return
+        if weight<0.0 or weight>1.0:
+            return
 
-        for i in range(len(self.buffer)):
-            self.buffer[i] = (
-                    self._avg(other, i, weight, 0),
-                    self._avg(other, i, weight, 1),
-                    self._avg(other, i, weight, 2),
-                    )
-
+        buf1 = (self.buf * weight)
+        buf2 = (other.buf * (1.0-weight))
+        self.buf = buf1.astype(dtype=DTYPE) + buf2.astype(dtype=DTYPE)
+	
+    @timefunc
     def downSample(self, bits):
-        for i in range(len(self.buffer)):
-            self.buffer[i] = (
-                    int(self.buffer[i][0]) & bits,
-                    int(self.buffer[i][1]) & bits,
-                    int(self.buffer[i][2]) & bits,
-                    )
-
-    def getPixels(self):
-        return self.buffer
+        self.buf &= bits
 
 class OPCMatrix:
+    @timefunc
     def __init__(self, width, height, address, zigzag=False, pixelDebug=False):
         self.pixelDebug = pixelDebug
         self.width = width
         self.height = height
-        self.buffer = OPCBuffer(self.numpix())
+        self.buf = OPCBuffer(width, height)
         self.zigzag = zigzag
         self.setCursor()
+
+        self.spent = 0
 
         if address is None:
             self.client = None
@@ -98,20 +122,24 @@ class OPCMatrix:
             self.ansi = None
             self.client = Client(address)
 
+    @timefunc
     def setFirmwareConfig(self, nodither=False, nointerp=False, manualled=False, ledonoff=True):
         if self.client is not None:
             data = chr(nodither | (nointerp << 1) | (manualled << 2) | (ledonoff << 3))
             self.client.sysEx(0x0001, 0x0002, data)
 
+    @timefunc
     def numpix(self):
         """
         Return the number of pixels in the display
         """
         return self.width * self.height
 
+    @timefunc
     def clone(self):
         return deepcopy(self)
 
+    @timefunc
     def copy(self, source, x=None, y=None):
         """
         XXX: This assumes that the source matrix is larger than the
@@ -128,6 +156,7 @@ class OPCMatrix:
         else:
             self._panCopy(source, x, y)
 
+    @timefunc
     def _panCopy(self, source, ox, oy):
         for x in range(self.width):
             for y in range(self.height):
@@ -135,109 +164,130 @@ class OPCMatrix:
                 if src is not None:
                     self.drawPixel(x, y, src)
 
+    @timefunc
     def _scaledCopy(self, source):
+        """
+        Process each gun independently. For each gun, we need to reshape
+        its array so as to line up all of the values associated with the
+        superpixel in a single row. This allws us to perform a mean
+        operation on the array, essentially building the new buffer
+        
+        For the array a=np.arange(4*4*3).reshape((4,4,3)), reds will
+        consist of:
+        
+              array([[ 0,  3,  6,  9],
+                     [12, 15, 18, 21],
+                     [24, 27, 30, 33],
+                     [36, 39, 42, 45]])
+        
+        If we're going from 4x4 to 2x2, then the reduction ratio is 2,
+        meaning that we will take four values from the superpixel to
+        calculate the new value.  In this case, the top LH pixel will be
+        the average of (0, 3, 12, 15). 
+        """
+
         ratio = source.width / self.width
-        if ratio < 1:
+        if ratio < 1: # Can't zoom up
             return
 
-        for x in range(self.width):
-            for y in range(self.height):
-                condensed = [0, 0, 0]
-                for x0 in range(ratio):
-                    for y0 in range(ratio):
-                        src = source.getPixel(y0+x*ratio, y0+y*ratio)
-                        for gun in range(3):
-                            condensed[gun] = condensed[gun] + src[gun]
+        guns = []
+        for gun in (source.buf.reds(), source.buf.greens(), source.buf.blues()):
+            new = np.average(np.split(np.average(np.split(gun, source.width //
+                ratio, axis=1), axis=-1), source.height // ratio, axis=1),
+                axis=-1)
+            guns.append(new)
 
-                for gun in range(3):
-                    condensed[gun] = condensed[gun]/(ratio*ratio)
+        self.buf.buf = np.dstack(guns).reshape((self.width, self.height, 3))
 
-                self.drawPixel(x, y, condensed)
-
+    @timefunc
     def setStripPixel(self, z, color):
         """
         Exposed helper method that sets a given pixel in the unrolled strip
         of LEDs.
         """
-        self.buffer[z] = color
+        x = z / self.width
+        y = z % self.width
 
-    def _getAddress(self, x, y):
-        x, y = int(x), int(y)
+        self.buf.buf[x, y] = color
 
-        if x < 0 or y < 0 or x >= self.width or y >= self.height:
-            if self.pixelDebug:
-                raise Exception("Invaid Index (%d, %d)" % (x, y))
-            else:
-                return None
-
-        if self.zigzag and y % 2 == 0:
-            x = (self.width-x)-1
-
-        return x+y*self.width
-
+    @timefunc
     def getPixel(self, x, y):
         """
         Retrieve the color tuple of the pixel from the specified location
         """
-        if 0 <= x < self.width and 0 <= y < self.height:
-            addr = self._getAddress(x, y)
-            return self.buffer[addr]
+        return self.buf.buf[x, y]
 
-        return None
-
+    @timefunc
     def drawPixel(self, x, y, color):
         """
         Set the pixel tuple at the specified location.  Perform no operation
-        if the color value is None
+        if the color value is None, or the address out of bounds
         """
-        addr = self._getAddress(x, y)
-        if addr is not None and color is not None:
-            self.buffer[addr] = color
+        t = time()
+        if color is not None:
+            try:
+                self.buf.buf[x, y] = color
+            except IndexError:
+                pass
 
+        self.spent += (time()-t)
+
+    @timefunc
     def _clip(self, x, y):
         return (
                 max(min(x, self.width), 0),
                 max(min(y, self.height), 0),
             )
 
+    @staticmethod
+    @timefunc
+    def _shiftPixel(pixel, dh, ds, dv):
+        if np.count_nonzero(pixel) == 0:
+            return pixel
+
+        h, s, v = rgbToHsv(pixel[0], pixel[1], pixel[2])
+        return hsvToRgb(h*dh, s*ds, v*dv)
+
+    @timefunc
     def shift(self, dh=1.0, ds=1.0, dv=1.0):
         """
         Shift any of hue, saturation, and value on the matrix, specifying
         the attributes that you'd like to adjust
         """
-        for i in range(self.numpix()):
-            r = self.buffer[i][0]
-            g = self.buffer[i][1]
-            b = self.buffer[i][2]
-            h, s, v = rgbToHsv(r, g, b)
-            self.buffer[i] = hsvToRgb(h*dh, s*ds, v*dv)
+        self.buf.buf = pixelstream.process(self.buf.buf, self._shiftPixel, dh,
+                ds, dv)
 
+        #reshaped = self.buf.buf.reshape(self.width*self.height, 3)
+        #pixels = [self._shiftPixel(pixel, dh, ds, dv) for pixel in reshaped]
+        #self.buf.buf = np.asarray(pixels).reshape(self.width, self.height, 3)
+
+    @timefunc
     def fade(self, divisor):
         """
-        Special case of shift, that's optimized for speed.
+        Special case of shift for just value that'll be faster than doing it
+        the long way.
         """
-        for i in range(self.numpix()):
-            r = self.buffer[i][0] * divisor
-            g = self.buffer[i][1] * divisor
-            b = self.buffer[i][2] * divisor
-            self.buffer[i] = (r, g, b)
+        buf = self.buf.buf * divisor
+        self.buf.buf = buf.astype(dtype=DTYPE)
 
+    @timefunc
     def clear(self, color=BLACK):
         """
         Wipe the matrix to any color, defaulting to black
         """
-        self.buffer = OPCBuffer(self.numpix(), color)
+        self.buf.buf[:][:] = color
 
+    @timefunc
     def show(self, channel=0):
         """
-        write the buffer to the display device
+        write the buf to the display device
         """
-        pixels = self.buffer.getPixels()
         if self.ansi is not None:
-            self.ansi.show(pixels)
+            self.ansi.show(self.buf.buf)
         else:
-            self.client.putPixels(channel, pixels)
+            self.client.putPixels(channel, self.buf.buf)
 
+    @timefunc
     def _line(self, x0, y0, x1=None, y1=None):
 
         if x1 is None and y1 is None:
@@ -278,6 +328,7 @@ class OPCMatrix:
 
         return points
 
+    @timefunc
     def setCursor(self, pos=(0, 0)):
         """
         Set the cursor position. This is used by draw relative operations
@@ -285,12 +336,14 @@ class OPCMatrix:
         x, y = pos
         self.cursor = (x, y)
 
+    @timefunc
     def getCursor(self):
         """
         Get the current cursor position
         """
         return self.cursor
 
+    @timefunc
     def drawLineRelative(self, x1, y1, color):
         """
         Draw a line from the current cursor position to the specified address
@@ -299,13 +352,15 @@ class OPCMatrix:
         for x, y in path:
             self.drawPixel(x, y, color)
 
+    @timefunc
     def drawLine(self, x1, y1, x2, y2, color):
         """
-        Draw a line between the two coordinate pairs specified
+        Draw a line between the specified coordinate pairs
         """
         for x, y in self._line(x1, y1, x2, y2):
             self.drawPixel(x, y, color)
 
+    @timefunc
     def drawPoly(self, points, color):
         """
         Draw a polygon described by the array of coordinates
@@ -320,6 +375,7 @@ class OPCMatrix:
         x, y = origin
         self.drawLineRelative(x, y, color)
 
+    @timefunc
     def fillRect(self, x1, y1, w, h, color):
         """
         Draw a filled rectangle
@@ -334,6 +390,7 @@ class OPCMatrix:
             for y in range(y1, y2+1):
                 self.drawPixel(x, y, color)
 
+    @timefunc
     def drawRect(self, x1, y1, w, h, color):
         """
         Draw a rectangle
@@ -342,6 +399,7 @@ class OPCMatrix:
                 (x1, y1), (x1+w, y1), (x1+w, y1+h), (x1, y1+h)
             ], color)
 
+    @timefunc
     def _circlePair(self, x1, y1, x2, y2, color, hasFill):
         if hasFill:
             self.drawLine(x1, y1, x2, y2, color)
@@ -349,6 +407,7 @@ class OPCMatrix:
             self.drawPixel(x1, y1, color)
             self.drawPixel(x2, y2, color)
 
+    @timefunc
     def _circleHelper(self, x0, y0, radius, color, hasFill):
         """
         See http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
@@ -370,12 +429,15 @@ class OPCMatrix:
                 x -= 1
                 radiusError += 2 * (y - x + 1)
 
+    @timefunc
     def drawCircle(self, x, y, radius, color):
         self._circleHelper(x, y, radius, color, False)
 
+    @timefunc
     def fillCircle(self, x, y, radius, color):
         self._circleHelper(x, y, radius, color, True)
 
+    @timefunc
     def terminate(self):
         if self.ansi is not None:
             self.ansi.terminate()
