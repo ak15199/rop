@@ -1,8 +1,10 @@
-from opc.matrix import OPCMatrix
-from opc.hue import hsvToRgb
-
-from random import random
+import logging
 from math import fmod
+from random import random
+
+from opc.hue import hsvToRgb
+from opc.matrix import OPCMatrix
+
 
 class Bilinear(object):
 
@@ -35,7 +37,7 @@ class Bilinear(object):
         return (v+1.0)/max
 
     def _interpolate(self, rgb, px, py):
-        return [self._bilinearInterp(gun, px, py) for gun in rgb]
+        return tuple([self._bilinearInterp(gun, px, py) for gun in rgb])
 
     def _rotate(self, array):
         return zip(*array[::-1])
@@ -62,7 +64,7 @@ class Bilinear(object):
             self.cornerValues[i] = fmod(new, 1.0)
 
         if self.bits is not None:
-            matrix.buffer.downSample(self.bits)
+            matrix.buf.downSample(self.bits)
 
     def interval(self):
         return 100

@@ -1,12 +1,13 @@
+from math import sin, cos, pi
+
 from opc.colors import *
 from opc.hue import getHueGen
 from opc.matrix import OPCMatrix
 
-from math import sin, cos, pi
 
 SCALE = 4
 
-class Art:
+class Art(object):
 
     description = "Use a higher resolution image downsampled to improve perceived clarity"
 

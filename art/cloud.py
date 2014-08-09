@@ -31,7 +31,7 @@ class Art:
 
         self.ticks += 10
 
-        matrix.buffer.avg(self.matrix.buffer, 0.9)
+        matrix.buf.avg(self.matrix.buf, 0.9)
 
     def interval(self):
         return 100
