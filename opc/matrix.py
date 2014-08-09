@@ -220,11 +220,10 @@ class OPCMatrix:
         Set the pixel tuple at the specified location.  Perform no operation
         if the color value is None, or the address out of bounds
         """
-        if color is not None:
-            try:
-                self.buf.buf[x, y] = color
-            except IndexError:
-                pass
+        if x>=self.width or y>=self.height or x<0 or y<0 or color is None:
+            return
+
+        self.buf.buf[x, y] = color
 
     @timefunc
     def _clip(self, x, y):
