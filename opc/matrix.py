@@ -152,7 +152,7 @@ class OPCMatrix:
     def _panCopy(self, source, ox, oy):
         for x in range(self.width):
             for y in range(self.height):
-                src = source.getPixel(x + ox, y + oy)
+                src = source.getPixel(x + ox, y + oy, wrap=True)
                 if src is not None:
                     self.drawPixel(x, y, src)
 
@@ -203,10 +203,14 @@ class OPCMatrix:
         self.buf.buf[x, y] = color
 
     @timefunc
-    def getPixel(self, x, y):
+    def getPixel(self, x, y, wrap=False):
         """
         Retrieve the color tuple of the pixel from the specified location
         """
+        if wrap:
+            x = x % self.width
+            y = y % self.height
+
         return self.buf.buf[x, y]
 
     @timefunc
