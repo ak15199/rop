@@ -1,6 +1,7 @@
 import inspect
 from os import listdir
 from os.path import isfile, join, abspath, dirname, sep
+import logging
 
 
 def moduleQualifies(dir, file, excludes, includes):
@@ -23,7 +24,6 @@ def ImportPlugins(dir, excludes, includes, args):
     excludes.append("__init__.py")
 
     for plugin in getPluginList(dir, excludes, includes):
-        print plugin+":",
         try:
             module = __import__(
                 dir+'.'+plugin,
@@ -35,12 +35,12 @@ def ImportPlugins(dir, excludes, includes, args):
 
             desc = getattr(obj, "description", None)
             if desc is not None:
-                print desc
+                logging.info("%s: %s"%(plugin, desc))
             else:
-                print "[done]"
+                logging.info("%s: [None]"%(plugin))
 
             plugins.append(obj)
         except Exception as e:
-            print "import failed:", str(e)
+            logging.error("%s: import failed: %s"%(plugin, str(e)))
 
     return plugins
