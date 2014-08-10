@@ -2,17 +2,21 @@ from opc.hue import hsvToRgb
 from opc.matrix import OPCMatrix
 
 from random import random
-from utils.lfsr import lfsr256
+from utils.lfsr import compoundLfsr
 
-class Art:
+HUEINCYCLES = 8
 
-    description = "Use a 256 bit LFSR to 'randomly' fill the display"
+class Art(object):
+
+    description = "Use an LFSR to 'randomly' fill the display"
 
     def __init__(self, matrix):
         pass
 
     def start(self, matrix):
-        self.random = lfsr256()
+        # we could probably shuffle() up a range, but that sounds like
+        # it'd be less of a challenge :)
+        self.random = compoundLfsr(matrix.numpix)
         self.hue = random()
         matrix.clear()
 
@@ -20,11 +24,12 @@ class Art:
         try:
             pos = self.random.next()
         except:
-            self.random = lfsr256()
-            self.hue = random()
+            self.random = compoundLfsr(matrix.numpix)
             pos = self.random.next()
             
-        color = hsvToRgb(self.hue, 1, random())
+        # gently transition through all hues over HUEINCYCLES fills
+        self.hue += 1.0/(matrix.numpix*HUEINCYCLES)
+        color = hsvToRgb(self.hue, 1, 0.2+0.8*random())
         matrix.setStripPixel(pos, color)
   
     def interval(self):
