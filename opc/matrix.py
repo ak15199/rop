@@ -105,6 +105,8 @@ class OPCMatrix:
         self.pixelDebug = pixelDebug
         self.width = width
         self.height = height
+        self.numpix = width * height
+
         self.buf = OPCBuffer(width, height)
         self.zigzag = zigzag
         self.setCursor()
@@ -124,13 +126,6 @@ class OPCMatrix:
         if self.client is not None:
             data = chr(nodither | (nointerp << 1) | (manualled << 2) | (ledonoff << 3))
             self.client.sysEx(0x0001, 0x0002, data)
-
-    @timefunc
-    def numpix(self):
-        """
-        Return the number of pixels in the display
-        """
-        return self.width * self.height
 
     @timefunc
     def clone(self):
