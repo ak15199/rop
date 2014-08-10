@@ -1,28 +1,36 @@
 from opc.matrix import OPCMatrix
 
 from random import random, randrange
-from math import fmod
+from math import fmod, sqrt
 from utils.pen import Pen
 
-PENS = 8
-
-class Art:
+class Art(object):
 
     description = "Rain falling down the display"
 
     def __init__(self, matrix):
         hue = random()
-        self.pens = []
-        for pen in range(PENS):
-            speed = (1.0+pen)/PENS
+        pencount = int(sqrt(matrix.width*matrix.height/2))
 
-            # height is longer than the height of the screen, so drops stay away for a little while
+        self.pens = []
+        for pen in range(pencount):
+            speed = (1.0+pen)/pencount
+
+            # height is longer than the height of the screen, so drops stay
+            # off screen for a little while
             height = int(matrix.height*1.3)
 
-            pen = Pen(matrix.width, height, 0, randrange(matrix.height), speed, 0, persist=False)
+            pen = Pen(
+                    matrix.width, height,
+                    randrange(matrix.width), height,
+                    0, -speed,
+                    hue=hue,
+                    persist=False)
+
             pen.setValue(speed)
-            pen.setBumpStrategy(pen.randomreset, x=True)
-            pen.setBumpStrategy(pen.none, y=True)
+            pen.setBumpStrategy(pen.random, x=True)
+            pen.setBumpStrategy(pen.reset, y=True)
+
             self.pens.append(pen)
 
     def start(self, matrix):

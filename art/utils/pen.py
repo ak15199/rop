@@ -8,8 +8,10 @@ from math import fmod, sin, cos
 HUEDELTA = 0.0005
 
 class Pen(object):
-    def __init__(self, width, height, x, y, dx=1, dy=1, persist=True):
-        self.hue = random()
+    def __init__(self, width, height, x, y, dx=1, dy=1, persist=True,
+            hue=None, huedelta=HUEDELTA):
+        
+        self.hue = random() if hue is None else hue
         self.value = 1
         self.x, self.x0 = x, x
         self.y, self.y0 = y, y
@@ -22,6 +24,7 @@ class Pen(object):
         self.persist = persist
         self.angle = 0
         self.theta = 0.01
+        self.huedelta = huedelta
 
     def setValue(self, value):
         self.value = value
@@ -37,11 +40,9 @@ class Pen(object):
     # one of these to execute when the pen reaches the limits of the display.
     # you can also set your own bump strategy by providing a method or 
     # methods.
-    def randomreset(self, x=False, y=False):
+    def reset(self, x=False, y=False):
         if x: self.x = self.x0
         if y: self.y = self.y0
-        if not x: self.x = randrange(self.w)
-        if not y: self.y = randrange(self.h)
 
     def reverse(self, x=False, y=False):
         if x: self.dx = -self.dx 
@@ -74,4 +75,4 @@ class Pen(object):
         
         matrix.drawPixel(self.x, self.y, hsvToRgb(self.hue, v=self.value))
 
-        self.hue = fmod(self.hue + HUEDELTA, 1)
+        self.hue = fmod(self.hue + self.huedelta, 1)
