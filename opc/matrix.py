@@ -6,7 +6,7 @@ from colors import BLACK
 from hue import rgbToHsv, hsvToRgb
 
 from ansiclient import AnsiClient
-from fastopc import FastOPC as Client
+from fastopc import FastOPC as OpcClient
 
 import utils.pixelstream as pixelstream
 from utils.prof import timefunc
@@ -94,7 +94,7 @@ class OPCBuffer:
         buf1 = (self.buf * weight)
         buf2 = (other.buf * (1.0-weight))
         self.buf = buf1.astype(dtype=DTYPE) + buf2.astype(dtype=DTYPE)
-	
+
     @timefunc
     def downSample(self, bits):
         self.buf &= bits
@@ -108,18 +108,17 @@ class OPCMatrix:
         self.numpix = width * height
 
         self.buf = OPCBuffer(width, height)
-        self.zigzag = zigzag
         self.setCursor()
 
         if address is None:
             self.client = None
         elif address[0:4] == 'ansi':
-            self.client = None
-            self.ansi = AnsiClient(width, height, address)
+            self.client = AnsiClient(address)
+            self.client.setGeometry(width, height)
             self.zigzag = False
         else:
-            self.ansi = None
-            self.client = Client(address)
+            self.client = OpcClient(address)
+            self.zigzag = zigzag
 
     @timefunc
     def setFirmwareConfig(self, nodither=False, nointerp=False, manualled=False, ledonoff=True):
@@ -163,19 +162,19 @@ class OPCMatrix:
         its array so as to line up all of the values associated with the
         superpixel in a single row. This allws us to perform a mean
         operation on the array, essentially building the new buffer
-        
+
         For the array a=np.arange(4*4*3).reshape((4,4,3)), reds will
         consist of:
-        
+
               array([[ 0,  3,  6,  9],
                      [12, 15, 18, 21],
                      [24, 27, 30, 33],
                      [36, 39, 42, 45]])
-        
+
         If we're going from 4x4 to 2x2, then the reduction ratio is 2,
         meaning that we will take four values from the superpixel to
         calculate the new value.  In this case, the top LH pixel will be
-        the average of (0, 3, 12, 15). 
+        the average of (0, 3, 12, 15).
         """
 
         ratio = source.width / self.width
@@ -274,10 +273,13 @@ class OPCMatrix:
         """
         write the buf to the display device
         """
-        if self.ansi is not None:
-            self.ansi.show(self.buf.buf)
+        if self.zigzag:
+            pixels = np.copy(self.buf.buf)
+            pixels[0::2] = pixels[0::2,::-1]
         else:
-            self.client.putPixels(channel, self.buf.buf)
+            pixels = self.buf.buf
+
+        self.client.putPixels(channel, pixels)
 
     @timefunc
     def _line(self, x0, y0, x1=None, y1=None):
@@ -431,5 +433,7 @@ class OPCMatrix:
 
     @timefunc
     def terminate(self):
-        if self.ansi is not None:
-            self.ansi.terminate()
+        try:
+            self.client.terminate()
+        except:
+            pass # pass if it's a non-ansi client

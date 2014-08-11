@@ -28,22 +28,16 @@ class AnsiClient:
     TODO: add support for xterm-256
     """
 
-    MAP10 = " .-=:+*#%@"    # ten step asciiart gradient
+    MAP10 = " .-:=+*#%@"    # ten step asciiart gradient
     MAP9 = u" ⡀⢂⢌⢕⡫⢷⣽⣿"     # nine step braille gradient, but
                             # don't even bother before python 3.3
                             # and libncursesw.so.5
 
-    def __init__(self, width, height, address, chars=None):
-        self.width = width
-        self.height = height
-
+    def __init__(self, server=None):
         initCurses()
         stdscr.clear()
 
-        if chars == None:
-            chars = self.MAP10
-
-        self.chars = dict(enumerate(chars))
+        self.chars = dict(enumerate(self.MAP10))
 
         COLOR_WHITE = 0  # curses has white locked in postition 0
         COLOR_BLACK = 1
@@ -98,6 +92,10 @@ class AnsiClient:
         for index in range(1, 8):
             curses.init_pair(index, color[index], curses.COLOR_BLACK)
 
+    def setGeometry(self, width, height):
+        self.width = width
+        self.height = height
+
     @timefunc
     def _addstr(self, pixel):
         stdscr.addstr(self.chars[pixel[0]], pixel[1])
@@ -151,7 +149,7 @@ class AnsiClient:
         stdscr.addstr(" + " + "-"*self.width + " +\n")
         stdscr.refresh()
 
-    def show(self, pixels):
+    def putPixels(self, channel, pixels):
         try:
             self._show(pixels)
         except curses.error as e:
@@ -162,6 +160,12 @@ class AnsiClient:
                 )
 
             raise TtyTooSmall(message)
+
+    def sysEx(self, systemId, commandId, msg):
+        pass
+
+    def setGlobalColorCorrection(self, gamma, r, g, b):
+        pass
 
     def terminate(self):
         exitCurses()
