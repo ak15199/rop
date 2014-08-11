@@ -6,11 +6,12 @@ If you're not already familiar, go check out
 https://github.com/scanlime/fadecandy for more background on this project.
 
 The code has been run on OSX with Python 2.7, and the only extra you'll need
-is numpy in support of the fastopc module. Typically you'd run something like
+is numpy to support fastopc and array math. Typically you'd run something
+like:
 
     # pip install numpy
 
- s the super user to get this installed.
+as the super user to install.
 
 To get started, update dpyinfo.py to suit your configuration, start the OPC
 service and connect your array. Then run:
@@ -47,6 +48,7 @@ The directories are:
     ./art/basecls   base classes that animations may derive from
     ./assets        files that are used by the animations
     ./opc           an extended interface for using OPC via python
+    ./opc/utils     various utilities used by the framework
 
 Check out the existing animations for use as examples, and please commit
 back code that you create!
@@ -59,10 +61,7 @@ can be found on [Imgur](http://ak15199.imgur.com/all).
 
 ### Other People's Work
 
+The opc code is taken from https://github.com/scanlime/fadecandy.
+
 Hopefully attriibutions are correct, if you see one missing,
 then please let me know and I'll fix.
-
-One specific that is not covered elsewhere:
-
-opc/opc.py is taken from https://github.com/scanlime/fadecandy
-and should be unchanged from the original. 
