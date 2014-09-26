@@ -38,67 +38,52 @@ class AnsiClient:
     def __init__(self, server=None):
         initCurses()
         stdscr.clear()
-
-        self.chars = dict(enumerate(self.MAP10))
-
-        COLOR_WHITE = 0  # curses has white locked in postition 0
-        COLOR_BLACK = 1
-        COLOR_RED = 2
-        COLOR_GREEN = 3
-        COLOR_YELLOW = 4
-        COLOR_BLUE = 5
-        COLOR_MAGENTA = 6
-        COLOR_CYAN = 7
-
-        self.colors = [
-            curses.color_pair(COLOR_BLACK),
-            curses.color_pair(COLOR_BLUE),
-            curses.color_pair(COLOR_BLUE)+curses.A_BOLD,
-            curses.color_pair(COLOR_GREEN),
-            curses.color_pair(COLOR_CYAN),
-            curses.color_pair(COLOR_CYAN),                   # approx
-            curses.color_pair(COLOR_GREEN)+curses.A_BOLD,
-            curses.color_pair(COLOR_CYAN),                   # approx
-            curses.color_pair(COLOR_CYAN)+curses.A_BOLD,
-            curses.color_pair(COLOR_RED),
-            curses.color_pair(COLOR_MAGENTA),
-            curses.color_pair(COLOR_MAGENTA),                # approx
-            curses.color_pair(COLOR_YELLOW),
-            curses.color_pair(COLOR_WHITE),
-            curses.color_pair(COLOR_BLUE)+curses.A_BOLD,     # approx
-            curses.color_pair(COLOR_YELLOW),                 # approx
-            curses.color_pair(COLOR_GREEN)+curses.A_BOLD,    # approx
-            curses.color_pair(COLOR_CYAN)+curses.A_BOLD,     # approx
-            curses.color_pair(COLOR_RED)+curses.A_BOLD,
-            curses.color_pair(COLOR_RED)+curses.A_BOLD,      # approx
-            curses.color_pair(COLOR_MAGENTA)+curses.A_BOLD,
-            curses.color_pair(COLOR_YELLOW),                 # approx
-            curses.color_pair(COLOR_RED)+curses.A_BOLD,      # approx
-            curses.color_pair(COLOR_MAGENTA)+curses.A_BOLD,  # approx
-            curses.color_pair(COLOR_YELLOW)+curses.A_BOLD,
-            curses.color_pair(COLOR_YELLOW)+curses.A_BOLD,   # approx
-            curses.color_pair(COLOR_WHITE)+curses.A_BOLD,
-        ]
-
-        color = [
-                curses.COLOR_WHITE,
-                curses.COLOR_BLACK,
-                curses.COLOR_RED,
-                curses.COLOR_GREEN,
-                curses.COLOR_YELLOW,
-                curses.COLOR_BLUE,
-                curses.COLOR_MAGENTA,
-                curses.COLOR_CYAN,
-            ]
+        curses.curs_set(0)
 
         if curses.COLORS == 256:
-            self.c_mod = 6
+            # initialize colors as the background, render spaces.
             for index in range(216):
                 curses.init_pair(index, -1, index + 16)
+            self.chars = " " * 10
+
+            self.c_mod = 6
+            self.colors = [curses.color_pair(i) for i in range(216)]
         else:
+            for index in range(8):
+                curses.init_pair(index, index, -1)
+
+            self.chars = self.MAP10
             self.c_mod = 3
-            for index in range(1, 8):
-                curses.init_pair(index, color[index], curses.COLOR_BLACK)
+            self.colors = [
+                curses.color_pair(curses.COLOR_BLACK),
+                curses.color_pair(curses.COLOR_BLUE),
+                curses.color_pair(curses.COLOR_BLUE)+curses.A_BOLD,
+                curses.color_pair(curses.COLOR_GREEN),
+                curses.color_pair(curses.COLOR_CYAN),
+                curses.color_pair(curses.COLOR_CYAN),                  # approx
+                curses.color_pair(curses.COLOR_GREEN)+curses.A_BOLD,
+                curses.color_pair(curses.COLOR_CYAN),                  # approx
+                curses.color_pair(curses.COLOR_CYAN)+curses.A_BOLD,
+                curses.color_pair(curses.COLOR_RED),
+                curses.color_pair(curses.COLOR_MAGENTA),
+                curses.color_pair(curses.COLOR_MAGENTA),               # approx
+                curses.color_pair(curses.COLOR_YELLOW),
+                curses.color_pair(curses.COLOR_WHITE),
+                curses.color_pair(curses.COLOR_BLUE)+curses.A_BOLD,    # approx
+                curses.color_pair(curses.COLOR_YELLOW),                # approx
+                curses.color_pair(curses.COLOR_GREEN)+curses.A_BOLD,   # approx
+                curses.color_pair(curses.COLOR_CYAN)+curses.A_BOLD,    # approx
+                curses.color_pair(curses.COLOR_RED)+curses.A_BOLD,
+                curses.color_pair(curses.COLOR_RED)+curses.A_BOLD,     # approx
+                curses.color_pair(curses.COLOR_MAGENTA)+curses.A_BOLD,
+                curses.color_pair(curses.COLOR_YELLOW),                # approx
+                curses.color_pair(curses.COLOR_RED)+curses.A_BOLD,     # approx
+                curses.color_pair(curses.COLOR_MAGENTA)+curses.A_BOLD, # approx
+                curses.color_pair(curses.COLOR_YELLOW)+curses.A_BOLD,
+                curses.color_pair(curses.COLOR_YELLOW)+curses.A_BOLD,  # approx
+                curses.color_pair(curses.COLOR_WHITE)+curses.A_BOLD,
+            ]
+
 
     def setGeometry(self, width, height):
         self.width = width
@@ -106,10 +91,7 @@ class AnsiClient:
 
     @timefunc
     def _addstr(self, pixel):
-        if curses.COLORS == 256:
-            stdscr.addstr(' ', curses.color_pair(pixel[1]))
-        else:
-            stdscr.addstr(self.chars[pixel[0]], self.colors[pixel[1]])
+        stdscr.addstr(self.chars[pixel[0]]*2, self.colors[pixel[1]])
 
     @timefunc
     def _char(self, pixels):
@@ -127,7 +109,7 @@ class AnsiClient:
 
     @timefunc
     def _show(self, pixels):
-        stdscr.addstr(0, 0, " + " + "-"*self.width + " +\n")
+        stdscr.addstr(0, 0, " + " + "--"*self.width + " +\n")
 
         """
           - sum the set on axis 2, then divide the result by 85. This'll
@@ -155,7 +137,7 @@ class AnsiClient:
                 self._addstr(pixel)
             stdscr.addstr(" |\n")
 
-        stdscr.addstr(" + " + "-"*self.width + " +\n")
+        stdscr.addstr(" + " + "--"*self.width + " +")
         stdscr.refresh()
 
     def putPixels(self, channel, pixels):
