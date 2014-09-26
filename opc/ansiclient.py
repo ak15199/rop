@@ -100,7 +100,7 @@ class AnsiClient:
     @timefunc
     def _colorindex(self, pixels):
         # map 0 - 256 to  0 - c_mod
-        return np.ceil(pixels / (256 / (self.c_mod - 1 )))
+        return np.round(pixels / (256 / (self.c_mod - 1 )))
 
     @timefunc
     def _color(self, pixels):
