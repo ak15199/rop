@@ -1,4 +1,5 @@
 #encoding: utf-8
+from __future__ import division
 
 import curses
 import logging
@@ -112,21 +113,17 @@ class AnsiClient:
 
     @timefunc
     def _char(self, pixels):
-        return (np.sum(pixels, axis=2) / 85).astype(dtype=np.uint8)  
+        return (np.sum(pixels, axis=2) / 85).astype(dtype=np.uint8)
 
     @timefunc
     def _colorindex(self, pixels):
-        return np.ceil(np.dot(pixels, (self.c_mod - 1)) / 256)
+        # map 0 - 256 to  0 - c_mod
+        return np.ceil(pixels / (256 / (self.c_mod - 1 )))
 
     @timefunc
-    def _color(self, indices):
-        shape = indices.shape
-        reshaped = indices.reshape(shape[0]*shape[1], shape[2])
-        pixels = [int(sum(self.c_mod ** (2 - i) * v
-                          for i,v in enumerate(pixel)))
-                  for pixel in reshaped]
-
-        return np.asarray(pixels).reshape(shape[0], shape[1])
+    def _color(self, pixels):
+        return np.sum(pixels * np.power(self.c_mod, [2,1,0]), axis=2,
+                      dtype=np.int16)
 
     @timefunc
     def _show(self, pixels):
