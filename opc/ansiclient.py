@@ -13,6 +13,7 @@ def initCurses():
 
     stdscr = curses.initscr()
     curses.start_color()
+    curses.use_default_colors()
 
 
 def exitCurses():
@@ -77,7 +78,6 @@ class AnsiClient:
             curses.color_pair(COLOR_YELLOW)+curses.A_BOLD,   # approx
             curses.color_pair(COLOR_WHITE)+curses.A_BOLD,
         ]
-        self.c_mod = 3
 
         color = [
                 curses.COLOR_WHITE,
@@ -90,8 +90,14 @@ class AnsiClient:
                 curses.COLOR_CYAN,
             ]
 
-        for index in range(1, 8):
-            curses.init_pair(index, color[index], curses.COLOR_BLACK)
+        if curses.COLORS == 256:
+            self.c_mod = 6
+            for index in range(216):
+                curses.init_pair(index, -1, index + 16)
+        else:
+            self.c_mod = 3
+            for index in range(1, 8):
+                curses.init_pair(index, color[index], curses.COLOR_BLACK)
 
     def setGeometry(self, width, height):
         self.width = width
@@ -99,7 +105,10 @@ class AnsiClient:
 
     @timefunc
     def _addstr(self, pixel):
-        stdscr.addstr(self.chars[pixel[0]], pixel[1])
+        if curses.COLORS == 256:
+            stdscr.addstr(' ', curses.color_pair(pixel[1]))
+        else:
+            stdscr.addstr(self.chars[pixel[0]], self.colors[pixel[1]])
 
     @timefunc
     def _char(self, pixels):
@@ -113,8 +122,8 @@ class AnsiClient:
     def _color(self, indices):
         shape = indices.shape
         reshaped = indices.reshape(shape[0]*shape[1], shape[2])
-        pixels = [self.colors[int(sum(self.c_mod**(self.c_mod - i -1) * v
-                              for i,v in enumerate(pixel)))]
+        pixels = [int(sum(self.c_mod ** (2 - i) * v
+                          for i,v in enumerate(pixel)))
                   for pixel in reshaped]
 
         return np.asarray(pixels).reshape(shape[0], shape[1])
