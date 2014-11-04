@@ -1,4 +1,5 @@
 #encoding: utf-8
+from __future__ import division
 
 import curses
 import logging
@@ -13,6 +14,7 @@ def initCurses():
 
     stdscr = curses.initscr()
     curses.start_color()
+    curses.use_default_colors()
 
 
 def exitCurses():
@@ -36,61 +38,52 @@ class AnsiClient:
     def __init__(self, server=None):
         initCurses()
         stdscr.clear()
+        curses.curs_set(0)
 
-        self.chars = dict(enumerate(self.MAP10))
+        if curses.COLORS == 256:
+            # initialize colors as the background, render spaces.
+            for index in range(216):
+                curses.init_pair(index, -1, index + 16)
+            self.chars = " " * 10
 
-        COLOR_WHITE = 0  # curses has white locked in postition 0
-        COLOR_BLACK = 1
-        COLOR_RED = 2
-        COLOR_GREEN = 3
-        COLOR_YELLOW = 4
-        COLOR_BLUE = 5
-        COLOR_MAGENTA = 6
-        COLOR_CYAN = 7
+            self.c_mod = 6
+            self.colors = [curses.color_pair(i) for i in range(216)]
+        else:
+            for index in range(8):
+                curses.init_pair(index, index, -1)
 
-        self.colors = {
-                "000":    curses.color_pair(COLOR_BLACK),
-                "001":    curses.color_pair(COLOR_BLUE),
-                "002":    curses.color_pair(COLOR_BLUE)+curses.A_BOLD,
-                "010":    curses.color_pair(COLOR_GREEN),
-                "011":    curses.color_pair(COLOR_CYAN),
-                "012":    curses.color_pair(COLOR_CYAN),                   # approx
-                "020":    curses.color_pair(COLOR_GREEN)+curses.A_BOLD,
-                "021":    curses.color_pair(COLOR_CYAN),                   # approx
-                "022":    curses.color_pair(COLOR_CYAN)+curses.A_BOLD,
-                "100":    curses.color_pair(COLOR_RED),
-                "101":    curses.color_pair(COLOR_MAGENTA),
-                "102":    curses.color_pair(COLOR_MAGENTA),                # approx
-                "110":    curses.color_pair(COLOR_YELLOW),
-                "111":    curses.color_pair(COLOR_WHITE),
-                "112":    curses.color_pair(COLOR_BLUE)+curses.A_BOLD,     # approx
-                "120":    curses.color_pair(COLOR_YELLOW),                 # approx
-                "121":    curses.color_pair(COLOR_GREEN)+curses.A_BOLD,    # approx
-                "122":    curses.color_pair(COLOR_CYAN)+curses.A_BOLD,     # approx
-                "200":    curses.color_pair(COLOR_RED)+curses.A_BOLD,
-                "201":    curses.color_pair(COLOR_RED)+curses.A_BOLD,      # approx
-                "202":    curses.color_pair(COLOR_MAGENTA)+curses.A_BOLD,
-                "210":    curses.color_pair(COLOR_YELLOW),                 # approx
-                "211":    curses.color_pair(COLOR_RED)+curses.A_BOLD,      # approx
-                "212":    curses.color_pair(COLOR_MAGENTA)+curses.A_BOLD,  # approx
-                "220":    curses.color_pair(COLOR_YELLOW)+curses.A_BOLD,
-                "221":    curses.color_pair(COLOR_YELLOW)+curses.A_BOLD,   # approx
-                "222":    curses.color_pair(COLOR_WHITE)+curses.A_BOLD,
-            }
-
-        color = [
-                curses.COLOR_WHITE,
-                curses.COLOR_BLACK,
-                curses.COLOR_RED,
-                curses.COLOR_GREEN,
-                curses.COLOR_YELLOW,
-                curses.COLOR_BLUE,
-                curses.COLOR_MAGENTA,
-                curses.COLOR_CYAN,
+            self.chars = self.MAP10
+            self.c_mod = 3
+            self.colors = [
+                curses.color_pair(curses.COLOR_BLACK),
+                curses.color_pair(curses.COLOR_BLUE),
+                curses.color_pair(curses.COLOR_BLUE)+curses.A_BOLD,
+                curses.color_pair(curses.COLOR_GREEN),
+                curses.color_pair(curses.COLOR_CYAN),
+                curses.color_pair(curses.COLOR_CYAN),                  # approx
+                curses.color_pair(curses.COLOR_GREEN)+curses.A_BOLD,
+                curses.color_pair(curses.COLOR_CYAN),                  # approx
+                curses.color_pair(curses.COLOR_CYAN)+curses.A_BOLD,
+                curses.color_pair(curses.COLOR_RED),
+                curses.color_pair(curses.COLOR_MAGENTA),
+                curses.color_pair(curses.COLOR_MAGENTA),               # approx
+                curses.color_pair(curses.COLOR_YELLOW),
+                curses.color_pair(curses.COLOR_WHITE),
+                curses.color_pair(curses.COLOR_BLUE)+curses.A_BOLD,    # approx
+                curses.color_pair(curses.COLOR_YELLOW),                # approx
+                curses.color_pair(curses.COLOR_GREEN)+curses.A_BOLD,   # approx
+                curses.color_pair(curses.COLOR_CYAN)+curses.A_BOLD,    # approx
+                curses.color_pair(curses.COLOR_RED)+curses.A_BOLD,
+                curses.color_pair(curses.COLOR_RED)+curses.A_BOLD,     # approx
+                curses.color_pair(curses.COLOR_MAGENTA)+curses.A_BOLD,
+                curses.color_pair(curses.COLOR_YELLOW),                # approx
+                curses.color_pair(curses.COLOR_RED)+curses.A_BOLD,     # approx
+                curses.color_pair(curses.COLOR_MAGENTA)+curses.A_BOLD, # approx
+                curses.color_pair(curses.COLOR_YELLOW)+curses.A_BOLD,
+                curses.color_pair(curses.COLOR_YELLOW)+curses.A_BOLD,  # approx
+                curses.color_pair(curses.COLOR_WHITE)+curses.A_BOLD,
             ]
 
-        for index in range(1, 8):
-            curses.init_pair(index, color[index], curses.COLOR_BLACK)
 
     def setGeometry(self, width, height):
         self.width = width
@@ -98,27 +91,25 @@ class AnsiClient:
 
     @timefunc
     def _addstr(self, pixel):
-        stdscr.addstr(self.chars[pixel[0]], pixel[1])
+        stdscr.addstr(self.chars[pixel[0]]*2, self.colors[pixel[1]])
 
     @timefunc
     def _char(self, pixels):
-        return (np.sum(pixels, axis=2) / 85).astype(dtype=np.uint8)  
+        return (np.sum(pixels, axis=2) / 85).astype(dtype=np.uint8)
 
     @timefunc
     def _colorindex(self, pixels):
-        return np.char.mod('%c', np.ceil(pixels/128).astype(dtype=np.uint8)+48)
+        # map 0 - 256 to  0 - c_mod
+        return np.round(pixels / (256 / (self.c_mod - 1 )))
 
     @timefunc
-    def _color(self, indices):
-        shape = indices.shape
-        reshaped = indices.reshape(shape[0]*shape[1], shape[2])
-        pixels = [self.colors["".join(pixel)] for pixel in reshaped]
-
-        return np.asarray(pixels).reshape(shape[0], shape[1])
+    def _color(self, pixels):
+        return np.sum(pixels * np.power(self.c_mod, [2,1,0]), axis=2,
+                      dtype=np.int16)
 
     @timefunc
     def _show(self, pixels):
-        stdscr.addstr(0, 0, " + " + "-"*self.width + " +\n")
+        stdscr.addstr(0, 0, " + " + "--"*self.width + " +\n")
 
         """
           - sum the set on axis 2, then divide the result by 85. This'll
@@ -146,7 +137,7 @@ class AnsiClient:
                 self._addstr(pixel)
             stdscr.addstr(" |\n")
 
-        stdscr.addstr(" + " + "-"*self.width + " +\n")
+        stdscr.addstr(" + " + "--"*self.width + " +")
         stdscr.refresh()
 
     def putPixels(self, channel, pixels):
