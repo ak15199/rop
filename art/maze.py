@@ -9,6 +9,7 @@ MZ_FREE = { "name": "Free", "color": GRAY40 }
 MZ_WALL = { "name": "Wall", "color": WHITE }
 MZ_PATH = { "name": "Path", "color": None } # chosen on the fly
 MZ_DOOR = { "name": "Door", "color": RED }
+MZ_SCAF = { "name": "Scaf", "color": GRAY40 } # scaffold
 
 MZ_PRIMARIES = [ RED, BLUE, GREEN, MAGENTA ]
 
@@ -62,8 +63,7 @@ class Art:
         # build a scaffold that the paths will run amongst.
         for x in range(1, self.width, 2):
             for y in range(1, self.height, 2):
-                self.matrix.drawPixel(x, y, MZ_WALL["color"])
-                self._mark(matrix, x, y, MZ_WALL)
+                self._mark(matrix, x, y, MZ_SCAF)
         
     def _seed_queue(self, matrix):
         self._step(matrix, 0, randrange(3, self.height-3))
@@ -76,9 +76,11 @@ class Art:
     def _inrange(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height
 
-    def _isFree(self, x, y): return self._inrange(x, y) and self.maze[x][y] == MZ_FREE
-    def _isPath(self, x, y): return self._inrange(x, y) and self.maze[x][y] == MZ_PATH
-    def _isWall(self, x, y): return self._inrange(x, y) and self.maze[x][y] == MZ_WALL
+    def _isType(self, x, y, t): return self._inrange(x, y) and self.maze[x][y] == t
+    def _isFree(self, x, y): return self._isType(x, y, MZ_FREE)
+    def _isPath(self, x, y): return self._isType(x, y, MZ_PATH)
+    def _isWall(self, x, y): return self._isType(x, y, MZ_WALL)
+    def _isScaf(self, x, y): return self._isType(x, y, MZ_SCAF)
 
     def _causesPathLoop(self, x, y):
         count = 0
@@ -92,7 +94,11 @@ class Art:
         return False
 
     def _step(self, matrix, x, y):
-        # zeroth, if the cell is occupied, then we're done
+        # prelim: if the cell is a scaffold, then turn it into a wall
+        if self._isScaf(x, y):
+            self._mark(matrix, x, y, MZ_WALL)
+
+        # prelim: if the cell is occupied, then we're done
         if not self._isFree(x, y):
             return False
 
@@ -123,7 +129,7 @@ class Art:
             while not working:
                 x, y = self.steps.pop()
                 working = self._step(matrix, x, y)
-        except:
+        except: # XXX: I'm going to hell for that
             self.initialized = False
             self.start(matrix)
 
