@@ -38,6 +38,14 @@ def dumptimings():
     for func, record in records.iteritems():
         record.dump()
 
+active = False
+
+def on():
+    active = True
+
+def off():
+    active = False
+
 def timefunc(f):
     def f_timer(*args, **kwargs):
         global records
@@ -53,4 +61,7 @@ def timefunc(f):
 
         return result
 
-    return f_timer
+    def f_noop(*args, **kwargs):
+        return f(*args, **kwargs)
+
+    return f_timer if active else f_noop

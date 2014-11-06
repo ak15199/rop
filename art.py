@@ -8,7 +8,7 @@ from traceback import format_exception
 import dpyinfo
 from importer import ImportPlugins
 from opc.matrix import OPCMatrix
-from opc.utils.prof import dumptimings
+import opc.utils.prof as prof
 
 DFLT_FLIPTIME_SECS = 30
 DFLT_CYCLE_COUNT = None
@@ -47,6 +47,9 @@ def main():
             nargs="*")
     args = parser.parse_args()                                                  
                                             
+    if args.profile:
+        prof.on()
+
     cycleCount = 0
     matrix = OPCMatrix(dpyinfo.WIDTH, dpyinfo.HEIGHT,
                         dpyinfo.ADDRESS, dpyinfo.ZIGZAG)
@@ -73,7 +76,7 @@ def main():
     matrix.terminate()
 
     if args.profile:
-        dumptimings()
+        prof.dumptimings()
 
 
 if __name__ == "__main__":
