@@ -9,7 +9,7 @@ HUEDELTA = 0.0005
 
 class Pen(object):
     def __init__(self, width, height, x, y, dx=1, dy=1, persist=True,
-            hue=None, huedelta=HUEDELTA):
+            hue=None, huedelta=HUEDELTA, radius=0):
         
         self.hue = random() if hue is None else hue
         self.value = 1
@@ -25,6 +25,7 @@ class Pen(object):
         self.angle = 0
         self.theta = 0.01
         self.huedelta = huedelta
+        self.radius = radius
 
     def setValue(self, value):
         self.value = value
@@ -73,6 +74,10 @@ class Pen(object):
         if (self.y < 1 and self.dy < 0) or (self.y >= self.h-1 and self.dy > 0):
             self.ay(y=True)
         
-        matrix.drawPixel(self.x, self.y, hsvToRgb(self.hue, v=self.value))
+        if self.radius == 0:
+            matrix.drawPixel(self.x, self.y, hsvToRgb(self.hue, v=self.value))
+        else:
+            matrix.fillCircle(self.x, self.y, self.radius, hsvToRgb(self.hue,
+                v=self.value))
 
         self.hue = fmod(self.hue + self.huedelta, 1)
