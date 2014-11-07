@@ -4,7 +4,7 @@ from opc.matrix import OPCMatrix
 from random import randrange
 from math import sin, cos, fmod, pi
 
-class Art:
+class Art(object):
 
     description = "Radar-like, but without the enemy planes"
 

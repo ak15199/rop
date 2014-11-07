@@ -9,7 +9,7 @@ PENS = 4
 SCALE = 4
 SIZE = 6
 
-class Art:
+class Art(object):
 
     description = "Bouncing blobs"
 

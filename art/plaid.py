@@ -7,7 +7,7 @@ from utils.pen import Pen
 
 PENS = 4
 
-class Art:
+class Art(object):
 
     description = "Bouncy balls with trail"
 

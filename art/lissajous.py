@@ -7,7 +7,7 @@ from utils.frange import frange
 
 DELTA_Z = 0.05
 
-class Art:
+class Art(object):
 
     description = "Lissajous figures"
 

@@ -2,7 +2,7 @@ from opc.matrix import OPCMatrix
 
 from random import randrange
 
-class Art:
+class Art(object):
 
     description = "A silly boring chess board"
 

@@ -21,7 +21,7 @@ def exitCurses():
     curses.endwin()
 
 
-class AnsiClient:
+class AnsiClient(object):
     """
     Simple text based client that displays a LED string as asciiart. There
     are several ways to do this, depending on the capability level of the

@@ -2,7 +2,7 @@ from opc.matrix import OPCMatrix
 
 from random import randrange
 
-class Art:
+class Art(object):
 
     description = "Random colored rectangles that fade with time"
 

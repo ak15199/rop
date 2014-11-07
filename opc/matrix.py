@@ -25,7 +25,7 @@ performing a HSV shift on the array.
 
 check out text.py for additional functions to draw text.
 """
-class OPCBuffer:
+class OPCBuffer(object):
     """
     OPCBuffer is usually considered an internal class. But it
     comes in handy (e.g.) if you want to draw on a larger "virtual"
@@ -99,7 +99,7 @@ class OPCBuffer:
     def downSample(self, bits):
         self.buf &= bits
 
-class OPCMatrix:
+class OPCMatrix(object):
     @timefunc
     def __init__(self, width, height, address, zigzag=False, pixelDebug=False):
         self.pixelDebug = pixelDebug

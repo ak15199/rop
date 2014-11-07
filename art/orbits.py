@@ -92,7 +92,7 @@ class Simulation(object):
             body.update(force[body], self.timestep)
             body.draw(matrix, cx, cy, scale)
 
-class Art:
+class Art(object):
 
     description = "Simulate orbit of Mercury, Venus, and Earth"
 

@@ -1,7 +1,7 @@
 from opc.matrix import OPCMatrix
 from opc.hue import hsvToRgb
 
-class Art:
+class Art(object):
 
     description = "Slow transition of hues across the display"
 

@@ -55,7 +55,7 @@ typeface_bbc = {
 }
 
 
-class OPCText:
+class OPCText(object):
     """
     This implementation assumes an 8x8 pixel grid per character, with one
     byte per row.

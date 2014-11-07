@@ -9,7 +9,7 @@ from time import time
 FILE = "assets/fortunes.txt"
 
 
-class Art:
+class Art(object):
 
     description = "Scroll classic fortunes across the display"
 

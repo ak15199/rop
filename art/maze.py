@@ -13,7 +13,7 @@ MZ_SCAF = { "name": "Scaf", "color": GRAY40 } # scaffold
 
 MZ_PRIMARIES = [ RED, BLUE, GREEN, MAGENTA ]
 
-class Art:
+class Art(object):
 
     description = "Recursive backtracking maze generation"
 

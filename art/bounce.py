@@ -8,7 +8,7 @@ from math import fabs
 import logging
 
 
-class Art:
+class Art(object):
 
     description = "Bouncy ball"
 

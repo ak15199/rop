@@ -46,7 +46,7 @@ class Shrapnel(Pen):
         self.dy *= 0.99
         return self.paused
 
-class Art:
+class Art(object):
 
     description = "And then it exploded..."
 

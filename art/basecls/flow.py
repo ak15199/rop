@@ -4,7 +4,7 @@ from opc.matrix import OPCMatrix
 from random import random
 from math import sin, pi
 
-class Flow:
+class Flow(object):
 
     huecount=(8+1) # the addition covers offscreen for recoloring
 

@@ -4,7 +4,7 @@ import time
 from math import sin, sqrt, fabs, fmod
 import dpyinfo
 
-class Art:
+class Art(object):
 
     description = "Classic plasma (almost)"
 

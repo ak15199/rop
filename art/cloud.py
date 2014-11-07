@@ -3,7 +3,7 @@ from random import random
 from opc.hue import hsvToRgb, getHueGen
 from basecls.diamondsquare import DiamondSquare
 
-class Art:
+class Art(object):
 
     description = "Clouds drawn with the diamond square algorithm"
 

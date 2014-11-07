@@ -12,7 +12,7 @@ ZOOMSTEPS = 24
 ITERSTEPS = 30
 DEBUG = False
 
-class Art:
+class Art(object):
 
     description = "Auto-zooming mandelbrot"
 

@@ -2,7 +2,7 @@ from frange import frange
 from random import random
 from copy import copy
 
-class Region:
+class Region(object):
 
     def __init__(self, x0, y0, x1, y1):
         self.x0, self.y0 = x0, y0
@@ -47,7 +47,7 @@ class Region:
              self._feq(theirs.x1, self.x1) and  \
              self._feq(theirs.y1, self.y1)      
     
-class Mandelbrot:
+class Mandelbrot(object):
 
     def __init__(self, width, height, maxsteps):
         self.width = width
