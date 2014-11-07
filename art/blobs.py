@@ -3,6 +3,7 @@ from random import random
 from opc.hue import getHueGen
 from opc.matrix import OPCMatrix
 
+from utils.frange import frandrange
 from utils.pen import Pen
 
 PENS = 4
@@ -25,7 +26,8 @@ class Art(object):
                     self.matrix.width, self.matrix.height,
                     self.matrix.width/4 + random()*self.matrix.width/2,
                     self.matrix.height/4 + random()*self.matrix.height/2,
-                    dx=dx, dy=dy, radius=self.matrix.width/SIZE
+                    dx=dx, dy=dy, radius=self.matrix.width/SIZE,
+                    huedelta=frandrange(0.005, 0.001),
                     )
             pen.setBumpStrategy(pen.reverse, x=True, y=True)
             self.pens.append(pen)
