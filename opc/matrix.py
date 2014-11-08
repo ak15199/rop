@@ -262,6 +262,40 @@ class OPCMatrix(object):
         self.buf.buf = buf.astype(dtype=DTYPE)
 
     @timefunc
+    def soften(self, ratio=.5, square=False, diamond=True):
+        """
+        Soften influence pixel color from our neighbors
+        """
+        new = OPCBuffer(self.width, self.height)
+        old = self.buf.buf
+
+        for x in range(self.width):
+            for y in range(self.height):
+                pixel = old[x][y]
+                d, s = 0, 0
+                if square:
+                    s += .25 * (old[x-1][y-1] if x>0 and y>0 else pixel)
+                    s += .25 * (old[x-1][y+1] if x>0 and y<self.height-1 else pixel)
+                    s += .25 * (old[x+1][y-1] if x<self.width-1 and y>0 else pixel)
+                    s += .25 * (old[x+1][y+1] if x<self.width-1 and
+                            y<self.height-1 else pixel)
+                if diamond:
+                    d += .25 * (old[x][y-1] if y>0 else pixel)
+                    d += .25 * (old[x][y+1] if y<self.height-1 else pixel)
+                    d += .25 * (old[x-1][y] if x>0 else pixel)
+                    d += .25 * (old[x+1][y] if x<self.width-1 else pixel)
+
+                if diamond and square:
+                    tune = (d+s)/2
+                else:
+                    tune = d+s
+
+                new.buf[x][y] = pixel*ratio + tune*(1-ratio)
+
+
+        self.buf = new
+
+    @timefunc
     def clear(self, color=BLACK):
         """
         Wipe the matrix to any color, defaulting to black
