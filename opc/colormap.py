@@ -1,21 +1,49 @@
+from exceptions import AttributeError
+
+def newcolor():
+    return [0]*3
+
 class Colormap(object):
 
     """
     Colormap management class
     """
 
-    def __init__(self, size):
-        self.size = size
-        self.cmap = [ (0, 0, 0) ] * size
+    def __init__(self, size=None, palette=None):
+        if size is not None:
+            self.size = size
+            self.cmap = [newcolor()] * self.size
+        elif palette is not None:
+            self._buildPalette(palette)
+        else:
+            raise AttributeError("Invalid Colormap Initializer")
+
+    def flat(self, index0, index1, color):
+        for index in range(index0, index1):
+            self.cmap[index] = color
+
+    def _buildPalette(self, palette):
+        index = 0
+        oldcolor = None
+        self.size = sum(palette.values())
+        self.cmap = [newcolor()] * self.size
+
+        for color, count in palette.iteritems():
+            if oldcolor is None:
+                oldcolor = color
+
+            self.gradient(index, index+count, oldcolor, color)
+            oldcolor = color
+            index += count
 
     def gradient(self, index0, index1, color0, color1):
         steps = float(index1) - index0
-        delta = [0] * 3
+        delta = newcolor()
         for gun in range(3):
             delta[gun] = (color1[gun] - color0[gun]) / steps
 
-        v = [0]*3
         for index in range(index0, index1):
+            v = newcolor()
             for gun in range(3):
                 v[gun] = color0[gun] + delta[gun] * (index-index0)
 
