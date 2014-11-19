@@ -45,8 +45,8 @@ def main():
             action="store_true")
     parser.add_argument("art", help="Optional list of arts",
             nargs="*")
-    args = parser.parse_args()                                                  
-                                            
+    args = parser.parse_args()
+
     if args.profile:
         prof.on()
 
