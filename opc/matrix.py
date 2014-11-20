@@ -248,10 +248,6 @@ class OPCMatrix(object):
         self.buf.buf = pixelstream.process(self.buf.buf, self._shiftPixel, dh,
                 ds, dv)
 
-        #reshaped = self.buf.buf.reshape(self.width*self.height, 3)
-        #pixels = [self._shiftPixel(pixel, dh, ds, dv) for pixel in reshaped]
-        #self.buf.buf = np.asarray(pixels).reshape(self.width, self.height, 3)
-
     @timefunc
     def fade(self, divisor):
         """
@@ -468,5 +464,5 @@ class OPCMatrix(object):
     def terminate(self):
         try:
             self.client.terminate()
-        except:
+        except AttributeError:
             pass # pass if it's a non-ansi client
