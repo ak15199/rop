@@ -292,7 +292,6 @@ class OPCMatrix(object):
 
                 new.buf[x][y] = pixel*ratio + tune*(1-ratio)
 
-
         self.buf = new
 
     @timefunc
