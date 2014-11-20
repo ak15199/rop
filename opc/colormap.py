@@ -76,8 +76,3 @@ class Colormap(object):
 
         # x3 since we have three colors to work with
         self.cmap = np.roll(self.cmap, stepsize*3)
-        """
-        np.concatenate((
-            self.cmap[stepsize % self.size:], self.cmap[:stepsize % self.size]
-            ), axis=0)
-        """

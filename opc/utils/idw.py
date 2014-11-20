@@ -27,7 +27,6 @@ def idw(sample, base, maxdist):
     total = None
 
     for distance in range(maxdist, -1, -1):
-        print "d: ", distance,
         samples = (
                 _relative(sample, base, distance, default),
                 _relative(sample, base, -distance, default)
@@ -54,21 +53,3 @@ def soften_2d(sample, maxdist):
     processed = [ soften_1d(data, maxdist) for data in gr.unroll()]
 
     return gr.reroll(processed)
-
-
-def _test():
-    sample = [
-          0,
-          0,
-          255,
-          255,
-          255,
-          0,
-          0,
-        ]
-
-    print sample
-    for i in range(len(sample)):
-        print idw(sample, i, 1)
-
-_test()

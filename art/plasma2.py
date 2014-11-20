@@ -28,4 +28,3 @@ class Art(DiamondSquare):
     def generate(self, matrix, diamond):
         self.colormap.rotate()
         self.diamond.translate(matrix, colormap=self.colormap)
-        #matrix.soften(0.5)
