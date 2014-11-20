@@ -1,9 +1,7 @@
 from utils import idw
 
 from exceptions import AttributeError
-
-def _newcolor():
-    return [0]*3
+import numpy as np
 
 class Colormap(object):
 
@@ -14,21 +12,23 @@ class Colormap(object):
     def __init__(self, size=None, palette=None):
         if size is not None:
             self.size = size
-            self.cmap = [_newcolor()] * self.size
+            self.cmap = np.empty((self.size, 3), dtype=np.uint8)
         elif palette is not None:
             self._buildPalette(palette)
         else:
             raise AttributeError("Invalid Colormap Initializer")
 
     def flat(self, index0, index1, color):
-        for index in range(index0, index1):
-            self.cmap[index] = color
+        """
+        initialize a block of colormap entries with a particular color
+        """
+        self.cmap[index0:index1] = color
 
     def _buildPalette(self, palette):
         index = 0
         oldcolor = None
         self.size = sum(palette.values())
-        self.cmap = [_newcolor()] * self.size
+        self.cmap = np.empty((self.size, 3), dtype=np.uint8)
 
         for color, count in palette.iteritems():
             if oldcolor is None:
@@ -39,19 +39,23 @@ class Colormap(object):
             index += count
 
     def gradient(self, index0, index1, color0, color1):
+        """
+        apply a linear gradient from color0 to color1 across a range of
+        colormap cells
+        """
         steps = float(index1) - index0
-        delta = _newcolor()
-        for gun in range(3):
-            delta[gun] = (color1[gun] - color0[gun]) / steps
+        delta = [(color1[gun] - color0[gun]) / steps for gun in range(3)]
 
         for index in range(index0, index1):
-            v = _newcolor()
-            for gun in range(3):
-                v[gun] = color0[gun] + delta[gun] * (index-index0)
-
-            self.cmap[index] = v
+            c = [color0[gun] + delta[gun] * (index-index0) for gun in range(3)]
+            self.cmap[index] = c
 
     def convert(self, point, scale=None):
+        """
+        Get the color associated with the given index. This method allows for
+        scaling up or down, in the case where the desired range is either
+        bigger or smaller than the colormap
+        """
         if scale:
             point = point * self.size/scale
 
@@ -59,11 +63,21 @@ class Colormap(object):
         return self.cmap[index]
 
     def soften(self, neighbors=1):
-        idw.soften()
-        for index in range(self.size):
-            value = self.cmap[index]
-            for n in neighbors:
-                value = value/2 + (self.cmap[index-n] + self.cmap[index+n])
+        """
+        Use inverse distance weighting to soften the transitions between colors
+        in the map, looking out by NEIGHBORS entries left and right.
+        """
+        self.cmap = idw.soften_2d(self.cmap, neighbors)
 
     def rotate(self, stepsize=1):
-        self.cmap[:] = self.cmap[stepsize % self.size:] + self.cmap[:stepsize % self.size]
+        """
+        Rotate the colormap up or down by STEPSIZE places
+        """
+
+        # x3 since we have three colors to work with
+        self.cmap = np.roll(self.cmap, stepsize*3)
+        """
+        np.concatenate((
+            self.cmap[stepsize % self.size:], self.cmap[:stepsize % self.size]
+            ), axis=0)
+        """

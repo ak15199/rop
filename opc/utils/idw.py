@@ -1,3 +1,5 @@
+from gunroller import GunRoller
+
 def _relative(sample, base, distance, default):
     address = base+distance
 
@@ -7,7 +9,7 @@ def _relative(sample, base, distance, default):
         return default
 
 
-def _idw(sample, base, maxdist):
+def idw(sample, base, maxdist):
     """
     A rudimentary implementation of inverse distance weighting.
     for a given point in a series, examine that points neighbors
@@ -25,9 +27,10 @@ def _idw(sample, base, maxdist):
     total = None
 
     for distance in range(maxdist, -1, -1):
+        print "d: ", distance,
         samples = (
-                relative(sample, base, distance, default),
-                relative(sample, base, -distance, default)
+                _relative(sample, base, distance, default),
+                _relative(sample, base, -distance, default)
                 )
         
         if total is None:
@@ -37,8 +40,35 @@ def _idw(sample, base, maxdist):
 
     return total
 
-def soften(sample, maxdist):
+def soften_1d(sample, maxdist):
     """
     perform inverse distance weighting of values in a one dimensional array
     """
-    return [_idw(sample, i, dist) for i in range(len(sample))]
+    return [idw(sample, i, maxdist) for i in range(len(sample))]
+
+def soften_2d(sample, maxdist):
+    """
+    perform inverse distance weighting of values in a two dimensional array
+    """
+    gr = GunRoller(sample)
+    processed = [ soften_1d(data, maxdist) for data in gr.unroll()]
+
+    return gr.reroll(processed)
+
+
+def _test():
+    sample = [
+          0,
+          0,
+          255,
+          255,
+          255,
+          0,
+          0,
+        ]
+
+    print sample
+    for i in range(len(sample)):
+        print idw(sample, i, 1)
+
+_test()
