@@ -14,12 +14,12 @@ class Art(DiamondSquare):
                 interpolate=False)
 
         self.colormap = Colormap(130)
-        self.colormap.flat(  0,  120, BLACK)
+        self.colormap.flat(  0,  130, BLACK)
 
-        self.colormap.flat( 20,  25,  BLUE)
-        self.colormap.flat( 50,  55,  YELLOW)
-        self.colormap.flat( 80,  85,  RED)
-        self.colormap.flat(110, 115,  GREEN)
+        self.colormap.flat( 20,  30,  BLUE)
+        self.colormap.flat( 50,  60,  YELLOW)
+        self.colormap.flat( 80,  90,  RED)
+        self.colormap.flat(110, 120,  GREEN)
 
         self.colormap.soften()
 
@@ -28,4 +28,4 @@ class Art(DiamondSquare):
     def generate(self, matrix, diamond):
         self.colormap.rotate()
         self.diamond.translate(matrix, colormap=self.colormap)
-        matrix.soften(0.5)
+        #matrix.soften(0.5)
