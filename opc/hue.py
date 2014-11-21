@@ -16,9 +16,7 @@ def rgbToHsv(r, g, b):
     return colorsys.rgb_to_hsv(r/255, g/255, b/255)
 
 
-def getHueGen(step=0.05, sat=1, val=1):
-    hue = 0
-
+def getHueGen(step=0.05, hue=0, sat=1, val=1):
     while True:
         hue = fmod(hue + step, 1)
         yield hsvToRgb(hue, sat, val)
