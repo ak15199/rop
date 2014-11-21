@@ -4,7 +4,7 @@ from math import sin, cos
 from opc.colormap import Colormap
 from opc.colors import rgb
 from opc.hue import hsvToRgb, getHueGen
-from opc.matrix import OPCMatrix
+from opc.scaledmatrix import ScaledMatrix
 from opc.utils.prof import timefunc
 
 from utils.diamondsquare import DiamondSquareAlgorithm
@@ -22,8 +22,9 @@ class Art(object):
         self.width = matrix.width*SCALE
         self.height = matrix.height*SCALE
 
-        self.diamond = DiamondSquareAlgorithm(self.width, self.height, (matrix.width+matrix.height)/4)
-        self.matrix = OPCMatrix(self.width, self.height, None, zigzag=matrix.zigzag)
+        self.matrix = ScaledMatrix(matrix)
+        self.diamond = DiamondSquareAlgorithm(self.matrix.width,
+                self.matrix.height, (self.matrix.width+self.matrix.height)/4)
         self.colormap = Colormap(palette=OrderedDict([
                 (rgb["NavyBlue"], 20),
                 (rgb["blue"], 15),
@@ -42,7 +43,6 @@ class Art(object):
         self.radius = 0
 
     def start(self, matrix):
-        logging.debug("super matrix size (%d, %d)"%(self.matrix.width,self.matrix.height))
         matrix.setFirmwareConfig(nointerp=True)
 
     def refresh(self, matrix):
@@ -61,8 +61,6 @@ class Art(object):
         x = self.width/2 + self.radius * sin(self.theta)
         y = self.height/2 + self.radius * cos(self.theta)
 
-        logging.debug("visit (%d, %d)"%(x,y))
-        
         matrix.copy(self.matrix, x, y)
 
     def interval(self):

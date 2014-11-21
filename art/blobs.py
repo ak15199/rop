@@ -1,7 +1,7 @@
 from random import random
 
 from opc.hue import getHueGen
-from opc.matrix import OPCMatrix
+from opc.scaledmatrix import ScaledMatrix
 
 from utils.frange import frandrange
 from utils.pen import Pen
@@ -15,8 +15,7 @@ class Art(object):
     description = "Bouncing blobs"
 
     def __init__(self, matrix):
-        self.matrix = OPCMatrix(SCALE*matrix.width, SCALE*matrix.height, None,
-                True)
+        self.matrix = ScaledMatrix(matrix)
 
         self.pens = []
         for i in range(PENS):
@@ -41,7 +40,7 @@ class Art(object):
         for pen in self.pens:
             pen.clock(self.matrix)
 
-        matrix.copy(self.matrix)
+        self.matrix.scaleDown()
   
     def interval(self):
         return 80
