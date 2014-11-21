@@ -81,15 +81,12 @@ class OPCBuffer(object):
     def avg(self, other, weight=.5):
         """
         Get a weighted average of two buffers.
-
-        XXX: This will fail silently if either the arrays are different
-            sizes, or if the weight isn't sensible. Should probably
-            raise exceptions.
         """
         if not self._sameSize(other):
-            return
+            raise InvalidArgument("Matrices are different sizes")
+
         if weight<0.0 or weight>1.0:
-            return
+            raise InvalidArgument("Invalid Weight")
 
         buf1 = (self.buf * weight)
         buf2 = (other.buf * (1.0-weight))
@@ -103,8 +100,12 @@ class OPCMatrix(object):
     @timefunc
     def __init__(self, width, height, address, zigzag=False, pixelDebug=False):
         self.pixelDebug = pixelDebug
+
         self.width = width
         self.height = height
+        self.midWidth = width / 2.0
+        self.midHeight = height / 2.0
+
         self.numpix = width * height
 
         self.buf = OPCBuffer(width, height)

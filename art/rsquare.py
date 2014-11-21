@@ -1,11 +1,9 @@
-from math import sin, cos, pi
+from math import sin, cos, pi, sqrt
 
 from opc.colors import *
 from opc.hue import getHueGen
-from opc.matrix import OPCMatrix
+from opc.scaledmatrix import ScaledMatrix
 
-
-SCALE = 4
 
 class Art(object):
 
@@ -14,10 +12,16 @@ class Art(object):
     def __init__(self, matrix):
         self.hue = getHueGen(0.001)
         self.theta = 0.0
-        self.matrix = OPCMatrix(SCALE*matrix.width, SCALE*matrix.height, None, True)
-        self.x = SCALE * matrix.width / 2.0
-        self.y = SCALE * matrix.height / 2.0
-        self.r = 6.5 * SCALE
+        self.matrix = ScaledMatrix(matrix)
+        self.x = self.matrix.midWidth
+        self.y = self.matrix.midHeight
+
+        # the width of the rectangle should allow for good fit when it is
+        # rotated 45 degrees. We can invoke the work of pythagoras to determine
+        # the hypotenuse, but rule of thumb (widest point is 1.7 broader than
+        # the narrowest
+        #
+        self.r = min(self.matrix.midWidth, self.matrix.midHeight) * 0.7
 
     def irnd(self, n):
         return int(round(n))
@@ -39,15 +43,16 @@ class Art(object):
         pass
 
     def refresh(self, matrix):
+        self.matrix.clear()
         self.theta += 0.05
         color = self.hue.next()
         self.matrix.shift(dv=0.8)
 
-        for polys in range(0, SCALE*7, 2):
+        for polys in range(0, self.matrix.scale*7, 2):
             self.matrix.drawPoly(self.poly(self.r-0.2*polys), color)
 
-        matrix.copy(self.matrix)
-  
+        self.matrix.scaleDown()
+
     def interval(self):
         return 30
 
