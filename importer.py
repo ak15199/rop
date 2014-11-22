@@ -1,7 +1,9 @@
 import inspect
+import logging
 from os import listdir
 from os.path import isfile, join, abspath, dirname, sep
-import logging
+import sys
+from traceback import format_exception
 
 
 def moduleQualifies(dir, file, excludes, includes):
@@ -41,6 +43,10 @@ def ImportPlugins(dir, excludes, includes, args):
 
             plugins.append(obj)
         except Exception as e:
-            logging.error("%s: import failed: %s"%(plugin, str(e)))
+            logging.error("%s: import failed, details follow: "%(plugin))
+
+            etype, evalue, etraceback = sys.exc_info()
+            for line in format_exception(etype, evalue, etraceback):
+                logging.error('    Exception: '+line.rstrip('\n'))
 
     return plugins
