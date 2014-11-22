@@ -1,33 +1,48 @@
+from opc.hue import hsvToRgb
 from opc.matrix import OPCMatrix
 
-from random import randrange
+from random import random, randrange
+
+
+class Rectangle(object):
+
+    def __init__(self, matrix):
+        self.value = 0.0
+        self.hue = random()
+
+        self.x = randrange(0, matrix.width)
+        self.y = randrange(0, matrix.height)
+        self.w = randrange(matrix.width/8, matrix.width/2)
+        self.h = randrange(matrix.height/8, matrix.height/2)
+
+    def update(self, matrix):
+        self.value += 0.2
+
+        matrix.fillRect(
+            self.x, self.y,
+            self.w, self.h,
+            hsvToRgb(h=self.hue, v=self.value),
+            )
+
+        return self.value < 1
+
 
 class Art(object):
 
     description = "Random colored rectangles that fade with time"
 
     def __init__(self, matrix):
-        pass
+        self.rect = Rectangle(matrix)
 
     def start(self, matrix):
         matrix.clear()
 
     def refresh(self, matrix):
-
         matrix.fade(0.95)
 
-        color = (randrange(0, 256), randrange(0, 256), randrange(0, 256))
-        min = 2
-        max = 7
+        if not self.rect.update(matrix):
+            self.rect = Rectangle(matrix)
 
-        matrix.fillRect(
-            randrange(0, matrix.width),
-            randrange(0, matrix.height),
-            randrange(min, max),
-            randrange(min, max),
-            color,
-            )
-  
     def interval(self):
-        return 400
+        return 200
 
