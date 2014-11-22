@@ -1,9 +1,10 @@
 from opc.matrix import OPCMatrix
 from opc.colors import *
 
-from time import sleep
-from random import randrange, random, shuffle
 from copy import deepcopy
+import logging
+from random import randrange, random, shuffle
+
 
 MZ_FREE = { "name": "Free", "color": GRAY40 }
 MZ_WALL = { "name": "Wall", "color": WHITE }
@@ -43,12 +44,14 @@ class Art(object):
                 { "x": -1, "y": 0,  "name": "W" }, 
             ]
 
+        self.mode = self._mode_draw
+
     def start(self, matrix):
         if not self.initialized:
             self._initialize_map(matrix)
             self._seed_queue(matrix)
             self.initialized = True
-        
+
         matrix.copy(self.matrix)
 
     def _initialize_map(self, matrix):
@@ -56,7 +59,7 @@ class Art(object):
 
         self.maze = [ [MZ_FREE for y in range(self.height)] for x in range(self.width)]
         self.matrix.clear(MZ_FREE["color"])
-        
+
         shuffle(MZ_PRIMARIES)
         MZ_PATH["color"] = MZ_PRIMARIES[0]
 
@@ -64,7 +67,7 @@ class Art(object):
         for x in range(1, self.width, 2):
             for y in range(1, self.height, 2):
                 self._mark(matrix, x, y, MZ_SCAF)
-        
+
     def _seed_queue(self, matrix):
         self._step(matrix, 0, randrange(3, self.height-3))
 
@@ -123,15 +126,28 @@ class Art(object):
 
         return True
 
-    def refresh(self, matrix):
+    def _mode_draw(self, matrix):
         try:
             working = False
             while not working:
                 x, y = self.steps.pop()
                 working = self._step(matrix, x, y)
-        except: # XXX: I'm going to hell for that
-            self.initialized = False
-            self.start(matrix)
+        except IndexError: # when we've run out of elements
+            self.mode = self._mode_pause
+            self.counter = 10
+
+    def _mode_pause(self, matrix):
+        self.counter -= 1
+        if self.counter == 0:
+            self.mode = self._mode_restart
+
+    def _mode_restart(self, matrix):
+        self.initialized = False
+        self.start(matrix)
+        self.mode = self._mode_draw
+
+    def refresh(self, matrix):
+        self.mode(matrix)
 
     def interval(self):
         return 100
