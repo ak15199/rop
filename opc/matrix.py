@@ -192,43 +192,10 @@ class OPCMatrix(object):
         self.buf.buf = np.dstack(guns).reshape((self.width, self.height, 3))
 
     @timefunc
-    def setStripPixel(self, z, color):
-        """
-        Exposed helper method that sets a given pixel in the unrolled strip
-        of LEDs.
-        """
-        x = z / self.width
-        y = z % self.width
-
-        self.buf.buf[x, y] = color
-
-    @timefunc
-    def getPixel(self, x, y, wrap=False):
-        """
-        Retrieve the color tuple of the pixel from the specified location
-        """
-        if wrap:
-            x = x % self.width
-            y = y % self.height
-
-        return self.buf.buf[x, y]
-
-    @timefunc
-    def drawPixel(self, x, y, color):
-        """
-        Set the pixel tuple at the specified location.  Perform no operation
-        if the color value is None, or the address out of bounds
-        """
-        if x>=self.width or y>=self.height or x<0 or y<0 or color is None:
-            return
-
-        self.buf.buf[x, y] = color
-
-    @timefunc
     def _clip(self, x, y):
         return (
-                max(min(x, self.width), 0),
-                max(min(y, self.height), 0),
+                max(min(x, self.width-1), 0),
+                max(min(y, self.height-1), 0),
             )
 
     @staticmethod
@@ -312,42 +279,82 @@ class OPCMatrix(object):
         self.client.putPixels(channel, pixels)
 
     @timefunc
-    def _line(self, x0, y0, x1=None, y1=None):
+    def setStripPixel(self, z, color):
+        """
+        Exposed helper method that sets a given pixel in the unrolled strip
+        of LEDs.
+        """
+        x = z / self.width
+        y = z % self.width
 
-        if x1 is None and y1 is None:
-            x1, y1 = x0, y0
-            x0, y0 = self.getCursor()
-            self.setCursor((x1, y1))
+        self.buf.buf[x, y] = color
 
-        steep = abs(y1 - y0) > abs(x1 - x0)
+    @timefunc
+    def getPixel(self, x, y, wrap=False):
+        """
+        Retrieve the color tuple of the pixel from the specified location
+        """
+        if wrap:
+            x = x % self.width
+            y = y % self.height
+
+        return self.buf.buf[x, y]
+
+    @timefunc
+    def drawPixel(self, x, y, color):
+        """
+        Set the pixel tuple at the specified location.  Perform no operation
+        if the color value is None, or the address out of bounds
+        """
+        if x>=self.width or y>=self.height or x<0 or y<0 or color is None:
+            return
+
+        self.buf.buf[x, y] = color
+
+    @timefunc
+    def drawPixels(self, coords, color):
+        """
+        Set the pixel tuple at the set of specified locations.  Like drawPixel,
+        but operates over a list of (x, y) coordinates.
+        """
+        coords = [ (coord[0], coord[1]) for coord in coords if coord[0]>=0 and coord[0]<self.width and
+                coord[1]>=0 and coord[1]<self.height ]
+
+        xs, ys = zip(*coords)
+
+        self.buf.buf[xs, ys] = color
+
+    @timefunc
+    def _line(self, x1, y1, x2, y2):
+        steep = abs(y2 - y1) > abs(x2 - x1)
         if steep:
-            x0, y0 = y0, x0
             x1, y1 = y1, x1
+            x2, y2 = y2, x2
 
-        if x0 > x1:
-            x0, x1 = x1, x0
-            y0, y1 = y1, y0
+        if x1 > x2:
+            x1, x2 = x2, x1
+            y1, y2 = y2, y1
 
-        dx = x1 - x0
-        dy = abs(y1 - y0)
+        dx = x2 - x1
+        dy = abs(y2 - y1)
         err = dx / 2
 
-        if y0 < y1:
+        if y1 < y2:
             ystep = 1
         else:
             ystep = -1
 
         points = []
-        while x0 <= x1:
+        while x1 <= x2:
             if steep:
-                points.append((y0, x0))
+                points.append((y1, x1))
             else:
-                points.append((x0, y0))
+                points.append((x1, y1))
 
-            x0 += 1
+            x1 += 1
             err -= dy
             if err < 0:
-                y0 += ystep
+                y1 += ystep
                 err += dx
 
         return points
@@ -372,18 +379,23 @@ class OPCMatrix(object):
         """
         Draw a line from the current cursor position to the specified address
         """
-        path = self._line(x1, y1)
-        for x, y in path:
-            self.drawPixel(x, y, color)
+        x0, y0 = self.getCursor()
+        self.drawLine(x0, y0, x1, y1, color)
+        self.setCursor((x1, y1))
 
     @timefunc
     def drawLine(self, x1, y1, x2, y2, color):
         """
-        Draw a line between the specified coordinate pairs
+        Draw a line between the specified coordinate pairs. If the line is
+        horizontal or vertical, then we can optimize the plotting by calling
+        it a one pixel wide rectangle
         """
-        for x, y in self._line(x1, y1, x2, y2):
-            self.drawPixel(x, y, color)
-
+        if int(x1) == int(x2) or int(y1) == int(y2):
+            self.fillRectAbsolute(x1, y1, x2, y2, color)
+        else:
+            coords = self._line(x1, y1, x2, y2)
+            self.drawPixels(coords, color)
+            
     @timefunc
     def drawPoly(self, points, color):
         """
@@ -392,12 +404,29 @@ class OPCMatrix(object):
         origin = points.pop(0)
 
         self.setCursor(origin)
-        for point in points:
-            x, y = point
+        for x, y in points:
             self.drawLineRelative(x, y, color)
 
         x, y = origin
         self.drawLineRelative(x, y, color)
+
+    def fillRectAbsolute(self, x1, y1, x2, y2, color):
+        x1, y1 = self._clip(x1, y1)
+        x2, y2 = self._clip(x2, y2)
+
+        # XXX: it's possible that we're off by one on our endpoints in each
+        # dimension. Need to confirm.
+
+        if x1 == x2:
+            if y1 == y2:
+                self.buf.buf[x1, y1] = color
+            else:
+                self.buf.buf[x1, min(y1, y2):max(y1, y2)] = color
+        else:
+            if y1 == y2:
+                self.buf.buf[min(x1, x2):max(x1, x2), y1] = color
+            else:
+                self.buf.buf[min(x1, x2):max(x1, x2), min(y1, y2):max(y1, y2)] = color
 
     @timefunc
     def fillRect(self, x1, y1, w, h, color):
@@ -407,12 +436,8 @@ class OPCMatrix(object):
         x1, y1 = int(x1), int(y1)
         w, h = int(w), int(h)
         x2, y2 = (x1+w-1, y1+h-1)
-        x1, y1 = self._clip(x1, y1)
-        x2, y2 = self._clip(x2, y2)
 
-        for x in range(x1, x2+1):
-            for y in range(y1, y2+1):
-                self.drawPixel(x, y, color)
+        self.fillRectAbsolute(x1, y1, x2, y2, color)
 
     @timefunc
     def drawRect(self, x1, y1, w, h, color):
@@ -426,10 +451,9 @@ class OPCMatrix(object):
     @timefunc
     def _circlePair(self, x1, y1, x2, y2, color, hasFill):
         if hasFill:
-            self.drawLine(x1, y1, x2, y2, color)
+            self.fillRectAbsolute(x1, y1, x2, y2, color)
         else:
-            self.drawPixel(x1, y1, color)
-            self.drawPixel(x2, y2, color)
+            self.drawPixels([(x1, y1), (x2, y2)], color)
 
     @timefunc
     def _circleHelper(self, x0, y0, radius, color, hasFill):
