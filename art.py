@@ -1,3 +1,6 @@
+import logging; logging.basicConfig(filename='art.log', level=logging.DEBUG)
+import opc.utils.prof as prof
+
 import argparse
 from exceptions import KeyboardInterrupt
 from random import seed
@@ -8,14 +11,11 @@ from traceback import format_exception
 import dpyinfo
 from importer import ImportPlugins
 from opc.matrix import OPCMatrix
-import opc.utils.prof as prof
 
 DFLT_FLIPTIME_SECS = 30
 DFLT_CYCLE_COUNT = None
 
 matrix = None
-
-import logging; logging.basicConfig(filename='art.log', level=logging.DEBUG)
 
 
 def exceptionHandler(etype, evalue, etraceback):
@@ -28,6 +28,26 @@ def exceptionHandler(etype, evalue, etraceback):
 
     if etype is not KeyboardInterrupt:
         print "%s (see log for details)" % evalue
+
+
+@prof.timereference
+def run(arts, args):
+    global matrix
+
+    cycleCount = 0
+
+    while args.count is None or cycleCount < args.count:
+        cycleCount += 1
+        seed(time())
+
+        for art in arts:
+            matrix.setFirmwareConfig()
+            art.start(matrix)
+            t = time()
+            while time()-t < args.fliptime:
+                art.refresh(matrix)
+                matrix.show()
+                sleep(art.interval()/1000.0)
 
 
 def main():
@@ -50,7 +70,6 @@ def main():
     if args.profile:
         prof.on()
 
-    cycleCount = 0
     matrix = OPCMatrix(dpyinfo.WIDTH, dpyinfo.HEIGHT,
                         dpyinfo.ADDRESS, dpyinfo.ZIGZAG)
 
@@ -60,18 +79,7 @@ def main():
         print "Couldn't find any art to execute"
         exit(1)
 
-    while args.count is None or cycleCount < args.count:
-        cycleCount += 1
-        seed(time())
-
-        for art in arts:
-            matrix.setFirmwareConfig()
-            art.start(matrix)
-            t = time()
-            while time()-t < args.fliptime:
-                art.refresh(matrix)
-                matrix.show()
-                sleep(art.interval()/1000.0)
+    run(arts, args)
 
     matrix.terminate()
 
