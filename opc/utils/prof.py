@@ -12,21 +12,33 @@ class Record(object):
     def addTime(self, t):
         self.times.append(t)
 
-    def dump(self):
-        logging.info("%20s %8d %8f %8f %8f %f" % (
-            self.func,
-            len(self.times),
-            sum(self.times),
-            min(self.times),
-            sum(self.times)/len(self.times),
-            max(self.times),
-            ))
+    def aggregate(self):
+        return {
+                "func": self.func,
+                "count": len(self.times),
+                "total": sum(self.times),
+                "min":  min(self.times),
+                "avg":  sum(self.times)/len(self.times),
+                "max":  max(self.times),
+            }
+
+
+def dumptiming(result):
+    logging.info("prof: %20s %8d %8f %8f %8f %f" % (
+        result["func"],
+        result["count"],
+        result["total"],
+        result["min"],
+        result["avg"],
+        result["max"],
+        ))
 
 def dumptimings():
     global records
 
-    logging.info("%d functions recorded", len(records))
-    logging.info("%20s %8s %8s %8s %8s %s" % (
+    logging.info("prof: %d functions recorded", len(records))
+    logging.info("prof:")
+    logging.info("prof: %20s %8s %8s %8s %8s %s" % (
         "Function",
         "Count",
         "Tot Time",
@@ -35,24 +47,39 @@ def dumptimings():
         "Max"
         ))
 
+    results = []
     for func, record in records.iteritems():
-        record.dump()
+        results.append(record.aggregate())
+
+    for result in sorted(results, key=lambda record: record["total"], reverse=True):
+        dumptiming(result)
 
 active = False
 
+
 def on():
+    global active
     active = True
 
+
 def off():
+    global active
     active = False
 
+
 def timefunc(f):
+
     def f_timer(*args, **kwargs):
+        global active
         global records
+
+        if not active:
+            return f(*args, **kwargs)
 
         start = time.time()
         result = f(*args, **kwargs)
         end = time.time()
+
         try:
             records[f.__name__].addTime(end-start)
         except:
@@ -61,7 +88,4 @@ def timefunc(f):
 
         return result
 
-    def f_noop(*args, **kwargs):
-        return f(*args, **kwargs)
-
-    return f_timer if active else f_noop
+    return f_timer
