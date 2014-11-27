@@ -12,7 +12,13 @@ MZ_PATH = { "name": "Path", "color": None } # chosen on the fly
 MZ_DOOR = { "name": "Door", "color": RED }
 MZ_SCAF = { "name": "Scaf", "color": GRAY40 } # scaffold
 
-MZ_PRIMARIES = [ RED, BLUE, GREEN, MAGENTA ]
+MZ_PRIMARIES = [
+        (192, 0, 0),
+        (192, 192, 0),
+        (0, 192, 0),
+        (0, 0, 192),
+        (0, 192, 192)
+        ]
 
 class Art(object):
 
@@ -133,8 +139,18 @@ class Art(object):
                 x, y = self.steps.pop()
                 working = self._step(matrix, x, y)
         except IndexError: # when we've run out of elements
-            self.mode = self._mode_pause
-            self.counter = 10
+            self.mode = self._mode_cleanup
+
+    def _mode_cleanup(self, matrix):
+        # the algorithm doesn't fill scaf cells that are surrounded by walls
+        # so need to go back and fix that after the fact.
+        for x in range(self.width):
+            for y in range(self.height):
+                if self._isScaf(x, y):
+                    self._mark(matrix, x, y, MZ_WALL)
+
+        self.counter = 20
+        self.mode = self._mode_pause
 
     def _mode_pause(self, matrix):
         self.counter -= 1
