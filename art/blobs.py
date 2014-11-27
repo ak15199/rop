@@ -7,7 +7,7 @@ from utils.frange import frandrange
 from utils.pen import Pen
 
 PENS = 4
-SCALE = 4
+SCALE = 3
 SIZE = 6
 
 class Art(object):
@@ -15,7 +15,7 @@ class Art(object):
     description = "Bouncing blobs"
 
     def __init__(self, matrix):
-        self.matrix = ScaledMatrix(matrix)
+        self.matrix = ScaledMatrix(matrix, scale=SCALE)
 
         self.pens = []
         for i in range(PENS):
@@ -43,5 +43,5 @@ class Art(object):
         self.matrix.scaleDown()
   
     def interval(self):
-        return 80
+        return 100
 

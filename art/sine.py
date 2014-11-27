@@ -10,7 +10,7 @@ class Art(object):
     description = "Rolling sine wave marks border between contrasting colors"
 
     def __init__(self, matrix):
-        self.matrix = ScaledMatrix(matrix)
+        self.matrix = ScaledMatrix(matrix, scale=2)
         self.hue1 = getHueGen(step=0.00001, hue=0.0)
         self.hue2 = getHueGen(step=0.00001, hue=0.5)
 

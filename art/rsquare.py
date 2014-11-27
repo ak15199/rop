@@ -12,9 +12,7 @@ class Art(object):
     def __init__(self, matrix):
         self.hue = getHueGen(0.001)
         self.theta = 0.0
-        self.matrix = ScaledMatrix(matrix)
-        self.x = self.matrix.midWidth
-        self.y = self.matrix.midHeight
+        self.matrix = ScaledMatrix(matrix, scale=4)
 
         # the width of the rectangle should allow for good fit when it is
         # rotated 45 degrees. We can invoke the work of pythagoras to determine
@@ -26,15 +24,19 @@ class Art(object):
     def irnd(self, n):
         return int(round(n))
 
-    def poly(self, r):
+    def poly(self, reduction):
         tc = cos(self.theta)
         ts = sin(self.theta)
 
+        r = self.r - 0.7*reduction
+        x = self.matrix.midWidth
+        y = self.matrix.midHeight
+
         poly = [
-                (self.irnd(self.x + r * tc - r * ts) ,  self.irnd(self.y + r * tc  + r * ts)), # UL
-                (self.irnd(self.x - r * tc - r * ts) ,  self.irnd(self.y + r * tc  - r * ts)), # UR
-                (self.irnd(self.x - r * tc + r * ts) ,  self.irnd(self.y - r * tc  - r * ts)), # BR
-                (self.irnd(self.x + r * tc + r * ts) ,  self.irnd(self.y - r * tc  + r * ts)), # BL
+                (self.irnd(x + r * tc - r * ts), self.irnd(y + r * tc + r * ts)), # UL
+                (self.irnd(x - r * tc - r * ts), self.irnd(y + r * tc - r * ts)), # UR
+                (self.irnd(x - r * tc + r * ts), self.irnd(y - r * tc - r * ts)), # BR
+                (self.irnd(x + r * tc + r * ts), self.irnd(y - r * tc + r * ts)), # BL
             ]
 
         return poly
@@ -46,13 +48,12 @@ class Art(object):
         self.matrix.clear()
         self.theta += 0.05
         color = self.hue.next()
-        self.matrix.shift(dv=0.8)
 
-        for polys in range(0, self.matrix.scale*7, 2):
-            self.matrix.drawPoly(self.poly(self.r-0.2*polys), color)
+        for reduction in range(0, self.matrix.scale*2):
+            self.matrix.drawPoly(self.poly(reduction), color)
 
         self.matrix.scaleDown()
 
     def interval(self):
-        return 30
+        return 100
 
