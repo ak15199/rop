@@ -395,7 +395,7 @@ class OPCMatrix(object):
         else:
             coords = self._line(x1, y1, x2, y2)
             self.drawPixels(coords, color)
-            
+
     @timefunc
     def drawPoly(self, points, color):
         """
@@ -410,23 +410,21 @@ class OPCMatrix(object):
         x, y = origin
         self.drawLineRelative(x, y, color)
 
+    @timefunc
     def fillRectAbsolute(self, x1, y1, x2, y2, color):
         x1, y1 = self._clip(x1, y1)
         x2, y2 = self._clip(x2, y2)
-
-        # XXX: it's possible that we're off by one on our endpoints in each
-        # dimension. Need to confirm.
 
         if x1 == x2:
             if y1 == y2:
                 self.buf.buf[x1, y1] = color
             else:
-                self.buf.buf[x1, min(y1, y2):max(y1, y2)] = color
+                self.buf.buf[x1, min(y1, y2):max(y1, y2)+1] = color
         else:
             if y1 == y2:
-                self.buf.buf[min(x1, x2):max(x1, x2), y1] = color
+                self.buf.buf[min(x1, x2):max(x1, x2)+1, y1] = color
             else:
-                self.buf.buf[min(x1, x2):max(x1, x2), min(y1, y2):max(y1, y2)] = color
+                self.buf.buf[min(x1, x2):max(x1, x2)+1, min(y1, y2):max(y1, y2)+1] = color
 
     @timefunc
     def fillRect(self, x1, y1, w, h, color):
