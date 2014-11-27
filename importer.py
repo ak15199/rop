@@ -22,7 +22,7 @@ def getPluginList(plugindir, excludes, includes):
 
 
 def ImportPlugins(dir, excludes, includes, args):
-    plugins = []
+    plugins = {}
     excludes.append("__init__.py")
 
     for plugin in getPluginList(dir, excludes, includes):
@@ -41,7 +41,7 @@ def ImportPlugins(dir, excludes, includes, args):
             else:
                 logging.info("%s: [None]"%(plugin))
 
-            plugins.append(obj)
+            plugins[plugin] = obj
         except Exception as e:
             logging.error("%s: import failed, details follow: "%(plugin))
 

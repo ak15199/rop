@@ -40,14 +40,36 @@ def run(arts, args):
         cycleCount += 1
         seed(time())
 
-        for art in arts:
+        for name, art in arts.iteritems():
             matrix.setFirmwareConfig()
             art.start(matrix)
-            t = time()
-            while time()-t < args.fliptime:
+
+            time_sound = 0 # sound as in 'sound as a pound'
+            time_alarm = 0
+            start_time = time()
+
+            while time()-start_time < args.fliptime:
+                cycle_time = time()
                 art.refresh(matrix)
                 matrix.show()
-                sleep(art.interval()/1000.0)
+
+                # interval is between refreshes, but we take time to actually
+                # render. Account for that here.
+                debt_time = time()-cycle_time
+                sleep_time = (art.interval()/1000.0) - debt_time
+                if sleep_time > 0:
+                    sleep(sleep_time)
+                    time_sound += 1
+                else:
+                    time_alarm += 1
+
+            # timer overrun alarms are an indication that the art has higher
+            # expectations of the hardware than is reasonable. If you see a
+            # lot of these, then consider performance tuning, turning up the
+            # art's interval, or buying better hardware
+            percent_overrun = 100*time_alarm/(time_sound+time_alarm)
+            if percent_overrun > 0:
+                logging.info("%s: generated %d%% timer overrun alarms"%(name, percent_overrun))
 
 
 def main():
