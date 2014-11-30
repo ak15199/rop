@@ -1,9 +1,7 @@
-import logging
 from math import fmod
 from random import random
 
 from opc.hue import hsvToRgb
-from opc.matrix import OPCMatrix
 
 
 class Bilinear(object):
@@ -11,11 +9,11 @@ class Bilinear(object):
     def __init__(self, matrix, bits=None):
         self.bits = bits
         self.cornerValueDeltas = [
-                self._delta(), self._delta(), self._delta(), self._delta(),
+            self._delta(), self._delta(), self._delta(), self._delta(),
             ]
 
         self.cornerValues = [
-                .1, .2, .3, .4,
+            .1, .2, .3, .4,
             ]
 
     def _delta(self):
@@ -50,7 +48,7 @@ class Bilinear(object):
         of the color. For the set of four corners, we have to interpolate
         each gun independently.
         """
-        rgbs = self._rotate([ hsvToRgb(self.cornerValues[i]) for i in range(4) ])
+        rgbs = self._rotate([hsvToRgb(self.cornerValues[i]) for i in range(4)])
 
         for x in range(matrix.width):
             px = self._percent(x, matrix.width)

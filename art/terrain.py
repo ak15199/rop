@@ -3,16 +3,13 @@ from math import sin, cos
 
 from opc.colormap import Colormap
 from opc.colors import rgb
-from opc.hue import hsvToRgb, getHueGen
 from opc.scaledmatrix import ScaledMatrix
-from opc.utils.prof import timefunc
 
 from utils.diamondsquare import DiamondSquareAlgorithm
 
-import logging
-
-SCALE=16
+SCALE = 16
 CENTERZONE = 4
+
 
 class Art(object):
 
@@ -24,15 +21,17 @@ class Art(object):
 
         self.matrix = ScaledMatrix(matrix)
         self.diamond = DiamondSquareAlgorithm(self.matrix.width,
-                self.matrix.height, (self.matrix.width+self.matrix.height)/4)
+                                              self.matrix.height,
+                                              (self.matrix.width +
+                                               self.matrix.height) / 4)
         self.colormap = Colormap(palette=OrderedDict([
-                (rgb["NavyBlue"], 20),
-                (rgb["blue"], 15),
-                (rgb["yellow3"], 5),
-                (rgb["LawnGreen"], 10),
-                (rgb["ForestGreen"], 20),
-                (rgb["gray50"], 15),
-                (rgb["snow1"], 5),
+            (rgb["NavyBlue"], 20),
+            (rgb["blue"], 15),
+            (rgb["yellow3"], 5),
+            (rgb["LawnGreen"], 10),
+            (rgb["ForestGreen"], 20),
+            (rgb["gray50"], 15),
+            (rgb["snow1"], 5),
             ]))
 
         self.diamond.generate()
@@ -55,7 +54,7 @@ class Art(object):
         self.theta += deltatheta
         self.radius -= 0.05
 
-        if self.radius<CENTERZONE:
+        if self.radius < CENTERZONE:
             self.radius = (self.width+self.height)/4
 
         x = self.width/2 + self.radius * sin(self.theta)

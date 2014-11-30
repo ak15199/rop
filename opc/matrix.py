@@ -1,7 +1,6 @@
 from copy import deepcopy
 import operator
 import numpy as np
-import logging
 
 from colors import BLACK
 from hue import rgbToHsv, hsvToRgb
@@ -26,6 +25,8 @@ performing a HSV shift on the array.
 
 check out text.py for additional functions to draw text.
 """
+
+
 class OPCBuffer(object):
     """
     OPCBuffer is usually considered an internal class. But it
@@ -62,21 +63,21 @@ class OPCBuffer(object):
         """
         get all of the reds from the buffer
         """
-        return self.buf[:,:,0]
+        return self.buf[:, :, 0]
 
     @timefunc
     def greens(self):
         """
         get all of the greens from the buffer
         """
-        return self.buf[:,:,1]
+        return self.buf[:, :, 1]
 
     @timefunc
     def blues(self):
         """
         get all of the blues from the buffer
         """
-        return self.buf[:,:,2]
+        return self.buf[:, :, 2]
 
     @timefunc
     def avg(self, other, weight=.5):
@@ -86,7 +87,7 @@ class OPCBuffer(object):
         if not self._sameSize(other):
             raise InvalidArgument("Matrices are different sizes")
 
-        if weight<0.0 or weight>1.0:
+        if weight < 0.0 or weight > 1.0:
             raise InvalidArgument("Invalid Weight")
 
         buf1 = (self.buf * weight)
@@ -97,9 +98,12 @@ class OPCBuffer(object):
     def downSample(self, bits):
         self.buf &= bits
 
+
 class OPCMatrix(object):
     @timefunc
-    def __init__(self, width, height, address, zigzag=False, flipud=False, fliplr=False, pixelDebug=False):
+    def __init__(self, width, height, address,
+                 zigzag=False, flipud=False, fliplr=False, pixelDebug=False):
+
         self.pixelDebug = pixelDebug
 
         self.width = width
@@ -127,9 +131,12 @@ class OPCMatrix(object):
             self.fliplr = fliplr
 
     @timefunc
-    def setFirmwareConfig(self, nodither=False, nointerp=False, manualled=False, ledonoff=True):
+    def setFirmwareConfig(self, nodither=False, nointerp=False,
+                          manualled=False, ledonoff=True):
+
         if self.client is not None:
-            data = chr(nodither | (nointerp << 1) | (manualled << 2) | (ledonoff << 3))
+            data = chr(nodither | (nointerp << 1) | (manualled << 2) |
+                       (ledonoff << 3))
             self.client.sysEx(0x0001, 0x0002, data)
 
     @timefunc
@@ -184,20 +191,25 @@ class OPCMatrix(object):
         """
 
         ratio = source.width / self.width
-        if ratio < 1: # Can't zoom up
+        if ratio < 1:  # Can't zoom up
             return
 
         guns = []
-        for gun in (source.buf.reds(), source.buf.greens(), source.buf.blues()):
+        r, g, b = source.buf.reds(), source.buf.greens(), source.buf.blues()
+        for gun in (r, g, b):
             new = np.average(np.split(np.average(np.split(gun, source.width //
-                ratio, axis=1), axis=-1), source.height // ratio, axis=1),
-                axis=-1)
+                             ratio, axis=1), axis=-1),
+                             source.height // ratio, axis=1),
+                             axis=-1)
             guns.append(new)
 
         self.buf.buf = np.dstack(guns).reshape((self.width, self.height, 3))
 
-    def _clipx(self, x): return max(min(x, self.width-1), 0)
-    def _clipy(self, y): return max(min(y, self.height-1), 0)
+    def _clipx(self, x):
+        return max(min(x, self.width-1), 0)
+
+    def _clipy(self, y):
+        return max(min(y, self.height-1), 0)
 
     @timefunc
     def _clip(self, x, y):
@@ -219,7 +231,7 @@ class OPCMatrix(object):
         the attributes that you'd like to adjust
         """
         self.buf.buf = pixelstream.process(self.buf.buf, self._shiftPixel, dh,
-                ds, dv)
+                                           ds, dv)
 
     @timefunc
     def fade(self, divisor):
@@ -243,16 +255,19 @@ class OPCMatrix(object):
                 pixel = old[x][y]
                 d, s = 0, 0
                 if square:
-                    s += .25 * (old[x-1][y-1] if x>0 and y>0 else pixel)
-                    s += .25 * (old[x-1][y+1] if x>0 and y<self.height-1 else pixel)
-                    s += .25 * (old[x+1][y-1] if x<self.width-1 and y>0 else pixel)
-                    s += .25 * (old[x+1][y+1] if x<self.width-1 and
-                            y<self.height-1 else pixel)
+                    s += .25 * (old[x-1][y-1] if x > 0 and
+                                y > 0 else pixel)
+                    s += .25 * (old[x-1][y+1] if x > 0 and
+                                y < self.height-1 else pixel)
+                    s += .25 * (old[x+1][y-1] if x < self.width-1 and
+                                y > 0 else pixel)
+                    s += .25 * (old[x+1][y+1] if x < self.width-1 and
+                                y < self.height-1 else pixel)
                 if diamond:
-                    d += .25 * (old[x][y-1] if y>0 else pixel)
-                    d += .25 * (old[x][y+1] if y<self.height-1 else pixel)
-                    d += .25 * (old[x-1][y] if x>0 else pixel)
-                    d += .25 * (old[x+1][y] if x<self.width-1 else pixel)
+                    d += .25 * (old[x][y-1] if y > 0 else pixel)
+                    d += .25 * (old[x][y+1] if y < self.height-1 else pixel)
+                    d += .25 * (old[x-1][y] if x > 0 else pixel)
+                    d += .25 * (old[x+1][y] if x < self.width-1 else pixel)
 
                 if diamond and square:
                     tune = (d+s)/2
@@ -278,7 +293,7 @@ class OPCMatrix(object):
         if self.zigzag or self.flipud or self.fliplr:
             pixels = np.copy(self.buf.buf)
             if self.zigzag:
-                pixels[0::2] = pixels[0::2,::-1]
+                pixels[0::2] = pixels[0::2, ::-1]
             if self.flipud:
                 pixels = np.flipud(pixels)
             if self.fliplr:
@@ -316,7 +331,8 @@ class OPCMatrix(object):
         Set the pixel tuple at the specified location.  Perform no operation
         if the color value is None, or the address out of bounds
         """
-        if x>=self.width or y>=self.height or x<0 or y<0 or color is None:
+        if x >= self.width or y >= self.height or \
+                x < 0 or y < 0 or color is None:
             return
 
         self.buf.buf[x, y] = color
@@ -327,8 +343,9 @@ class OPCMatrix(object):
         Set the pixel tuple at the set of specified locations.  Like drawPixel,
         but operates over a list of (x, y) coordinates.
         """
-        coords = [ (coord[0], coord[1]) for coord in coords if coord[0]>=0 and coord[0]<self.width and
-                coord[1]>=0 and coord[1]<self.height ]
+        coords = [(coord[0], coord[1]) for coord in coords if
+                  coord[0] >= 0 and coord[0] < self.width and
+                  coord[1] >= 0 and coord[1] < self.height]
 
         xs, ys = zip(*coords)
 
@@ -434,7 +451,8 @@ class OPCMatrix(object):
             if y1 == y2:
                 self.buf.buf[min(x1, x2):max(x1, x2)+1, y1] = color
             else:
-                self.buf.buf[min(x1, x2):max(x1, x2)+1, min(y1, y2):max(y1, y2)+1] = color
+                self.buf.buf[min(x1, x2):max(x1, x2)+1,
+                             min(y1, y2):max(y1, y2)+1] = color
 
     @timefunc
     def fillRect(self, x1, y1, w, h, color):
@@ -453,7 +471,7 @@ class OPCMatrix(object):
         Draw a rectangle
         """
         self.drawPoly([
-                (x1, y1), (x1+w, y1), (x1+w, y1+h), (x1, y1+h)
+            (x1, y1), (x1+w, y1), (x1+w, y1+h), (x1, y1+h)
             ], color)
 
     @timefunc
@@ -498,7 +516,7 @@ class OPCMatrix(object):
         try:
             self.client.terminate()
         except AttributeError:
-            pass # pass if it's a non-ansi client
+            pass  # pass if it's a non-ansi client
 
     def _fillPolyRow(self, y, xs, color):
         # XXX: assume that the polygon is always convex or flat, never
@@ -540,4 +558,3 @@ class OPCMatrix(object):
         for y in rows.keys():
             if y >= 0 and y < self.height:
                 self._fillPolyRow(y, sorted(set(rows[y])), color)
-

@@ -1,5 +1,6 @@
 from basecls.flow import Flow
 
+
 class Art(Flow):
 
     description = "Spiral flow from middle to edge with continuous color"

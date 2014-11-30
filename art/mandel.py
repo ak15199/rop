@@ -1,16 +1,12 @@
-from opc.matrix import OPCMatrix
 from opc.hue import hsvToRgb
-from utils.frange import frange
 from utils.fractools import Mandelbrot, Region
 
 from copy import copy
-from math import sin, cos
-import logging
-from random import randrange, random
 
 ZOOMSTEPS = 24
 ITERSTEPS = 30
 DEBUG = False
+
 
 class Art(object):
 
@@ -25,7 +21,6 @@ class Art(object):
         self.i = 0
 
     def start(self, matrix):
-        #matrix.setFirmwareConfig(nointerp=True)
         pass
 
     def _begin(self, matrix):
@@ -49,7 +44,7 @@ class Art(object):
                 if point is not None:
                     hue = (0.0+point)/self.mandel.maxsteps
                     matrix.drawPixel(x, y, hsvToRgb(hue))
-                    
+
     def _forward(self):
         self.stepsDown += 1
         self.zoomRemaining = ZOOMSTEPS
@@ -71,11 +66,6 @@ class Art(object):
         else:
             self._forward()
 
-        logging.debug(" Origin:"+str(self.origin))
-        logging.debug("   From:"+str(self.current))
-        logging.debug("     To:"+str(self.target))
-        logging.debug("  Steps:"+str(self.delta))
-
         # move to next state
         return self._zoomToTarget(matrix)
 
@@ -94,7 +84,6 @@ class Art(object):
 
     def refresh(self, matrix):
         self.stateExecute = self.stateExecute(matrix)
-  
+
     def interval(self):
         return 100
-

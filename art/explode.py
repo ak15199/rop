@@ -1,8 +1,7 @@
-from opc.matrix import OPCMatrix
-from utils.frange import frange
 from utils.pen import Pen
 from math import sin, cos, pi
 from random import random
+
 
 class Shrapnel(Pen):
     def __init__(self, matrix):
@@ -12,10 +11,10 @@ class Shrapnel(Pen):
         # we will reset some params to sensible values in a minute, so let's
         # not fuss with x, y, dx, dy now
         super(Shrapnel, self).__init__(
-                matrix.width,
-                matrix.height,
-                0, 0, 0, 0,
-                )
+            matrix.width,
+            matrix.height,
+            0, 0, 0, 0,
+            )
 
         super(Shrapnel, self).setBumpStrategy(self._pause, x=True, y=True)
 
@@ -46,6 +45,7 @@ class Shrapnel(Pen):
         self.dy *= 0.99
         return self.paused
 
+
 class Art(object):
 
     description = "And then it exploded..."
@@ -57,7 +57,7 @@ class Art(object):
     def __init__(self, matrix):
         self.pause = 0
 
-        self.shrapnel=[]
+        self.shrapnel = []
         for i in range(self.PIECES):
             self.shrapnel.append(Shrapnel(matrix))
 

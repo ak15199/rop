@@ -1,7 +1,5 @@
-from opc.matrix import OPCMatrix
-from random import random
-from opc.hue import hsvToRgb, getHueGen
 from basecls.diamondsquare import DiamondSquare
+
 
 class Art(DiamondSquare):
 

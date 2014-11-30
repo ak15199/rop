@@ -1,14 +1,23 @@
-from opc.matrix import OPCMatrix
-from opc.colors import *
+from opc.colors import YELLOW, GRAY50, RY2, BLUE
 from math import sin, cos, atan2, sqrt
+
 
 """
 Based on https://fiftyexamples.readthedocs.org/en/latest/gravity.html
 """
-def k(dist): return 1000*dist
+
+
+def k(dist):
+    return 1000*dist
+
+
+def au(dist):
+    return AU*dist
+
+
 G = 6.67428e-11
 AU = k(149.6e6)     # 149.6 million km, in meters.
-def au(dist): return AU*dist
+
 
 class Body(object):
 
@@ -36,8 +45,8 @@ class Body(object):
         # Report an error if the distance is zero; otherwise we'll
         # get a ZeroDivisionError exception further down.
         if d == 0:
-            raise ValueError("Collision between objects %r and %r"
-                                             % (self.name, other.name))
+            raise ValueError("Collision between objects %r and %r" %
+                             (self.name, other.name))
 
         # Compute the force of attraction
         f = G * self.mass * other.mass / (d**2)
@@ -60,16 +69,16 @@ class Body(object):
     def draw(self, matrix, cx, cy, scale):
         matrix.drawPixel(cx+self.px*scale, cx+self.py*scale, self.color)
 
+
 class Simulation(object):
 
     def __init__(self):
         self.timestep = 24*3600  # One day
         self.bodies = [
-                #Body("Moon",    7.3477e22, WHITE,  px=au(-1.001), vy=k(29.783)),
-                Body("Sun",     1.9889e30, YELLOW                             ),
-                Body("Mercury", 3.3022e23, GRAY50, px=au(.4),     vy=k(-47.362)),
-                Body("Venus",   4.8685e24, RY2,    px=au(.723),   vy=k(-35.02)),
-                Body("Earth",   5.9742e24, BLUE,   px=au(-1),     vy=k(29.783)),
+            Body("Sun",     1.9889e30, YELLOW),
+            Body("Mercury", 3.3022e23, GRAY50, px=au(.4),   vy=k(-47.362)),
+            Body("Venus",   4.8685e24, RY2,    px=au(.723), vy=k(-35.02)),
+            Body("Earth",   5.9742e24, BLUE,   px=au(-1),   vy=k(29.783)),
             ]
 
     def clock(self, matrix, cx, cy, scale):
@@ -92,6 +101,7 @@ class Simulation(object):
             body.update(force[body], self.timestep)
             body.draw(matrix, cx, cy, scale)
 
+
 class Art(object):
 
     description = "Simulate orbit of Mercury, Venus, and Earth"
@@ -107,7 +117,6 @@ class Art(object):
     def refresh(self, matrix):
         matrix.fade(0.99)
         self.simulation.clock(matrix, self.cx, self.cy, self.scale)
-  
+
     def interval(self):
         return 10
-

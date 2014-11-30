@@ -1,9 +1,9 @@
-from opc.matrix import OPCMatrix
-
 """
 This is a sample template that will duck type successfully
 Make sure that your art has implementations for these.
 """
+
+
 class Art(object):
 
     description = "Your description goes right here"
@@ -16,7 +16,6 @@ class Art(object):
 
     def refresh(self, matrix):
         pass
-  
+
     def interval(self):
         return 400
-

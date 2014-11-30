@@ -1,4 +1,6 @@
-import logging; logging.basicConfig(filename='art.log', level=logging.DEBUG)
+import logging
+logging.basicConfig(filename='art.log', level=logging.DEBUG)
+
 import opc.utils.prof as prof
 
 import argparse
@@ -44,7 +46,7 @@ def run(arts, args):
             matrix.setFirmwareConfig()
             art.start(matrix)
 
-            time_sound = 0 # sound as in 'sound as a pound'
+            time_sound = 0  # sound as in 'sound as a pound'
             time_alarm = 0
             start_time = time()
 
@@ -67,9 +69,10 @@ def run(arts, args):
             # expectations of the hardware than is reasonable. If you see a
             # lot of these, then consider performance tuning, turning up the
             # art's interval, or buying better hardware
-            percent_overrun = 100*time_alarm/(time_sound+time_alarm)
-            if percent_overrun > 0:
-                logging.info("%s: generated %d%% timer overrun alarms"%(name, percent_overrun))
+            pc_overrun = 100*time_alarm/(time_sound+time_alarm)
+            if pc_overrun > 0:
+                logging.info("%s: %d%% timer overrun alarms" %
+                             (name, pc_overrun))
 
 
 def _v(attr, default):
@@ -84,26 +87,26 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--count", type=int,
-            help="run for count cycles through all of the art",
-            default=DFLT_CYCLE_COUNT)
+                        help="run for count cycles through all of the art",
+                        default=DFLT_CYCLE_COUNT)
     parser.add_argument("-f", "--fliptime", type=int,
-            help="run each art for fliptime seconds before transitioning to the next",
-            default=DFLT_FLIPTIME_SECS)
+                        help="run art for FLIPTIME secs before transitioning",
+                        default=DFLT_FLIPTIME_SECS)
     parser.add_argument("-p", "--profile",
-            help="switch on and report profiling detail",
-            action="store_true")
+                        help="switch on and report profiling detail",
+                        action="store_true")
     parser.add_argument("art", help="Optional list of arts",
-            nargs="*")
+                        nargs="*")
     args = parser.parse_args()
 
     if args.profile:
         prof.on()
 
     matrix = OPCMatrix(
-            _v("WIDTH", 16), _v("HEIGHT", 16),
-            _v("ADDRESS", "ansi"), _v("ZIGZAG", False),
-            _v("FLIPUP", False), _v("FLIPLR", False)
-            )
+        _v("WIDTH", 16), _v("HEIGHT", 16),
+        _v("ADDRESS", "ansi"), _v("ZIGZAG", False),
+        _v("FLIPUP", False), _v("FLIPLR", False)
+        )
 
     arts = ImportPlugins("art", ["template.py"], args.art, matrix)
     if len(arts) == 0:

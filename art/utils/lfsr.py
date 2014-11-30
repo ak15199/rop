@@ -1,4 +1,3 @@
-import logging#
 from random import random
 
 from opc.utils.prof import timefunc
@@ -10,22 +9,23 @@ from opc.utils.prof import timefunc
 # polynomials required to calculate a n-bit lsfr. Higher bits are
 # available, just not included here yet.
 poly = {
-        2:  (2, 1),
-        3:  (3, 2),
-        4:  (4, 3),
-        5:  (5, 3),
-        6:  (6, 5),
-        7:  (7, 6),
-        8:  (8, 6, 5, 4),
-        9:  (9, 5),
-        10: (10, 7),
-        11: (11, 9),
-        12: (12, 11, 14),
-        13: (13, 12, 11, 8),
-        14: (14, 13, 12, 2),
-        15: (15, 14),
-        16: (16, 14, 13, 11),
-        }
+    2:  (2, 1),
+    3:  (3, 2),
+    4:  (4, 3),
+    5:  (5, 3),
+    6:  (6, 5),
+    7:  (7, 6),
+    8:  (8, 6, 5, 4),
+    9:  (9, 5),
+    10: (10, 7),
+    11: (11, 9),
+    12: (12, 11, 14),
+    13: (13, 12, 11, 8),
+    14: (14, 13, 12, 2),
+    15: (15, 14),
+    16: (16, 14, 13, 11),
+    }
+
 
 def bit(value, bit):
     return (value >> bit) & 1
@@ -46,7 +46,7 @@ def lfsr(seed=None, bits=8, base=0):
     try:
         toggles = poly[bits]
     except:
-        raise Exception("%d bit LFSRs aren't supported"%bits)
+        raise Exception("%d bit LFSRs aren't supported" % bits)
 
     lfsr = seed
     starting = True
@@ -84,7 +84,7 @@ class LfsrBucket(object):
 
         # if there's anything left over, deal with it as a
         # sub-bucket
-        if slots>0:
+        if slots > 0:
             self._addBucket(slots, base)
 
     def _invPow2(self, value):
@@ -126,6 +126,7 @@ class LfsrBucket(object):
             except StopIteration:
                 return None
 
+
 @timefunc
 def compoundLfsr(slots):
     """
@@ -133,7 +134,7 @@ def compoundLfsr(slots):
     once-visit values, most of the heavy lifting is done in a
     class.
 
-    figure out largest power of two that is smaller than places 
+    figure out largest power of two that is smaller than places
     add as many of these to the pool that fit, this is a bucket.
     take the remainder and repeat until there is nothing left.
 

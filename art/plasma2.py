@@ -1,9 +1,8 @@
-from opc.matrix import OPCMatrix
 from opc.colormap import Colormap
-from opc.colors import *
-from opc.matrix import OPCMatrix
+from opc.colors import BLACK, BLUE, YELLOW, RED, GREEN
 
 from basecls.diamondsquare import DiamondSquare
+
 
 class Art(DiamondSquare):
 
@@ -11,15 +10,15 @@ class Art(DiamondSquare):
 
     def __init__(self, matrix):
         super(Art, self).__init__(matrix, self.generate, maxticks=20,
-                interpolate=False)
+                                  interpolate=False)
 
         self.colormap = Colormap(130)
-        self.colormap.flat(  0,  130, BLACK)
+        self.colormap.flat(0, 130, BLACK)
 
-        self.colormap.flat( 20,  30,  BLUE)
-        self.colormap.flat( 50,  60,  YELLOW)
-        self.colormap.flat( 80,  90,  RED)
-        self.colormap.flat(110, 120,  GREEN)
+        self.colormap.flat(20, 30, BLUE)
+        self.colormap.flat(50, 60, YELLOW)
+        self.colormap.flat(80, 90, RED)
+        self.colormap.flat(110, 120, GREEN)
 
         self.colormap.soften()
 

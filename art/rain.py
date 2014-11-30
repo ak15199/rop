@@ -1,8 +1,7 @@
-from opc.matrix import OPCMatrix
-
 from random import random, randrange
-from math import fmod, sqrt
+from math import sqrt
 from utils.pen import Pen
+
 
 class Art(object):
 
@@ -21,11 +20,11 @@ class Art(object):
             height = int(matrix.height*1.3)
 
             pen = Pen(
-                    matrix.width, height,
-                    randrange(matrix.width), height,
-                    0, -speed,
-                    hue=hue,
-                    persist=False)
+                matrix.width, height,
+                randrange(matrix.width), height,
+                0, -speed,
+                hue=hue,
+                persist=False)
 
             pen.setValue(speed)
             pen.setBumpStrategy(pen.random, x=True)
@@ -40,7 +39,6 @@ class Art(object):
     def refresh(self, matrix):
         for pen in self.pens:
             pen.clock(matrix)
-  
+
     def interval(self):
         return 60
-

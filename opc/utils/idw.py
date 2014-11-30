@@ -1,5 +1,6 @@
 from gunroller import GunRoller
 
+
 def _relative(sample, base, distance, default):
     address = base+distance
 
@@ -28,10 +29,10 @@ def idw(sample, base, maxdist):
 
     for distance in range(maxdist, -1, -1):
         samples = (
-                _relative(sample, base, distance, default),
-                _relative(sample, base, -distance, default)
-                )
-        
+            _relative(sample, base, distance, default),
+            _relative(sample, base, -distance, default)
+            )
+
         if total is None:
             total = sum(samples)/2
         else:
@@ -39,17 +40,19 @@ def idw(sample, base, maxdist):
 
     return total
 
+
 def soften_1d(sample, maxdist):
     """
     perform inverse distance weighting of values in a one dimensional array
     """
     return [idw(sample, i, maxdist) for i in range(len(sample))]
 
+
 def soften_2d(sample, maxdist):
     """
     perform inverse distance weighting of values in a two dimensional array
     """
     gr = GunRoller(sample)
-    processed = [ soften_1d(data, maxdist) for data in gr.unroll()]
+    processed = [soften_1d(data, maxdist) for data in gr.unroll()]
 
     return gr.reroll(processed)

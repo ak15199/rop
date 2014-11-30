@@ -1,11 +1,10 @@
-from opc.colors import *
-from opc.matrix import OPCMatrix
 from opc.hue import getHueGen
 
-from math import sin, cos, pi, fabs
+from math import sin, cos, pi
 from utils.frange import frange
 
 DELTA_Z = 0.05
+
 
 class Art(object):
 
@@ -35,7 +34,6 @@ class Art(object):
             x = xcenter + xcenter * sin(theta_x * angle)
             y = ycenter + ycenter * cos(theta_y * angle)
             matrix.drawPixel(x, y, color)
-        
+
     def interval(self):
         return 100
-

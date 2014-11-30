@@ -1,11 +1,7 @@
-from opc.colors import *
 from opc.hue import hsvToRgb
-from opc.matrix import OPCMatrix
 
 from random import random
 from math import fabs
-
-import logging
 
 
 class Art(object):
@@ -16,7 +12,7 @@ class Art(object):
         self.radius = 1.5
         self.x = self.radius
         self.dx = 5
-        self.timeslice = 50 # ms
+        self.timeslice = 50  # ms
         self.scale = 0.1
         self.dt = 100/self.timeslice*self.scale
         self.accel = 9.8
@@ -53,8 +49,8 @@ class Art(object):
         if self.dy < 0 and self.y < self.radius:
             self._reset(matrix)
         else:
-            matrix.fillCircle(self.x, self.y, self.radius, hsvToRgb(self.color))
-  
+            matrix.fillCircle(self.x, self.y, self.radius,
+                              hsvToRgb(self.color))
+
     def interval(self):
         return self.timeslice
-

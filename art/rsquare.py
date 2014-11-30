@@ -1,18 +1,15 @@
-from math import sin, cos, pi, sqrt
+from math import sin, cos
 
-from opc.colors import *
+from opc.colors import BLACK
 from opc.hue import getHueGen
 from opc.scaledmatrix import ScaledMatrix
 
-from time import sleep
-
-
-SCALE=4
+SCALE = 4
 
 
 class Art(object):
 
-    description = "Use a higher resolution image downsampled to improve perceived clarity"
+    description = "Downsample a high-res image to improve perceived clarity"
 
     def __init__(self, matrix):
         self.hue = getHueGen(0.001)
@@ -38,10 +35,10 @@ class Art(object):
         y = self.matrix.midHeight
 
         poly = [
-                (self.irnd(x + r * tc - r * ts), self.irnd(y + r * tc + r * ts)), # UL
-                (self.irnd(x - r * tc - r * ts), self.irnd(y + r * tc - r * ts)), # UR
-                (self.irnd(x - r * tc + r * ts), self.irnd(y - r * tc - r * ts)), # BR
-                (self.irnd(x + r * tc + r * ts), self.irnd(y - r * tc + r * ts)), # BL
+            (self.irnd(x + r*tc - r*ts), self.irnd(y + r*tc + r*ts)),  # UL
+            (self.irnd(x - r*tc - r*ts), self.irnd(y + r*tc - r*ts)),  # UR
+            (self.irnd(x - r*tc + r*ts), self.irnd(y - r*tc - r*ts)),  # BR
+            (self.irnd(x + r*tc + r*ts), self.irnd(y - r*tc + r*ts)),  # BL
             ]
 
         return poly
@@ -55,10 +52,9 @@ class Art(object):
         color = self.hue.next()
 
         self.matrix.fillPoly(self.poly(0), color)
-        self.matrix.fillPoly(self.poly(2*SCALE), (0,0,0))
+        self.matrix.fillPoly(self.poly(2*SCALE), BLACK)
 
         self.matrix.scaleDown()
 
     def interval(self):
         return 80
-

@@ -3,6 +3,7 @@ from utils import idw
 from exceptions import AttributeError
 import numpy as np
 
+
 class Colormap(object):
 
     """

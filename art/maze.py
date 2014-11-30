@@ -1,31 +1,32 @@
-from opc.matrix import OPCMatrix
-from opc.colors import *
+from opc.colors import GRAY40, WHITE, RED
 
 from copy import deepcopy
-import logging
-from random import randrange, random, shuffle
+from random import randrange, shuffle
 
 
-MZ_FREE = { "name": "Free", "color": GRAY40 }
-MZ_WALL = { "name": "Wall", "color": WHITE }
-MZ_PATH = { "name": "Path", "color": None } # chosen on the fly
-MZ_DOOR = { "name": "Door", "color": RED }
-MZ_SCAF = { "name": "Scaf", "color": GRAY40 } # scaffold
+MZ_FREE = {"name": "Free", "color": GRAY40}
+MZ_WALL = {"name": "Wall", "color": WHITE}
+MZ_PATH = {"name": "Path", "color": None}  # chosen on the fly
+MZ_DOOR = {"name": "Door", "color": RED}
+MZ_SCAF = {"name": "Scaf", "color": GRAY40}  # scaffold
 
 MZ_PRIMARIES = [
-        (192, 0, 0),
-        (192, 192, 0),
-        (0, 192, 0),
-        (0, 0, 192),
-        (0, 192, 192)
-        ]
+    (192, 0, 0),
+    (192, 192, 0),
+    (0, 192, 0),
+    (0, 0, 192),
+    (0, 192, 192)
+    ]
+
 
 class Art(object):
 
     description = "Recursive backtracking maze generation"
 
     """
-    See http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking
+    See http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-
+    backtracking
+
     for a rough idea on how this works. That approach assumes that walls
     can be represented on a per-cell basis, which doesn't really work in
     our case.  So we have a little extra work to do in that cells can
@@ -43,11 +44,11 @@ class Art(object):
         self.matrix = matrix.clone()
         self.initialized = False
 
-        self.directions = [ 
-                { "x": 0,  "y": 1,  "name": "N" },
-                { "x": 0,  "y": -1, "name": "S" }, 
-                { "x": 1,  "y": 0,  "name": "E" }, 
-                { "x": -1, "y": 0,  "name": "W" }, 
+        self.directions = [
+            {"x": 0,  "y": 1,  "name": "N"},
+            {"x": 0,  "y": -1, "name": "S"},
+            {"x": 1,  "y": 0,  "name": "E"},
+            {"x": -1, "y": 0,  "name": "W"},
             ]
 
         self.mode = self._mode_draw
@@ -63,7 +64,8 @@ class Art(object):
     def _initialize_map(self, matrix):
         self.steps = []
 
-        self.maze = [ [MZ_FREE for y in range(self.height)] for x in range(self.width)]
+        self.maze = [[MZ_FREE for y in range(self.height)]
+                     for x in range(self.width)]
         self.matrix.clear(MZ_FREE["color"])
 
         shuffle(MZ_PRIMARIES)
@@ -85,21 +87,30 @@ class Art(object):
     def _inrange(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height
 
-    def _isType(self, x, y, t): return self._inrange(x, y) and self.maze[x][y] == t
-    def _isFree(self, x, y): return self._isType(x, y, MZ_FREE)
-    def _isPath(self, x, y): return self._isType(x, y, MZ_PATH)
-    def _isWall(self, x, y): return self._isType(x, y, MZ_WALL)
-    def _isScaf(self, x, y): return self._isType(x, y, MZ_SCAF)
+    def _isType(self, x, y, t):
+        return self._inrange(x, y) and self.maze[x][y] == t
+
+    def _isFree(self, x, y):
+        return self._isType(x, y, MZ_FREE)
+
+    def _isPath(self, x, y):
+        return self._isType(x, y, MZ_PATH)
+
+    def _isWall(self, x, y):
+        return self._isType(x, y, MZ_WALL)
+
+    def _isScaf(self, x, y):
+        return self._isType(x, y, MZ_SCAF)
 
     def _causesPathLoop(self, x, y):
         count = 0
         for direction in self.directions:
-            nx, ny = x + direction["x"], y + direction["y"] 
+            nx, ny = x + direction["x"], y + direction["y"]
             if self._isPath(nx, ny):
                 count += 1
                 if count == 2:
                     return True
-    
+
         return False
 
     def _step(self, matrix, x, y):
@@ -121,13 +132,13 @@ class Art(object):
         # third, we check for neighbors that could bridge the path if a
         # connection is added
         for direction in directions:
-            nx, ny = x + direction["x"], y + direction["y"] 
+            nx, ny = x + direction["x"], y + direction["y"]
             if self._isFree(nx, ny) and self._causesPathLoop(nx, ny):
                 self._mark(matrix, nx, ny, MZ_WALL)
 
         # forth, we add new places to explore to the stack
         for direction in directions:
-            nx, ny = x + direction["x"], y + direction["y"] 
+            nx, ny = x + direction["x"], y + direction["y"]
             self.steps.append((nx, ny))
 
         return True
@@ -138,7 +149,7 @@ class Art(object):
             while not working:
                 x, y = self.steps.pop()
                 working = self._step(matrix, x, y)
-        except IndexError: # when we've run out of elements
+        except IndexError:  # when we've run out of elements
             self.mode = self._mode_cleanup
 
     def _mode_cleanup(self, matrix):
@@ -167,4 +178,3 @@ class Art(object):
 
     def interval(self):
         return 100
-

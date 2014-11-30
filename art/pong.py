@@ -1,19 +1,18 @@
-from opc.colors import rgb 
-from opc.matrix import OPCMatrix
+from opc.colors import rgb
 
 from random import randrange, random
-from math import copysign
 
 WINTHRESH = 9
 
+
 def coinToss():
-    return random()>=.5
+    return random() >= .5
 
 
 class Net(object):
 
     COLOR = rgb["gray30"]
-    FREQ  = 2               # on|off dash frequency
+    FREQ = 2               # on|off dash frequency
 
     def __init__(self):
         pass
@@ -21,7 +20,8 @@ class Net(object):
     def display(self, matrix):
         for y in range(matrix.width):
             if ((1+y)/self.FREQ) % self.FREQ == 0:
-                matrix.drawLine(matrix.width/2-1, y, matrix.width/2, y, self.COLOR)
+                matrix.drawLine(matrix.width/2-1, y,
+                                matrix.width/2, y, self.COLOR)
 
 
 class Digit(object):
@@ -47,7 +47,7 @@ class Digit(object):
         self.color = color
 
     def _draw(self, matrix, y, line):
-        x = self.x 
+        x = self.x
         while line > 0:
             if line & 1:
                 matrix.drawPixel(x, y, self.color)
@@ -112,11 +112,12 @@ class Bat(object):
         self.y = max(self.y-1, self.RADIUS)
 
     def display(self, matrix):
-        matrix.drawLine(self.x, self.y-self.RADIUS, self.x, self.y+self.RADIUS, self.COLOR)
+        matrix.drawLine(self.x, self.y-self.RADIUS,
+                        self.x, self.y+self.RADIUS, self.COLOR)
 
     def intersects(self, x, y):
-        a = abs(x - self.x)
-        return abs(x - self.x) == 1 and self.y-self.RADIUS < y and y < self.y+self.RADIUS
+        return abs(x - self.x) == 1 and self.y-self.RADIUS < y \
+            and y < self.y+self.RADIUS
 
     def behind(self, x, isLeft):
         if isLeft:
@@ -151,9 +152,9 @@ class Bat(object):
 class Player(object):
 
     def __init__(self, width, height, isLeft):
-        self.bat   = Bat(width, height, isLeft)
+        self.bat = Bat(width, height, isLeft)
         self.score = Score(width, height, isLeft)
-        self.left  = isLeft
+        self.left = isLeft
         self.width = width
 
     def _mySide(self, ball_y):
@@ -190,6 +191,7 @@ class Player(object):
         self.bat.display(matrix)
         self.score.display(matrix)
 
+
 class Ball(object):
 
     SERVEMARGIN = 4
@@ -212,7 +214,7 @@ class Ball(object):
             self.h = -1
 
         if coinToss():
-            self.v =  randrange(1, 2)
+            self.v = randrange(1, 2)
         else:
             self.v = -randrange(1, 2)
 
@@ -241,10 +243,10 @@ class Art(object):
 
     def __init__(self, matrix):
         self.ball = Ball(matrix.width, matrix.height)
-        self.net  = Net()
+        self.net = Net()
 
         self.players = {}
-        for left in [ True, False ]:
+        for left in [True, False]:
             self.players[left] = Player(matrix.width, matrix.height, left)
 
         self._newGame()
@@ -284,4 +286,3 @@ class Art(object):
 
     def interval(self):
         return 140
-

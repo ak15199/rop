@@ -1,12 +1,12 @@
-from opc.matrix import OPCMatrix
 from opc.hue import hsvToRgb
+
 
 class Art(object):
 
     description = "Slow transition of hues across the display"
 
     def __init__(self, matrix):
-        self.base = 0;
+        self.base = 0
 
     def start(self, matrix):
         pass
@@ -20,7 +20,6 @@ class Art(object):
                 sat = .5 + pcent50
                 val = 1 - pcent50
                 matrix.drawPixel(x, y, hsvToRgb(hue, sat, val))
-  
+
     def interval(self):
         return 100
-

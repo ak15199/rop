@@ -4,6 +4,7 @@ import logging
 active = False
 records = {}
 
+
 class Record(object):
 
     def __init__(self, func, reference):
@@ -15,18 +16,18 @@ class Record(object):
         self.times.append(t)
 
     def presentable(self):
-        return len(self.times)>0 and not self.reference
+        return len(self.times) > 0 and not self.reference
 
     def aggregate(self, totaltime):
         total = sum(self.times)
         return {
-                "func": self.func,
-                "count": len(self.times),
-                "percent": 100.0/totaltime*total,
-                "total": total,
-                "min":  min(self.times),
-                "avg":  sum(self.times)/len(self.times),
-                "max":  max(self.times),
+            "func": self.func,
+            "count": len(self.times),
+            "percent": 100.0/totaltime*total,
+            "total": total,
+            "min":  min(self.times),
+            "avg":  sum(self.times)/len(self.times),
+            "max":  max(self.times),
             }
 
 
@@ -60,7 +61,8 @@ def dumptimings():
 
     totaltime = _totaltime()
 
-    results = [record.aggregate(totaltime) for record in records.values() if record.presentable()]
+    results = [record.aggregate(totaltime) for record in records.values()
+               if record.presentable()]
 
     logging.info("prof: %d functions recorded", len(results))
     logging.info("prof:")
@@ -74,8 +76,9 @@ def dumptimings():
         "Max"
         ))
 
-    for result in sorted(results, key=lambda record: record["percent"], reverse=True):
-        _dumptiming(result)
+    rows = sorted(results, key=lambda record: record["percent"], reverse=True)
+    for row in rows:
+        _dumptiming(row)
 
     logging.info("prof:")
 

@@ -1,12 +1,12 @@
-#encoding: utf-8
 from __future__ import division
 
 import curses
-import logging
 import numpy as np
 
 from error import TtyTooSmall
 from utils.prof import timefunc
+
+stdscr = None  # for flake8
 
 
 def initCurses():
@@ -26,16 +26,13 @@ class AnsiClient(object):
     Simple text based client that displays a LED string as asciiart. There
     are several ways to do this, depending on the capability level of the
     terminal. See the specific implementations for details.
-
-    TODO: add support for xterm-256
     """
 
     MAP10 = " .-:=+*#%@"    # ten step asciiart gradient
-    MAP9 = u" ⡀⢂⢌⢕⡫⢷⣽⣿"     # nine step braille gradient, but
-                            # don't even bother before python 3.3
-                            # and libncursesw.so.5
 
     def __init__(self, server=None):
+        global stdscr
+
         initCurses()
         stdscr.clear()
         curses.curs_set(0)
@@ -55,35 +52,35 @@ class AnsiClient(object):
             self.chars = self.MAP10
             self.c_mod = 3
             self.colors = [
+                # lines that end 'ax' are approximations
                 curses.color_pair(curses.COLOR_BLACK),
                 curses.color_pair(curses.COLOR_BLUE),
                 curses.color_pair(curses.COLOR_BLUE)+curses.A_BOLD,
                 curses.color_pair(curses.COLOR_GREEN),
                 curses.color_pair(curses.COLOR_CYAN),
-                curses.color_pair(curses.COLOR_CYAN),                  # approx
+                curses.color_pair(curses.COLOR_CYAN),                   # ax
                 curses.color_pair(curses.COLOR_GREEN)+curses.A_BOLD,
-                curses.color_pair(curses.COLOR_CYAN),                  # approx
+                curses.color_pair(curses.COLOR_CYAN),                   # ax
                 curses.color_pair(curses.COLOR_CYAN)+curses.A_BOLD,
                 curses.color_pair(curses.COLOR_RED),
                 curses.color_pair(curses.COLOR_MAGENTA),
-                curses.color_pair(curses.COLOR_MAGENTA),               # approx
+                curses.color_pair(curses.COLOR_MAGENTA),                # ax
                 curses.color_pair(curses.COLOR_YELLOW),
                 curses.color_pair(curses.COLOR_WHITE),
-                curses.color_pair(curses.COLOR_BLUE)+curses.A_BOLD,    # approx
-                curses.color_pair(curses.COLOR_YELLOW),                # approx
-                curses.color_pair(curses.COLOR_GREEN)+curses.A_BOLD,   # approx
-                curses.color_pair(curses.COLOR_CYAN)+curses.A_BOLD,    # approx
+                curses.color_pair(curses.COLOR_BLUE)+curses.A_BOLD,     # ax
+                curses.color_pair(curses.COLOR_YELLOW),                 # ax
+                curses.color_pair(curses.COLOR_GREEN)+curses.A_BOLD,    # ax
+                curses.color_pair(curses.COLOR_CYAN)+curses.A_BOLD,     # ax
                 curses.color_pair(curses.COLOR_RED)+curses.A_BOLD,
-                curses.color_pair(curses.COLOR_RED)+curses.A_BOLD,     # approx
+                curses.color_pair(curses.COLOR_RED)+curses.A_BOLD,      # ax
                 curses.color_pair(curses.COLOR_MAGENTA)+curses.A_BOLD,
-                curses.color_pair(curses.COLOR_YELLOW),                # approx
-                curses.color_pair(curses.COLOR_RED)+curses.A_BOLD,     # approx
-                curses.color_pair(curses.COLOR_MAGENTA)+curses.A_BOLD, # approx
+                curses.color_pair(curses.COLOR_YELLOW),                 # ax
+                curses.color_pair(curses.COLOR_RED)+curses.A_BOLD,      # ax
+                curses.color_pair(curses.COLOR_MAGENTA)+curses.A_BOLD,  # ax
                 curses.color_pair(curses.COLOR_YELLOW)+curses.A_BOLD,
-                curses.color_pair(curses.COLOR_YELLOW)+curses.A_BOLD,  # approx
+                curses.color_pair(curses.COLOR_YELLOW)+curses.A_BOLD,   # ax
                 curses.color_pair(curses.COLOR_WHITE)+curses.A_BOLD,
             ]
-
 
     def setGeometry(self, width, height):
         self.width = width
@@ -91,6 +88,8 @@ class AnsiClient(object):
 
     @timefunc
     def _addstr(self, pixel):
+        global stdscr
+
         stdscr.addstr(self.chars[pixel[0]]*2, self.colors[pixel[1]])
 
     @timefunc
@@ -100,15 +99,17 @@ class AnsiClient(object):
     @timefunc
     def _colorindex(self, pixels):
         # map 0 - 256 to  0 - c_mod
-        return np.round(pixels / (256 / (self.c_mod - 1 )))
+        return np.round(pixels / (256 / (self.c_mod - 1)))
 
     @timefunc
     def _color(self, pixels):
-        return np.sum(pixels * np.power(self.c_mod, [2,1,0]), axis=2,
+        return np.sum(pixels * np.power(self.c_mod, [2, 1, 0]), axis=2,
                       dtype=np.int16)
 
     @timefunc
     def _show(self, pixels):
+        global stdscr
+
         stdscr.addstr(0, 0, " + " + "--"*self.width + " +\n")
 
         """
@@ -143,11 +144,12 @@ class AnsiClient(object):
     def putPixels(self, channel, pixels):
         try:
             self._show(pixels)
-        except curses.error as e:
+        except curses.error:
             ttyheight, ttywidth = stdscr.getmaxyx()
             message = (
                 "Your screen (%d, %d) is too small to support this size"
-                " matrix (%d, %d)" % (ttywidth, ttyheight, self.width, self.height)
+                " matrix (%d, %d)" %
+                (ttywidth, ttyheight, self.width, self.height)
                 )
 
             raise TtyTooSmall(message)

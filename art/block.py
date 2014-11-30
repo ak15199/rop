@@ -1,5 +1,4 @@
 from opc.hue import hsvToRgb
-from opc.matrix import OPCMatrix
 
 from random import random, randrange
 
@@ -45,4 +44,3 @@ class Art(object):
 
     def interval(self):
         return 200
-

@@ -1,6 +1,5 @@
-from frange import frange
 from random import random
-from copy import copy
+
 
 class Region(object):
 
@@ -18,21 +17,21 @@ class Region(object):
         d += 0.0
         dx, dy = self.dxdy(d, d)
         region = Region(
-                self.x0+dx*x, self.y0+dy*y,
-                self.x0+dx*(x+1), self.y0+dy*(y+1),
+            self.x0+dx*x, self.y0+dy*y,
+            self.x0+dx*(x+1), self.y0+dy*(y+1),
             )
-        
+
         return region
 
     def delta(self, theirs, steps=1):
         steps += 0.0
         return Region(
-                (theirs.x0-self.x0)/steps, 
-                (theirs.y0-self.y0)/steps, 
-                (theirs.x1-self.x1)/steps, 
-                (theirs.y1-self.y1)/steps, 
+            (theirs.x0-self.x0)/steps,
+            (theirs.y0-self.y0)/steps,
+            (theirs.x1-self.x1)/steps,
+            (theirs.y1-self.y1)/steps,
             )
-    
+
     def increment(self, delta):
         self.x0, self.y0 = self.x0+delta.x0, self.y0+delta.y0
         self.x1, self.y1 = self.x1+delta.x1, self.y1+delta.y1
@@ -41,23 +40,25 @@ class Region(object):
         return abs(a - b) < epsilon
 
     def __eq__(self, theirs):
-        return isinstance(theirs, Region)  and  \
-             self._feq(theirs.x0, self.x0) and  \
-             self._feq(theirs.y0, self.y0) and  \
-             self._feq(theirs.x1, self.x1) and  \
-             self._feq(theirs.y1, self.y1)      
-    
+        return isinstance(theirs, Region) and   \
+            self._feq(theirs.x0, self.x0) and  \
+            self._feq(theirs.y0, self.y0) and  \
+            self._feq(theirs.x1, self.x1) and  \
+            self._feq(theirs.y1, self.y1)
+
+
 class Mandelbrot(object):
 
     def __init__(self, width, height, maxsteps):
         self.width = width
         self.height = height
         self.maxsteps = maxsteps
-        self.detail = [[0 for y in range(self.height)] for x in range(self.width)]
+        self.detail = [[0 for y in range(self.height)]
+                       for x in range(self.width)]
 
     def _point(self, x, y):
         n, u, v = 0, x, y
-        
+
         while True:
             a, b = u*u, v*v
             if a+b >= 4:
@@ -119,12 +120,12 @@ class Mandelbrot(object):
         if hasnone:
             imax += 3
 
-        return (imax - imin) 
-    
+        return (imax - imin)
+
     def mostInteresting(self, area):
         """
         determine which quadrant has the steepest iteration count
-        gradient. 
+        gradient.
         """
         INTERVAL = 4
         grad_max = 0
@@ -136,11 +137,10 @@ class Mandelbrot(object):
                 quadrant += 1
                 grad = self._gradient(tx, ty, INTERVAL)
                 # if it's close, then it's in with a chance
-                lucky = grad_max and (grad/grad_max) > .9 and random()>0.6
-                close = grad_max == grad and random()>0.6
+                lucky = grad_max and (grad/grad_max) > .9 and random() > 0.6
+                close = grad_max == grad and random() > 0.6
                 if grad > grad_max or lucky or close:
                     grad_max = grad
-                    chosen = quadrant
                     region = area.portion(tx, ty, INTERVAL)
 
         if grad_max < 2:

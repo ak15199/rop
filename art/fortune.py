@@ -1,10 +1,7 @@
-from opc.colors import *
-from opc.hue import hsvToRgb
-from opc.matrix import OPCMatrix
+from opc.color import BLUE
 from opc.text import OPCText, typeface_bbc
-from random import randint, seed
+from random import randint
 import os
-from time import time
 
 FILE = "assets/fortunes.txt"
 
@@ -26,16 +23,16 @@ class Art(object):
             if line == "":
                 if buffer == "":
                     # we teleported to the end of the file. Try again.
-                    return _self.getFortune()
+                    return self._getFortune()
                 else:
                     # we have a fortune, but reached EOF. We're good.
-                    return buffer 
+                    return buffer
 
             # Replace line termination with a space
             line = line[:-1]+" "
 
             if line == "% ":
-                return buffer 
+                return buffer
 
             buffer += line.replace("\t", "  ")
 
@@ -44,7 +41,7 @@ class Art(object):
         return self._readFortune()
 
     def __init__(self, matrix):
-        stats = os.stat(FILE);
+        stats = os.stat(FILE)
         self.length = stats.st_size
 
         self.file = open(FILE, "U")
@@ -62,11 +59,14 @@ class Art(object):
 
         y = matrix.height/2 - 4
 
-        end = self.typeface.drawText(matrix, 0-self.base, y, self.thisMessage, (192, 192,255), BLUE)
+        end = self.typeface.drawText(matrix, 0-self.base, y,
+                                     self.thisMessage, (192, 192, 255), BLUE)
+
         # drawText returns None if the image ran to the end of the page. If it
         # didn't, then it's time to bring in the new one.
         if end is not None:
-            self.typeface.drawText(matrix, end, y, self.nextMessage, (192, 192, 255), BLUE)
+            self.typeface.drawText(matrix, end, y, self.nextMessage,
+                                   (192, 192, 255), BLUE)
             if end == 1:
                 # this is the final pixel for the original text. So next time
                 # through, next message is the active messge.

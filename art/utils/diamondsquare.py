@@ -1,10 +1,10 @@
-from opc.matrix import OPCMatrix
 from opc.hue import hsvToRgb
 
 from random import random
 from exceptions import AttributeError
 
 from art.utils.array import array
+
 
 class DiamondSquareAlgorithm(object):
 
@@ -48,19 +48,22 @@ class DiamondSquareAlgorithm(object):
         self._setSample(x, y, ((a + b + c + d) / 4.0) + value)
 
     def _rand(self):
-         return 2*random() - 1
+        return 2*random() - 1
 
     def _diamondSquare(self, stepsize, scale):
         halfstep = stepsize / 2
 
         for y in range(0, self.height+halfstep, stepsize):
             for x in range(0, self.width+halfstep, stepsize):
-                self._sampleSquare(halfstep+x, halfstep+y, stepsize, self._rand() * scale)
+                self._sampleSquare(halfstep+x, halfstep+y,
+                                   stepsize, self._rand() * scale)
 
         for y in range(0, self.height, stepsize):
             for x in range(0, self.width, stepsize):
-                self._sampleDiamond(x + halfstep, y, stepsize, self._rand() * scale)
-                self._sampleDiamond(x, y + halfstep, stepsize, self._rand() * scale)
+                self._sampleDiamond(x + halfstep, y, stepsize,
+                                    self._rand() * scale)
+                self._sampleDiamond(x, y + halfstep, stepsize,
+                                    self._rand() * scale)
 
     def generate(self):
         samplesize = self.featureSize
@@ -78,7 +81,7 @@ class DiamondSquareAlgorithm(object):
             scale /= 2.0
 
     def translate(self, matrix, hue=None, colormap=None):
-        vmin =  100.0
+        vmin = 100.0
         vmax = -100.0
 
         if hue is None and colormap is None:

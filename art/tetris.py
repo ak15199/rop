@@ -1,9 +1,9 @@
-from opc.matrix import OPCMatrix
-from opc.colors import *
+from opc.colors import CYAN, BLUE, RY2, YELLOW, GREEN, MAGENTA, RED, GRAY40
 
 from utils.array import array
 
 from random import randrange
+
 
 class Tetrimino(object):
 
@@ -26,10 +26,14 @@ class Tetrimino(object):
 
     def __init__(self, color, bits):
         self.order = {
-                self.up:    { "x": range(0, 4, 1),     "y": range(0, 2, 1),   "dim": (4, 2)},
-                self.down:  { "x": range(3, -1, -1),   "y": range(1, -1, -1), "dim": (4, 2)},
-                self.left:  { "x": range(0, 2, 1),     "y": range(0, 4, 1),   "dim": (2, 4)},
-                self.right: { "x": range(1, -1, -1),   "y": range(3, -1, -1), "dim": (2, 4)},
+            self.up:    {"x": range(0, 4, 1),
+                         "y": range(0, 2, 1),   "dim": (4, 2)},
+            self.down:  {"x": range(3, -1, -1),
+                         "y": range(1, -1, -1), "dim": (4, 2)},
+            self.left:  {"x": range(0, 2, 1),
+                         "y": range(0, 4, 1),   "dim": (2, 4)},
+            self.right: {"x": range(1, -1, -1),
+                         "y": range(3, -1, -1), "dim": (2, 4)},
             }
         self.color = color
         self.bits = bits
@@ -172,16 +176,14 @@ class InPlay(object):
         pieceProfile = self.tetrimino.profile(hydrated)
         wellProfile = well.profile()
         candidate = {
-                True:  { "y": well.height, "x": None },
-                False: { "y": well.height, "x": None },
-                }
-
-        #import pdb; pdb.set_trace()
+            True:  {"y": well.height, "x": None},
+            False: {"y": well.height, "x": None},
+            }
 
         for x in range(well.width-len(pieceProfile)):
             y, perfect = self._tryX(x, pieceProfile, wellProfile)
             if candidate[perfect]["y"] > y:
-                candidate[perfect] = { "y": y, "x": x }
+                candidate[perfect] = {"y": y, "x": x}
 
         if candidate[True]["x"] is not None:
             return candidate[True]["x"]
@@ -223,8 +225,11 @@ class Well(object):
 class Game(object):
 
     def __init__(self, width, height):
-        shapes = { CYAN: 15, BLUE: 142, RY2: 46, YELLOW: 51, GREEN: 54, MAGENTA: 39, RED: 99 }
-        self.tetriminos = [ Tetrimino(color, bits) for color, bits in shapes.iteritems() ]
+        shapes = {CYAN: 15, BLUE: 142, RY2: 46, YELLOW: 51,
+                  GREEN: 54, MAGENTA: 39, RED: 99}
+
+        self.tetriminos = [Tetrimino(color, bits)
+                           for color, bits in shapes.iteritems()]
 
         self.width = width
         self.height = height
@@ -250,7 +255,7 @@ class Game(object):
         laid down and it doesn't fit, then the well is full and the game is
         over.
         """
-        c = self.current # handy shorthand
+        c = self.current  # handy shorthand
         c.operation(c.modeErase, self.well.well)
         c.nudge()
         c.drop(-1)
@@ -295,7 +300,6 @@ class Art(object):
             self._newGame()
 
         self.game.draw(matrix)
-  
+
     def interval(self):
         return 200
-

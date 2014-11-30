@@ -11,7 +11,8 @@ class ScaledMatrix(OPCMatrix):
     def __init__(self, basematrix, scale=4):
         self.scale = scale
         self.basematrix = basematrix
-        super(ScaledMatrix, self).__init__(scale*basematrix.width, scale*basematrix.height, None, True)
+        super(ScaledMatrix, self).__init__(scale*basematrix.width,
+                                           scale*basematrix.height, None, True)
 
     def scaleDown(self):
         self.basematrix.copy(self)

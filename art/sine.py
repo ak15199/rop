@@ -1,5 +1,4 @@
 import math
-from random import random
 
 from opc.hue import getHueGen
 from opc.scaledmatrix import ScaledMatrix
@@ -24,7 +23,8 @@ class Art(object):
 
         for x in range(self.matrix.width):
             angle = 2 * math.pi * x/self.matrix.width
-            y = self.matrix.midHeight + self.matrix.midHeight * math.sin(angle+self.phase)
+            y = self.matrix.midHeight + \
+                self.matrix.midHeight * math.sin(angle+self.phase)
 
             self.matrix.drawLine(x, y, x, y-offset, self.hue1.next())
             self.matrix.drawLine(x, y, x, y+offset, self.hue2.next())
@@ -32,7 +32,6 @@ class Art(object):
         self.phase += 0.05
 
         self.matrix.scaleDown()
-  
+
     def interval(self):
         return 100
-

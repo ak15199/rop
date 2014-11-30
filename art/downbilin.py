@@ -1,5 +1,6 @@
 from basecls.bilinear import Bilinear
 
+
 class Art(Bilinear):
 
     description = "Downsampled bilinear interpolation"
