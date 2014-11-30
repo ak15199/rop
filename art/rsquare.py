@@ -4,6 +4,11 @@ from opc.colors import *
 from opc.hue import getHueGen
 from opc.scaledmatrix import ScaledMatrix
 
+from time import sleep
+
+
+SCALE=4
+
 
 class Art(object):
 
@@ -12,7 +17,7 @@ class Art(object):
     def __init__(self, matrix):
         self.hue = getHueGen(0.001)
         self.theta = 0.0
-        self.matrix = ScaledMatrix(matrix, scale=4)
+        self.matrix = ScaledMatrix(matrix, scale=SCALE)
 
         # the width of the rectangle should allow for good fit when it is
         # rotated 45 degrees. We can invoke the work of pythagoras to determine
@@ -28,7 +33,7 @@ class Art(object):
         tc = cos(self.theta)
         ts = sin(self.theta)
 
-        r = self.r - 0.7*reduction
+        r = self.r - reduction
         x = self.matrix.midWidth
         y = self.matrix.midHeight
 
@@ -49,11 +54,11 @@ class Art(object):
         self.theta += 0.05
         color = self.hue.next()
 
-        for reduction in range(0, self.matrix.scale*2):
-            self.matrix.drawPoly(self.poly(reduction), color)
+        self.matrix.fillPoly(self.poly(0), color)
+        self.matrix.fillPoly(self.poly(2*SCALE), (0,0,0))
 
         self.matrix.scaleDown()
 
     def interval(self):
-        return 100
+        return 80
 

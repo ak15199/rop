@@ -1,4 +1,5 @@
 from copy import deepcopy
+import operator
 import numpy as np
 import logging
 
@@ -191,12 +192,12 @@ class OPCMatrix(object):
 
         self.buf.buf = np.dstack(guns).reshape((self.width, self.height, 3))
 
+    def _clipx(self, x): return max(min(x, self.width-1), 0)
+    def _clipy(self, y): return max(min(y, self.height-1), 0)
+
     @timefunc
     def _clip(self, x, y):
-        return (
-                max(min(x, self.width-1), 0),
-                max(min(y, self.height-1), 0),
-            )
+        return (self._clipx(x), self._clipy(y))
 
     @staticmethod
     @timefunc
@@ -489,3 +490,45 @@ class OPCMatrix(object):
             self.client.terminate()
         except AttributeError:
             pass # pass if it's a non-ansi client
+
+    def _fillPolyRow(self, y, xs, color):
+        # XXX: assume that the polygon is always convex or flat, never
+        # concave. In this case, we always assume that the entire area
+        # between min and max x gets filled with color. Except for the
+        # case where there is just one pixel...
+        if len(xs) == 1:
+            self.buf.buf[self._clipx(xs[0]), y] = color
+        else:
+            begin = min(xs)
+            end = max(xs)
+            self.buf.buf[self._clipx(begin):self._clipx(end), y] = color
+
+    @timefunc
+    def fillPoly(self, points, color):
+        """
+        fill a flat or convex polygon. This will not work for concave
+        polygons. In order to achieve that goal, you should consider
+        stacking several polygons next to one another
+        """
+        # get a list of all of the points that bound the polygon
+        edges = []
+        prev = origin = points.pop(0)
+
+        for x, y in points:
+            edges.append(self._line(prev[0], prev[1], x, y))
+            prev = (x, y)
+
+        edges.append(self._line(prev[0], prev[1], origin[0], origin[1]))
+
+        # we're going to process row by row, so first group the points by
+        # row
+        rows = {}
+        xys = reduce(operator.add, edges)
+        for xy in xys:
+            rows.setdefault(xy[1], []).append(xy[0])
+
+        # the xs in each row should have dups removed
+        for y in rows.keys():
+            if y >= 0 and y < self.height:
+                self._fillPolyRow(y, sorted(set(rows[y])), color)
+
