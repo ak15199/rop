@@ -72,6 +72,13 @@ def run(arts, args):
                 logging.info("%s: generated %d%% timer overrun alarms"%(name, percent_overrun))
 
 
+def _v(attr, default):
+    try:
+        return getattr(dpyinfo, attr)
+    except:
+        return default
+
+
 def main():
     global matrix
 
@@ -92,8 +99,11 @@ def main():
     if args.profile:
         prof.on()
 
-    matrix = OPCMatrix(dpyinfo.WIDTH, dpyinfo.HEIGHT,
-                        dpyinfo.ADDRESS, dpyinfo.ZIGZAG)
+    matrix = OPCMatrix(
+            _v("WIDTH", 16), _v("HEIGHT", 16),
+            _v("ADDRESS", "ansi"), _v("ZIGZAG", False),
+            _v("FLIPUP", False), _v("FLIPLR", False)
+            )
 
     arts = ImportPlugins("art", ["template.py"], args.art, matrix)
     if len(arts) == 0:

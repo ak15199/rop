@@ -99,7 +99,7 @@ class OPCBuffer(object):
 
 class OPCMatrix(object):
     @timefunc
-    def __init__(self, width, height, address, zigzag=False, pixelDebug=False):
+    def __init__(self, width, height, address, zigzag=False, flipud=False, fliplr=False, pixelDebug=False):
         self.pixelDebug = pixelDebug
 
         self.width = width
@@ -118,9 +118,13 @@ class OPCMatrix(object):
             self.client = AnsiClient(address)
             self.client.setGeometry(width, height)
             self.zigzag = False
+            self.flipud = False
+            self.fliplr = False
         else:
             self.client = OpcClient(address)
             self.zigzag = zigzag
+            self.flipud = flipud
+            self.fliplr = fliplr
 
     @timefunc
     def setFirmwareConfig(self, nodither=False, nointerp=False, manualled=False, ledonoff=True):
@@ -271,9 +275,14 @@ class OPCMatrix(object):
         """
         write the buf to the display device
         """
-        if self.zigzag:
+        if self.zigzag or self.flipud or self.fliplr:
             pixels = np.copy(self.buf.buf)
-            pixels[0::2] = pixels[0::2,::-1]
+            if self.zigzag:
+                pixels[0::2] = pixels[0::2,::-1]
+            if self.flipud:
+                pixels = np.flipud(pixels)
+            if self.fliplr:
+                pixels = np.fliplr(pixels)
         else:
             pixels = self.buf.buf
 
