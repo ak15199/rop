@@ -12,13 +12,14 @@ class Art(object):
         pass
 
     def refresh(self, matrix):
-        self.base += 1
+        self.base += 4
+        h = matrix.height - 1
+
         for x in range(matrix.width):
             hue = ((self.base+32*x) % 1024)/1024.0
             for y in range(matrix.height):
-                pcent50 = 0.50*float(y)/(matrix.height-1)
-                sat = .5 + pcent50
-                val = 1 - pcent50
+                sat = min(1, 0.25 + (1.5*y)/h)
+                val = min(1, 0.25 + (1.5*(h-y)/h))
                 matrix.drawPixel(x, y, hsvToRgb(hue, sat, val))
 
     def interval(self):
