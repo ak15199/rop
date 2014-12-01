@@ -12,3 +12,4 @@ class Art(DiamondSquare):
     def generate(self, matrix, diamond):
         diamond.generate()
         diamond.translate(matrix, hue=self.hue)
+        self.hue += 0.05
