@@ -8,7 +8,7 @@ The code has been run on OSX with Python 2.7, and the only extra you'll need
 is numpy to support fastopc and array math. Typically you'd run something
 like:
 
-    # pip install numpy
+    # pip install -r requirements.txt
 
 as the super user to install. On the off-chance that the installation gets
 a hiccup, numpy is pretty well documented and you should be able to figure
