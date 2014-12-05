@@ -8,9 +8,7 @@ DFLTTICKS = 350
 class DiamondSquare(object):
 
     def __init__(self, matrix, generate, maxticks=DFLTTICKS, interpolate=True):
-        self.diamond = DiamondSquareAlgorithm(matrix.width,
-                                              matrix.height,
-                                              (matrix.width+matrix.height)/4)
+        self.diamond = DiamondSquareAlgorithm(matrix.width, matrix.height)
         self.matrix = OPCMatrix(matrix.width, matrix.height, None,
                                 zigzag=matrix.zigzag)
         self.generate = generate
