@@ -8,11 +8,13 @@ The code has been run on OSX with Python 2.7, and the only extra you'll need
 is numpy to support fastopc and array math. Typically you'd run something
 like:
 
-    # pip install numpy
+    # pip install -r requirements.txt
 
 as the super user to install. On the off-chance that the installation gets
 a hiccup, numpy is pretty well documented and you should be able to figure
-it out.
+it out. If you find that performance isn't as you'd expect, then it may be
+that there are some ancillary packages missing which numpy relies on for
+optimum performance. Again, the numpy docs are prety good.
 
 To get started, update dpyinfo.py to suit your display configuration, start
 the OPC service and connect your array. Then run:
@@ -39,6 +41,10 @@ than the matrix in order to work*.
 
 Most textual logging is now delivered to art.log. If something doesn't
 look right, then check in here for exceptions and other diagnostics.
+
+It's also possible to limit number of cycles that art.py runs through,
+adjust the duration that each art is displayed before moving on to the next,
+or turn on profiling. Run with `--help` for more information.
 
 The directories are:
 
