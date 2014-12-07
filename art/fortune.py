@@ -1,4 +1,4 @@
-from opc.color import BLUE
+from opc.colors import BLUE
 from opc.text import OPCText, typeface_bbc
 from random import randint
 import os

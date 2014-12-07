@@ -1,5 +1,5 @@
+from opc.colors import BLACK
 from opc.hue import hsvToRgb
-from opc.color import BLACK
 
 from math import fmod, sin, cos
 

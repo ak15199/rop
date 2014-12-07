@@ -1,4 +1,4 @@
-from opc.color import BLACK
+from opc.colors import BLACK
 from opc.hue import hsvToRgb
 
 from random import random, randrange
