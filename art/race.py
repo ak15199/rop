@@ -4,20 +4,30 @@ from opc.hue import getHueGen
 from utils.frange import frange
 
 
-class Racer(object):
-
-    def __init__(self, x, y, radius, phase):
+class Polar(object):
+    def __init__(self, x, y, radius):
         self.x = x
         self.y = y
-        self.phase = phase
+        self.phase = 0
         self.radius = radius
 
-    def next(self, clock):
-        angle = pi * (1 + sin(self.phase * clock))
+    def transform(self, angle):
         x = self.x + self.radius * sin(angle)
         y = self.y + self.radius * cos(angle)
 
         return x, y
+
+
+class Racer(object):
+
+    def __init__(self, x, y, position, accel):
+        self.polar = Polar(x, y, position)
+        self.accel = accel
+
+    def next(self, theta):
+        angle = self.accel * sin(theta)
+
+        return self.polar.transform(angle)
 
 
 class Art(object):
@@ -30,9 +40,9 @@ class Art(object):
         self.racers = []
         xmax = matrix.midWidth-1
         for x in frange(0, xmax, .5):
-            offset = pi*(x/xmax)
-            phase = 1 + .1 * sin(offset)
-            racer = Racer(matrix.midWidth, matrix.midHeight, x, phase)
+            offset = pi*(0.2 + 0.6 * x/xmax)
+            accel = 20 * sin(offset)
+            racer = Racer(matrix.midWidth, matrix.midHeight, x, accel)
             self.racers.append(racer)
 
     def start(self, matrix):
@@ -41,12 +51,13 @@ class Art(object):
 
     def refresh(self, matrix):
         matrix.shift(.9, .9, .9)
-        
+
         hue = self.hue.next()
         for racer in self.racers:
            x, y = racer.next(self.clock)
            matrix.drawPixel(x, y, hue)
-        self.clock += 0.05
+
+        self.clock += 0.01
 
     def interval(self):
         return 100
