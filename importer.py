@@ -8,8 +8,8 @@ from traceback import format_exception
 
 def moduleQualifies(dir, file, excludes, includes):
     return isfile(join(dir, file))                  \
-        and file.endswith(".py")                   \
-        and file not in excludes                   \
+        and file.endswith(".py")                    \
+        and file not in excludes                    \
         and (file in includes or len(includes) == 0)
 
 

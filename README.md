@@ -1,8 +1,14 @@
+Introduction
+------------
+
 This project is designed to generate a number of distinctive animations on
 a grid of LEDs via OPC, to a FadeCandy board.
 
 If you're not already familiar, go check out
 https://github.com/scanlime/fadecandy for more background on this project.
+
+Installation
+------------
 
 The code has been run on OSX with Python 2.7, and the only extra you'll need
 is numpy to support fastopc and array math. Typically you'd run something
@@ -14,7 +20,10 @@ as the super user to install. On the off-chance that the installation gets
 a hiccup, numpy is pretty well documented and you should be able to figure
 it out. If you find that performance isn't as you'd expect, then it may be
 that there are some ancillary packages missing which numpy relies on for
-optimum performance. Again, the numpy docs are prety good.
+optimum performance. Again, the numpy docs are pretty good.
+
+Getting Started
+---------------
 
 To get started, update dpyinfo.py to suit your display configuration, start
 the OPC service and connect your array. Then run:
@@ -46,7 +55,7 @@ It's also possible to limit number of cycles that art.py runs through,
 adjust the duration that each art is displayed before moving on to the next,
 or turn on profiling. Run with `--help` for more information.
 
-The directories are:
+The directories are
 
     .               application directory
     ./art           contains classes for each of the animations.
@@ -60,14 +69,30 @@ The directories are:
 
 Check out the existing animations for use as examples, and please commit
 back code that you create!
+ 
+Running from the Web
+--------------------
 
+If you don't have a physical display, or a suitable terminal, then it's
+still possbile to see what's going on by looking at the animations as
+a web page. For this, you'll need to run the bundled Flask app like this:
 
-### Project Pictures
+  % python webrop.py
+
+You should then be able to go visit the web page at ``http://localhost:5000``
+
+If course, this is using the bundled development web server that comes
+with Flask. If you want to serve volumes of this stuff, then it'll be
+better to run under a production web server.
+
+Project Pictures
+----------------
 
 A random assortment of images documenting the development of the hardware
 can be found on [Imgur](http://ak15199.imgur.com/all).
 
-### Other People's Work
+Other People's Work
+-------------------
 
 The opc code is taken from https://github.com/scanlime/fadecandy.
 

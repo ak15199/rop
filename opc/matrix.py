@@ -6,6 +6,7 @@ from colors import BLACK
 from hue import rgbToHsv, hsvToRgb
 
 from ansiclient import AnsiClient
+from rawclient import RawClient
 from fastopc import FastOPC as OpcClient
 
 import utils.pixelstream as pixelstream
@@ -124,6 +125,12 @@ class OPCMatrix(object):
             self.zigzag = False
             self.flipud = False
             self.fliplr = False
+        elif address[0:3] == 'raw':
+            self.client = RawClient()
+            self.client.setGeometry(width, height)
+            self.zigzag = False
+            self.flipud = False
+            self.fliplr = True
         else:
             self.client = OpcClient(address)
             self.zigzag = zigzag
@@ -301,7 +308,7 @@ class OPCMatrix(object):
         else:
             pixels = self.buf.buf
 
-        self.client.putPixels(channel, pixels)
+        return self.client.putPixels(channel, pixels)
 
     @timefunc
     def setStripPixel(self, z, color):

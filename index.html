@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script>
+        function json(url, func)
+        {
+            return $.ajax({
+                     dataType: "json",
+                     url: url,
+                     success: func,
+                     timeout: 50000
+                     })
+                 .done(function() {
+                     $("#diagnostic").hide()
+                 })
+                 .fail(function() {
+                     $("#diagnostic").show()
+                     console.log("fail")
+                 })
+        }
+
+        function requestUpdate()
+        {
+            json("refresh.json", renderUpdate)
+            //$.getJSON("refresh.json", renderUpdate)
+        }
+
+        function renderUpdate(packet)
+        {
+            var c = document.getElementById("display")
+            var ctx = c.getContext("2d")
+
+            var xrange = packet.data.length
+            var yrange = packet.data[0].length
+
+            for(var x=0; x<xrange; ++x) {
+              for(var y=0; y<yrange; ++y) {
+                ctx.fillStyle = "#" + packet.data[x][y]
+                ctx.fillRect(x, y, 1.01, 1.01)
+              }
+            }
+
+        }
+
+        function initialize(info)
+        {
+            var c = document.getElementById("display")
+            var ctx = c.getContext("2d")
+
+            ctx.scale(c.width/info.xrange, c.height/info.yrange)
+        }
+
+        $(document).ready(function(){
+            json("initialize.json", initialize)
+            setInterval(requestUpdate, 100);
+        });
+    </script>
+
+    <style>
+        .stdsize {
+            width: 600px;
+            height: 600px;
+            padding: 5px;
+
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        #display {
+            border: 1px solid #ccc;
+            background: #333;
+        }
+        #diagnostic {
+            font-family: Helvetica, Arial, sans-serif;
+            border: 1px solid red;
+            color: #eee;
+            display: none;
+        }
+        p {
+            padding: 0 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<canvas id="display" class="stdsize" width="600" height="600">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+<div id="diagnostic" class="stdsize">
+    <p>The server is offline.</p>
+    <p>+++ Out of Cheese Error. Redo From Start. +++</p>
+</div>
+
+</body>
+</html>
