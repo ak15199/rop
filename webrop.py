@@ -1,6 +1,8 @@
-import os.path
-from flask import Flask, Response, jsonify
+from flask import Flask, Response, jsonify, request
 
+import logging; logging.basicConfig(filename='web.log', level=logging.INFO)
+
+import os.path
 from random import seed
 from time import sleep, time
 
@@ -49,7 +51,6 @@ def frameGenerator(arts, matrix):
         seed(time())
 
         for name, art in arts.iteritems():
-            matrix.setFirmwareConfig()
             art.start(matrix)
 
             time_sound = 0  # sound as in 'sound as a pound'
@@ -76,7 +77,7 @@ def frameGenerator(arts, matrix):
                     time_alarm += 1
 
 
-def initialize():
+def initialize_rop():
     global generator
 
     matrix = OPCMatrix(M_WIDTH, M_HEIGHT, "raw")
@@ -119,5 +120,6 @@ def json_initialize():
 
 
 if __name__ == "__main__":
-    initialize()
+    initialize_rop()
+
     app.run(threaded=True)
