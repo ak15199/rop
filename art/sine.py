@@ -19,7 +19,7 @@ class Art(object):
         pass
 
     def refresh(self, matrix):
-        offset = self.matrix.scale/2
+        offset = self.matrix.scale * 1.2
 
         for x in range(self.matrix.width):
             angle = 2 * math.pi * x/self.matrix.width
