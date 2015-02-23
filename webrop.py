@@ -16,79 +16,60 @@ M_HEIGHT = 64
 
 DFLT_FLIPTIME_SECS = 30
 
-generator = None
-
 app = Flask(__name__)
 app.config.from_object(__name__)
 
 
-def webHex(pix):
-    return '{0:06x}'.format(((int(pix[0])*0x100) +
-                            int(pix[1]))*0x100 + int(pix[2]))
+class Feed(object):
 
+    def __init__(self):
+        matrix = OPCMatrix(M_WIDTH, M_HEIGHT, "raw")
+        arts = ImportPlugins("art", ["template.py"], [], matrix)
+        if len(arts) == 0:
+            matrix.terminate()
+            print "Couldn't find any art to execute"
+            exit(1)
 
-def convertToWebHex(data):
-    packet = {
-        "data": [[webHex(pix) for pix in row] for row in data]
-        }
+        self.generator = self._frameGenerator(arts, matrix)
+        self.packet = None
 
-    return packet
+    def _frameGenerator(self, arts, matrix):
+        while True:
+            seed(time())
 
+            for name, art in arts.iteritems():
+                art.start(matrix)
 
-@app.route("/refresh.json")
-def json_refresh():
-    global generator
+                start_time = time()
 
-    hexdata = convertToWebHex(generator.next())
-    return jsonify(hexdata)
+                while time()-start_time < DFLT_FLIPTIME_SECS:
+                    cycle_time = time()
+                    art.refresh(matrix)
+                    elapsed = time() - cycle_time
+                    remaining = art.interval()/1000.0 - elapsed
 
+                    yield {
+                            "interval": remaining,
+                            "expires": time()+remaining,
+                            "data": matrix.show(),
+                            }
 
-def frameGenerator(arts, matrix):
-    cycleCount = 0
+    def _webHex(self, pix):
+        return '{0:06x}'.format(((int(pix[0])*0x100) +
+                                int(pix[1]))*0x100 + int(pix[2]))
 
-    while True:
-        cycleCount += 1
-        seed(time())
+    def produce(self):
+        if self.packet is None or time() > self.packet["expires"]:
+            frame = self.generator.next()
+            data = [[self._webHex(pix) for pix in row] for row in frame["data"]]
 
-        for name, art in arts.iteritems():
-            art.start(matrix)
+            self.packet = {
+                "interval": frame["interval"],
+                "expires": frame["expires"],
+                "data": data,
+                }
 
-            time_sound = 0  # sound as in 'sound as a pound'
-            time_alarm = 0
-            start_time = time()
-
-            while time()-start_time < DFLT_FLIPTIME_SECS:
-                cycle_time = time()
-                art.refresh(matrix)
-
-                yield matrix.show()
-
-                # interval is between refreshes, but we take time to actually
-                # render. Account for that here.
-                #
-                # TODO: Note that - unlike art.py we calculate but don't use
-                # the resultant value. That's for later.
-                debt_time = time()-cycle_time
-                sleep_time = (art.interval()/1000.0) - debt_time
-                if sleep_time > 0:
-                    sleep(sleep_time)
-                    time_sound += 1
-                else:
-                    time_alarm += 1
-
-
-def initialize_rop():
-    global generator
-
-    matrix = OPCMatrix(M_WIDTH, M_HEIGHT, "raw")
-
-    arts = ImportPlugins("art", ["template.py"], [], matrix)
-    if len(arts) == 0:
-        matrix.terminate()
-        print "Couldn't find any art to execute"
-        exit(1)
-
-    generator = frameGenerator(arts, matrix)
+        return self.packet
 
 
 def root_dir():  # pragma: no cover
@@ -119,7 +100,16 @@ def json_initialize():
     return jsonify(packet)
 
 
-if __name__ == "__main__":
-    initialize_rop()
+@app.route("/refresh.json")
+def json_refresh():
+    global feed
 
-    app.run(threaded=True)
+    return jsonify(feed.produce())
+
+
+if __name__ == "__main__":
+    global feed
+    
+    feed = Feed()
+
+    app.run(threaded=True, debug=True)
