@@ -1,12 +1,13 @@
 from utils.pen import Pen
-from math import sin, cos, pi
+from math import sin, cos, pi, sqrt
 from random import random
 
 
 class Shrapnel(Pen):
-    def __init__(self, matrix):
+    def __init__(self, matrix, motion_cycles):
         self.centerx = matrix.width/2.0
         self.centery = matrix.height/2.0
+        self.cycles = motion_cycles
 
         # we will reset some params to sensible values in a minute, so let's
         # not fuss with x, y, dx, dy now
@@ -24,23 +25,26 @@ class Shrapnel(Pen):
         self.paused = True
 
     def reset(self, matrix):
-        self.paused = False
+        # the furthest distance any pen will have to travel is on the diagonal
+        maxDimension = sqrt(matrix.width*matrix.width + matrix.height*matrix.height)
+
+        # slowest pens need to cover the distance in cycles time, but there may be
+        # some that go faster
+        velocity = maxDimension/(2.0*self.cycles) + 0.05*random()*maxDimension
+
         angle = random()*2*pi
-
-        # determined by experiment
-        averageSize = (matrix.width+matrix.height)/2
-        velocity = (averageSize/8+random()*4)/8
-
-        velocityx = velocity * sin(angle)
-        velocityy = velocity * cos(angle)
+        self.dx = velocity * sin(angle)
+        self.dy = velocity * cos(angle)
 
         self.x = self.centerx
         self.y = self.centery
-        self.dx = velocityx
-        self.dy = velocityy
+        self.paused = False
 
     def clock(self, matrix):
         super(Shrapnel, self).clock(matrix)
+
+        # slow over time
+        # XXX: this may cause problems for larger spans?
         self.dx *= 0.99
         self.dy *= 0.99
         return self.paused
@@ -50,20 +54,17 @@ class Art(object):
 
     description = "And then it exploded..."
 
-    PIECES = 32
-
     PAUSE_CYCLES = 10
 
     def __init__(self, matrix):
         self.pause = 0
+        self.pieces = int(sqrt(matrix.numpix)/1.5)
 
-        self.shrapnel = []
-        for i in range(self.PIECES):
-            self.shrapnel.append(Shrapnel(matrix))
+        cycles = int(sqrt(matrix.numpix)*2)
+        self.shrapnel = [Shrapnel(matrix, cycles) for i in range(self.pieces)]
 
     def start(self, matrix):
-        matrix.setFirmwareConfig(nointerp=True)
-        matrix.clear((80, 80, 90))
+        matrix.clear()
 
     def _update(self, matrix):
         done = 0
@@ -71,14 +72,14 @@ class Art(object):
             if shrap.clock(matrix):
                 done += 1
 
-        if done == self.PIECES:
+        if done == self.pieces:
             for shrap in self.shrapnel:
                 shrap.reset(matrix)
 
             self.pause = self.PAUSE_CYCLES
 
     def refresh(self, matrix):
-        matrix.shift(dv=0.8)
+        matrix.shift(dv=0.7)
         if self.pause == 0:
             self._update(matrix)
         else:
