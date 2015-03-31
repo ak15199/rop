@@ -82,7 +82,7 @@ class Art(object):
 
     def _setCell(self, matrix, addr, neighbors):
         x, y = self._decode(addr)
-        matrix.drawPixel(x, y, hsvToRgb(self.hue, self.value, 1))
+        matrix.drawPixel(x, y, hsvToRgb(self.hue, 1, 1), self.value)
         self.filling[addr] = neighbors
         self.value -= self.deltaValue
 
