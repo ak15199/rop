@@ -169,6 +169,7 @@ class OPCMatrix(object):
 
     @timefunc
     def _panCopy(self, source, ox, oy):
+        # TODO: This could be optimized with numpy
         for x in range(self.width):
             for y in range(self.height):
                 src = source.getPixel(x + ox, y + oy, wrap=True)
@@ -333,7 +334,7 @@ class OPCMatrix(object):
         return self.buf.buf[x, y]
 
     @timefunc
-    def drawPixel(self, x, y, color):
+    def drawPixel(self, x, y, color, alpha=None):
         """
         Set the pixel tuple at the specified location.  Perform no operation
         if the color value is None, or the address out of bounds
@@ -342,10 +343,15 @@ class OPCMatrix(object):
                 x < 0 or y < 0 or color is None:
             return
 
-        self.buf.buf[x, y] = color
+        if alpha is None:
+            self.buf.buf[x, y] = color
+        else:
+            a0 = alpha
+            a1 = 1-alpha
+            self.buf.buf[x, y] = np.asarray(color)*a0 + self.buf.buf[x, y]*a1
 
     @timefunc
-    def drawPixels(self, coords, color):
+    def drawPixels(self, coords, color, alpha=None):
         """
         Set the pixel tuple at the set of specified locations.  Like drawPixel,
         but operates over a list of (x, y) coordinates.
@@ -356,7 +362,12 @@ class OPCMatrix(object):
 
         xs, ys = zip(*coords)
 
-        self.buf.buf[xs, ys] = color
+        if alpha is None:
+            self.buf.buf[xs, ys] = color
+        else:
+            a0 = alpha
+            a1 = 1-alpha
+            self.buf.buf[xs, ys] = np.asarray(color)*a0 + self.buf.buf[xs, ys]*a1
 
     @timefunc
     def _line(self, x1, y1, x2, y2):
@@ -409,16 +420,16 @@ class OPCMatrix(object):
         return self.cursor
 
     @timefunc
-    def drawLineRelative(self, x1, y1, color):
+    def drawLineRelative(self, x1, y1, color, alpha):
         """
         Draw a line from the current cursor position to the specified address
         """
         x0, y0 = self.getCursor()
-        self.drawLine(x0, y0, x1, y1, color)
+        self.drawLine(x0, y0, x1, y1, color, alpha)
         self.setCursor((x1, y1))
 
     @timefunc
-    def drawLine(self, x1, y1, x2, y2, color):
+    def drawLine(self, x1, y1, x2, y2, color, alpha=None):
         """
         Draw a line between the specified coordinate pairs. If the line is
         horizontal or vertical, then we can optimize the plotting by calling
@@ -428,10 +439,10 @@ class OPCMatrix(object):
             self.fillRectAbsolute(x1, y1, x2, y2, color)
         else:
             coords = self._line(x1, y1, x2, y2)
-            self.drawPixels(coords, color)
+            self.drawPixels(coords, color, alpha)
 
     @timefunc
-    def drawPoly(self, points, color):
+    def drawPoly(self, points, color, alpha=None):
         """
         Draw a polygon described by the array of coordinates
         """
@@ -439,10 +450,10 @@ class OPCMatrix(object):
 
         self.setCursor(origin)
         for x, y in points:
-            self.drawLineRelative(x, y, color)
+            self.drawLineRelative(x, y, color, alpha)
 
         x, y = origin
-        self.drawLineRelative(x, y, color)
+        self.drawLineRelative(x, y, color, alpha)
 
     @timefunc
     def fillRectAbsolute(self, x1, y1, x2, y2, color):
@@ -482,14 +493,14 @@ class OPCMatrix(object):
             ], color)
 
     @timefunc
-    def _circlePair(self, x1, y1, x2, y2, color, hasFill):
+    def _circlePair(self, x1, y1, x2, y2, color, hasFill, alpha=None):
         if hasFill:
             self.fillRectAbsolute(x1, y1, x2, y2, color)
         else:
-            self.drawPixels([(x1, y1), (x2, y2)], color)
+            self.drawPixels([(x1, y1), (x2, y2)], color, alpha)
 
     @timefunc
-    def _circleHelper(self, x0, y0, radius, color, hasFill):
+    def _circleHelper(self, x0, y0, radius, color, hasFill, alpha=None):
         """
         See http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
         """
@@ -498,10 +509,14 @@ class OPCMatrix(object):
         radiusError = 1-x
 
         while x >= y:
-            self._circlePair(x + x0, y + y0, -x + x0, y + y0, color, hasFill)
-            self._circlePair(y + x0, x + y0, -y + x0, x + y0, color, hasFill)
-            self._circlePair(-y + x0, -x + y0, y + x0, -x + y0, color, hasFill)
-            self._circlePair(-x + x0, -y + y0, x + x0, -y + y0, color, hasFill)
+            self._circlePair(x + x0, y + y0, -x + x0, y + y0, color, hasFill,
+                    alpha)
+            self._circlePair(y + x0, x + y0, -y + x0, x + y0, color, hasFill,
+                    alpha)
+            self._circlePair(-y + x0, -x + y0, y + x0, -x + y0, color, hasFill,
+                    alpha)
+            self._circlePair(-x + x0, -y + y0, x + x0, -y + y0, color, hasFill,
+                    alpha)
 
             y += 1
             if radiusError < 0:
@@ -511,8 +526,8 @@ class OPCMatrix(object):
                 radiusError += 2 * (y - x + 1)
 
     @timefunc
-    def drawCircle(self, x, y, radius, color):
-        self._circleHelper(x, y, radius, color, False)
+    def drawCircle(self, x, y, radius, color, alpha=None):
+        self._circleHelper(x, y, radius, color, False, alpha)
 
     @timefunc
     def fillCircle(self, x, y, radius, color):
