@@ -1,3 +1,4 @@
+from opc.colors import WHITE
 from opc.hue import hsvToRgb
 
 from math import sqrt
@@ -18,14 +19,28 @@ class BarSet(object):
             self.pdx, self.pdy = 1, 0
             self.sdx, self.sdy = 0, 1
 
-        self.hue = random()
+
+        if self._cointoss(0.1):
+            self.color = WHITE
+        else:
+            self.color = hsvToRgb(random(), self._stepped(), self._stepped())
 
         cycleSize = int(sqrt(matrix.width*matrix.height)/REPEATS)
-        self.bits = [ self._cointoss(0.3) for bit in range(cycleSize) ]
+
+        self.bits = [ True ]
+        # bits can't be all True or all false
+        while not any(self.bits) or all(self.bits):
+            self.bits = [ self._cointoss(0.3) for bit in range(cycleSize) ]
 
         self.px, self.py = 0, 0
 
-    def _cointoss(self, chance):
+    def _stepped(self):
+        if self._cointoss():
+            return 1
+
+        return 0.5
+
+    def _cointoss(self, chance=0.5):
         return random() < chance
 
     def draw(self, matrix):
@@ -39,7 +54,7 @@ class BarSet(object):
         while sx < matrix.width and sy < matrix.height:
             for bit in self.bits:
                 if bit:
-                    matrix.drawPixel(sx + self.px, sy + self.py, hsvToRgb(self.hue, 1, 1))
+                    matrix.drawPixel(sx + self.px, sy + self.py, self.color)
 
                 sx += self.sdx
                 sy += self.sdy
