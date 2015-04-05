@@ -360,6 +360,9 @@ class OPCMatrix(object):
                   coord[0] >= 0 and coord[0] < self.width and
                   coord[1] >= 0 and coord[1] < self.height]
 
+        if not coords: # when everything is off screen
+            return
+
         xs, ys = zip(*coords)
 
         if alpha is None:
