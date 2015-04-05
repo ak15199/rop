@@ -17,12 +17,6 @@ def rgbToHsv(r, g, b):
     return colorsys.rgb_to_hsv(r/255, g/255, b/255)
 
 
-def getHueGen(step=0.05, hue=0, sat=1, val=1):
-    while True:
-        hue = fmod(hue + step, 1)
-        yield hsvToRgb(hue, sat, val)
-
-
 @MWT(timeout=20)
 def hue(shade):
     hue = shade * 255
@@ -34,3 +28,21 @@ def hue(shade):
 
     hue -= 170
     return (0, hue * 3, 255 - hue * 3)
+
+
+def getColorGen(step=0.05, hue=0, sat=1, val=1):
+    """
+    Generator that returns a stream of shades as colors
+    """
+    hue = getHueGen(step, hue)
+    while True:
+        yield hsvToRgb(hue.next(), sat, val)
+
+
+def getHueGen(step=0.05, hue=0):
+    """
+    Generator that returns a stream of shades as hues
+    """
+    while True:
+        hue = fmod(hue + step, 1)
+        yield hue

@@ -1,6 +1,6 @@
 import math
 
-from opc.hue import getHueGen
+from opc.hue import getColorGen
 from opc.scaledmatrix import ScaledMatrix
 
 
@@ -10,8 +10,8 @@ class Art(object):
 
     def __init__(self, matrix):
         self.matrix = ScaledMatrix(matrix, scale=2)
-        self.hue1 = getHueGen(step=0.00001, hue=0.0)
-        self.hue2 = getHueGen(step=0.00001, hue=0.5)
+        self.hue1 = getColorGen(step=0.00001, hue=0.0)
+        self.hue2 = getColorGen(step=0.00001, hue=0.5)
 
         self.phase = 0
 

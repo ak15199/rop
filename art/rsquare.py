@@ -1,7 +1,7 @@
 from math import sin, cos
 
 from opc.colors import BLACK
-from opc.hue import getHueGen
+from opc.hue import getColorGen
 from opc.scaledmatrix import ScaledMatrix
 
 SCALE = 4
@@ -12,7 +12,7 @@ class Art(object):
     description = "Downsample a high-res image to improve perceived clarity"
 
     def __init__(self, matrix):
-        self.hue = getHueGen(0.001)
+        self.hue = getColorGen(0.001)
         self.theta = 0.0
         self.matrix = ScaledMatrix(matrix, scale=SCALE)
 

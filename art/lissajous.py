@@ -1,4 +1,4 @@
-from opc.hue import getHueGen
+from opc.hue import getColorGen
 
 from math import sin, cos, pi
 from utils.frange import frange
@@ -11,7 +11,7 @@ class Art(object):
     description = "Lissajous figures"
 
     def __init__(self, matrix):
-        self.hue = getHueGen(0.01)
+        self.hue = getColorGen(0.01)
         self.phase_z = 0
 
     def start(self, matrix):

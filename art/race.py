@@ -1,6 +1,6 @@
 import logging
 from math import sin, cos, pi
-from opc.hue import getHueGen
+from opc.hue import getColorGen
 from utils.frange import frange
 
 
@@ -35,7 +35,7 @@ class Art(object):
     description = "Racing pixels"
 
     def __init__(self, matrix):
-        self.hue = getHueGen(0.001)
+        self.hue = getColorGen(0.001)
         self.clock = 0
         self.racers = []
         xmax = matrix.midWidth-1
