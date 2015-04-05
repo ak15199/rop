@@ -1,8 +1,6 @@
 import logging
 logging.basicConfig(filename='art.log', level=logging.DEBUG)
 
-import opc.utils.prof as prof
-
 import argparse
 from exceptions import KeyboardInterrupt
 from random import seed
@@ -12,7 +10,10 @@ from traceback import format_exception
 
 import dpyinfo
 from importer import ImportPlugins
+
+from opc.error import TtyTooSmall
 from opc.matrix import OPCMatrix
+import opc.utils.prof as prof
 
 DFLT_FLIPTIME_SECS = 30
 DFLT_CYCLE_COUNT = None
@@ -23,8 +24,12 @@ matrix = None
 def matrixDone():
     global matrix
     if matrix is not None:
-        matrix.clear()
-        matrix.show()
+        try:
+            matrix.clear()
+            matrix.show()
+        except TtyTooSmall:
+            pass
+
         matrix.terminate()
 
 def exceptionHandler(etype, evalue, etraceback):
