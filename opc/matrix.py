@@ -423,7 +423,7 @@ class OPCMatrix(object):
         return self.cursor
 
     @timefunc
-    def drawLineRelative(self, x1, y1, color, alpha):
+    def drawLineRelative(self, x1, y1, color, alpha=None):
         """
         Draw a line from the current cursor position to the specified address
         """
