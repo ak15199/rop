@@ -2,7 +2,6 @@ from opc.colors import BLACK
 from opc.hue import getHueGen, hsvToRgb
 from math import sqrt
 from random import random, randint
-import logging
 
 class Point(object):
 
