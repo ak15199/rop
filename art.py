@@ -20,10 +20,15 @@ DFLT_CYCLE_COUNT = None
 matrix = None
 
 
-def exceptionHandler(etype, evalue, etraceback):
+def matrixDone():
     global matrix
     if matrix is not None:
+        matrix.clear()
+        matrix.show()
         matrix.terminate()
+
+def exceptionHandler(etype, evalue, etraceback):
+    matrixDone()
 
     for line in format_exception(etype, evalue, etraceback):
         logging.error('Exception: '+line.rstrip('\n'))
@@ -115,8 +120,7 @@ def main():
         exit(1)
 
     run(arts, args)
-
-    matrix.terminate()
+    matrixDone()
 
     if args.profile:
         prof.dumptimings()
