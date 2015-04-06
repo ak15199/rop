@@ -1,4 +1,5 @@
 from copy import deepcopy
+import colorsys
 import operator
 import numpy as np
 
@@ -229,17 +230,18 @@ class OPCMatrix(object):
         if np.count_nonzero(pixel) == 0:
             return pixel
 
-        h, s, v = rgbToHsv(pixel[0], pixel[1], pixel[2])
-        return hsvToRgb(h*dh, s*ds, v*dv)
-
+        h, s, v = colorsys.rgb_to_hsv(pixel[0], pixel[1], pixel[2])
+        r, g, b = colorsys.hsv_to_rgb(h*dh, s*ds, v*dv)
+        return r, g, b
+ 
     @timefunc
     def shift(self, dh=1.0, ds=1.0, dv=1.0):
         """
         Shift any of hue, saturation, and value on the matrix, specifying
         the attributes that you'd like to adjust
         """
-        self.buf.buf = pixelstream.process(self.buf.buf, self._shiftPixel, dh,
-                                           ds, dv)
+        self.buf.buf = pixelstream.process(self.buf.buf/255, self._shiftPixel, dh,
+                                           ds, dv) * 255
 
     @timefunc
     def fade(self, divisor):
@@ -414,6 +416,10 @@ class OPCMatrix(object):
         """
         x, y = pos
         self.cursor = (x, y)
+
+    @timefunc
+    def movesCursor(self, x, y):
+        return self.cursor[0]!=x or self.cursor[1]!=y
 
     @timefunc
     def getCursor(self):
