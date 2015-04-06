@@ -45,4 +45,4 @@ class Art(object):
             count += 1
 
     def interval(self):
-        return 150
+        return 100

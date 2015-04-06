@@ -58,7 +58,7 @@ class Art(object):
 
     def __init__(self, matrix):
         self.pause = 0
-        self.pieces = int(sqrt(matrix.numpix)/1.5)
+        self.pieces = int(sqrt(matrix.numpix))
 
         cycles = int(sqrt(matrix.numpix)*2)
         self.shrapnel = [Shrapnel(matrix, cycles) for i in range(self.pieces)]

@@ -5,12 +5,12 @@ import numpy as np
 
 from colors import BLACK
 from hue import rgbToHsv, hsvToRgb
+import nphue
 
 from ansiclient import AnsiClient
 from rawclient import RawClient
 from fastopc import FastOPC as OpcClient
 
-import utils.pixelstream as pixelstream
 from utils.prof import timefunc
 
 
@@ -224,24 +224,17 @@ class OPCMatrix(object):
     def _clip(self, x, y):
         return (self._clipx(x), self._clipy(y))
 
-    @staticmethod
-    @timefunc
-    def _shiftPixel(pixel, dh, ds, dv):
-        if np.count_nonzero(pixel) == 0:
-            return pixel
-
-        h, s, v = colorsys.rgb_to_hsv(pixel[0], pixel[1], pixel[2])
-        r, g, b = colorsys.hsv_to_rgb(h*dh, s*ds, v*dv)
-        return r, g, b
- 
     @timefunc
     def shift(self, dh=1.0, ds=1.0, dv=1.0):
         """
         Shift any of hue, saturation, and value on the matrix, specifying
         the attributes that you'd like to adjust
         """
-        self.buf.buf = pixelstream.process(self.buf.buf/255, self._shiftPixel, dh,
-                                           ds, dv) * 255
+        hsv = nphue.rgb_to_hsv(self.buf.buf)
+        mod = hsv * np.array([dh, ds, dv])
+        rgb = nphue.hsv_to_rgb(mod)
+
+        self.buf.buf = rgb
 
     @timefunc
     def fade(self, divisor):
