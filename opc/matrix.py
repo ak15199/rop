@@ -226,10 +226,11 @@ class OPCMatrix(object):
 
     @staticmethod
     @timefunc
-    def _shiftPixel(pixel, dh, ds, dv):
+    def _shiftPixel(pixel, args):
         if np.count_nonzero(pixel) == 0:
             return pixel
 
+        dh, ds, dv = args
         h, s, v = colorsys.rgb_to_hsv(pixel[0], pixel[1], pixel[2])
         r, g, b = colorsys.hsv_to_rgb(h*dh, s*ds, v*dv)
         return r, g, b
@@ -240,8 +241,8 @@ class OPCMatrix(object):
         Shift any of hue, saturation, and value on the matrix, specifying
         the attributes that you'd like to adjust
         """
-        self.buf.buf = pixelstream.process(self.buf.buf/255, self._shiftPixel, dh,
-                                           ds, dv) * 255
+        self.buf.buf = pixelstream.process(self.buf.buf/255, self._shiftPixel, (dh,
+                                           ds, dv)) * 255
 
     @timefunc
     def fade(self, divisor):
