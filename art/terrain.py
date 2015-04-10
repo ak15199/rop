@@ -3,12 +3,14 @@ from math import sin, cos
 
 from opc.colormap import Colormap
 from opc.colors import rgb
-from opc.scaledmatrix import ScaledMatrix
+from opc.matrix import OPCMatrix
 
 from utils.diamondsquare import DiamondSquareAlgorithm
 
+import logging
+
 SCALE = 16
-CENTERZONE = 4
+CENTERZONE = 16
 
 
 class Art(object):
@@ -19,7 +21,7 @@ class Art(object):
         self.width = matrix.width*SCALE
         self.height = matrix.height*SCALE
 
-        self.matrix = ScaledMatrix(matrix)
+        self.matrix = OPCMatrix(self.width, self.height, None)
         self.diamond = DiamondSquareAlgorithm(self.matrix.width,
                                               self.matrix.height,
                                               (self.matrix.width +
@@ -36,7 +38,6 @@ class Art(object):
 
         self.diamond.generate()
         self.diamond.translate(self.matrix, colormap=self.colormap)
-        self.matrix.soften(ratio=.5)
 
         self.theta = 0
         self.radius = 0
