@@ -54,6 +54,7 @@ def run(arts, args):
 
         for name, art in arts.iteritems():
             matrix.setFirmwareConfig()
+            matrix.hq(False)
             art.start(matrix)
 
             time_sound = 0  # sound as in 'sound as a pound'

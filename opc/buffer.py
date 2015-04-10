@@ -121,6 +121,7 @@ class OPCBuffer(object):
 
             self.buf[:][:] = window
 
+        """
         for x in range(self.width):
             for y in range(self.height):
                 try:
@@ -129,6 +130,7 @@ class OPCBuffer(object):
                         self.buf[x, y] = src
                 except IndexError:
                     pass
+        """
 
     @timefunc
     def scaledCopy(self, source):

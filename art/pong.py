@@ -1,5 +1,5 @@
 from opc.colors import rgb
-
+import logging
 from random import randrange, random
 
 WINTHRESH = 9
@@ -99,6 +99,8 @@ class Bat(object):
     def __init__(self, width, height, isLeft):
         self.width = width
         self.height = height
+        logging.info("BAT w = %d, h = %d"%(self.width, self.height))
+
         self.y = self.height/2 - self.RADIUS
         if isLeft:
             self.x = width - 1
@@ -242,6 +244,7 @@ class Art(object):
     description = "Automated pong"
 
     def __init__(self, matrix):
+        logging.info("I w = %d, h = %d"%(matrix.width, matrix.height))
         self.ball = Ball(matrix.width, matrix.height)
         self.net = Net()
 
@@ -261,6 +264,7 @@ class Art(object):
         self.ball.serve(coinToss())
 
     def refresh(self, matrix):
+        logging.info("R w = %d, h = %d"%(matrix.width, matrix.height))
 
         for player in self.players.values():
             opponent = self.players[player.opponent()]
