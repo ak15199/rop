@@ -1,7 +1,6 @@
 import numpy as np
 from colors import BLACK
 from utils.prof import timefunc
-import logging
 
 DTYPE = np.uint8
 
@@ -91,18 +90,11 @@ class OPCBuffer(object):
         try: # happy path
             self.buf[:][:] = source.buf[ox:xend, oy:yend]
         except ValueError:
-            logging.info("copy failed, trying plan b:")
             xbig = xend > source.width
             ybig = yend > source.height
             xgap = xend - source.width
             ygap = yend - source.height
-            logging.info("  BIG: xend: %d, yend: %d"%(xend, yend))
-            logging.info("  BIG: xbig: %d, ybig: %d"%(xbig, ybig))
-            logging.info("  GAP: xgap: %d, ygap: %d"%(xgap, ygap))
-
-            logging.info("    target: %s"%str(self.buf.shape))
             window = source.buf[ox:(xend-xgap), oy:(yend-ygap)]
-            logging.info("    concat: %s"%str(window.shape))
 
             if xbig:
                 if ybig:
@@ -125,8 +117,6 @@ class OPCBuffer(object):
                     # XX | o
                     # XX | o
                     window = source.buf[ox:xend, oy:(yend-ygap)]
-                    logging.info("    concat: %s"%str(window.shape))
-                    logging.info("    with: %s"%str(source.buf[ox:xend, 0:ygap].shape))
                     window = np.concatenate((window, source.buf[ox:xend, 0:ygap]), axis=1)
 
             self.buf[:][:] = window
