@@ -4,6 +4,7 @@ from math import sin, cos
 from opc.colormap import Colormap
 from opc.colors import rgb
 from opc.matrix import OPCMatrix
+from random import random
 
 from utils.diamondsquare import DiamondSquareAlgorithm
 
@@ -38,6 +39,7 @@ class Art(object):
 
         self.diamond.generate()
         self.diamond.translate(self.matrix, colormap=self.colormap)
+        self.matrix.soften()
 
         self.theta = 0
         self.radius = 0
