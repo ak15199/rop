@@ -17,20 +17,48 @@ from utils.prof import timefunc
 
 DTYPE = np.uint8
 
-"""
-This is loosely based on the Adafruit GFX library, although there
-are a ton of differences. Some of the differences are where features
-have not yet been implemented through necessity, but will be one day.
+class HQ(object):
 
-Others are additional effects that are here because they seemed
-pretty cool. Like setting firmware configs on a connection, or
-performing a HSV shift on the array.
+    """
+    use the HQ class to savely wrap art init blocks when you need to
+    switch on HQ for set-up purposes. For example:
 
-check out text.py for additional functions to draw text.
-"""
+        from opc.matrix import HQ
+
+
+        class Art(object):
+
+            def __init__(self, matrix):
+
+                with HQ(matrix):
+                    initialization stuff...
+
+    """
+
+    def __init__(self, matrix):
+        self.matrix = matrix
+
+    def __enter__(self):
+        self.matrix.hq()
+
+    def __exit__(self, type, value, traceback):
+        self.matrix.hq(False)
 
 
 class OPCMatrix(object):
+
+    """
+    This is loosely based on the Adafruit GFX library, although there
+    are a ton of differences. Some of the differences are where features
+    have not yet been implemented through necessity, but will be one day.
+
+    Others are additional effects that are here because they seemed
+    pretty cool. Like setting firmware configs on a connection, or
+    performing a HSV shift on the array.
+
+    check out the additional classes in this module for more code, and
+    see the examples provided for usage.
+    """
 
     HQMULT = 4
 

@@ -7,6 +7,8 @@ DTYPE = np.uint8
 
 class OPCBuffer(object):
     """
+    Provdes primitive buffer-level storage and operations.
+
     OPCBuffer is usually considered an internal class. But it
     comes in handy (e.g.) if you want to draw on a larger "virtual"
     array, and scale down for rendering on a physical array.
@@ -40,30 +42,22 @@ class OPCBuffer(object):
 
     @timefunc
     def reds(self):
-        """
-        get all of the reds from the buffer
-        """
+        """ get all of the reds from the buffer """
         return self.buf[:, :, 0]
 
     @timefunc
     def greens(self):
-        """
-        get all of the greens from the buffer
-        """
+        """ get all of the greens from the buffer """
         return self.buf[:, :, 1]
 
     @timefunc
     def blues(self):
-        """
-        get all of the blues from the buffer
-        """
+        """ get all of the blues from the buffer """
         return self.buf[:, :, 2]
 
     @timefunc
     def avg(self, other, weight=.5):
-        """
-        Get a weighted average of two buffers.
-        """
+        """ Get a weighted average of two buffers.  """
         if not self._sameSize(other):
             raise InvalidArgument("Matrices are different sizes")
 
@@ -121,20 +115,11 @@ class OPCBuffer(object):
 
             self.buf[:][:] = window
 
-        """
-        for x in range(self.width):
-            for y in range(self.height):
-                try:
-                    src = source.buf[x+ox, y+oy]
-                    if src is not None:
-                        self.buf[x, y] = src
-                except IndexError:
-                    pass
-        """
-
     @timefunc
     def scaledCopy(self, source):
         """
+        Reduce the size of the source buffer to fit the destination buffer.
+
         Process each gun independently. For each gun, we need to reshape
         its array so as to line up all of the values associated with the
         superpixel in a single row. This allws us to perform a mean
