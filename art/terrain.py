@@ -9,7 +9,7 @@ from utils.diamondsquare import DiamondSquareAlgorithm
 
 import logging
 
-SCALE = 16
+SCALE = 8
 CENTERZONE = 16
 
 
@@ -51,7 +51,7 @@ class Art(object):
         # center of the matrix:
         #  - when radius is max, then deltatheta is about .005 radians.
         #  - when radius is min, then deltatheta is about .1 radians.
-        deltatheta = 0.004
+        deltatheta = 0.01
         self.theta += deltatheta
         self.radius -= 0.05
 
