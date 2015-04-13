@@ -41,19 +41,19 @@ or on the road, then you can still get an idea of the animations. The code
 will auto-detect whether the terminal supports color and use it if it can.
 
 Be aware that the down-sampled image is super lossy, since it's reducing
-24 bit color to a handful of ascii-art characters... or - even better - if
-your tty has a 256 color mode, then things will look quite a bit better.
+24 bit color to a handful of ascii-art characters... although if your
+tty has a 256 color mode, then things will look quite a bit better.
 Also, don't be too adventurous in trying to render to areas larger than the
 tty, as curses will choke. In this case, you'll see a message saying that
 the terminal is too small. *The terminal needs to be three lines taller
 than the matrix in order to work*.
 
-Most textual logging is now delivered to art.log. If something doesn't
-look right, then check in here for exceptions and other diagnostics.
+Most textual logging is delivered to art.log. If something doesn't
+look right, then check in this file for exceptions and other diagnostics.
 
 It's also possible to limit number of cycles that art.py runs through,
 adjust the duration that each art is displayed before moving on to the next,
-or turn on profiling. Run with `--help` for more information.
+or to switch on profiling. Run with `--help` for more information.
 
 The directories are
 
