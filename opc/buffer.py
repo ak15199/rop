@@ -1,6 +1,11 @@
 import numpy as np
+from scipy.ndimage import interpolation
+from scipy import signal
+
 from colors import BLACK
 from utils.prof import timefunc
+
+import logging
 
 DTYPE = np.uint8
 
@@ -154,3 +159,31 @@ class OPCBuffer(object):
             guns.append(new)
 
         self.buf = np.dstack(guns).reshape((self.width, self.height, 3))
+
+    @timefunc
+    def rotate(self, angle):
+        self.buf = interpolation.rotate(self.buf, angle, reshape=False,
+                output=DTYPE)
+
+    @timefunc
+    def _convolve(self, kernel):
+        guns = []
+        scale = np.sum(kernel)*256
+        r, g, b = self.reds(), self.greens(), self.blues()
+        for gun in (r, g, b):
+            new = signal.convolve2d(gun/scale, kernel, mode="same",
+            boundary="symm")
+            guns.append(new*255)
+
+        self.buf = np.dstack(guns).reshape((self.width, self.height, 3))
+
+    @timefunc
+    def blur(self):
+        gaussian = np.array([
+            [1, 2, 1],
+            [2, 4, 2],
+            [1, 2, 1],
+            ], dtype=np.float32)
+
+        self._convolve(gaussian)
+        logging.info(str(self.buf))
