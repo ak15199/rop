@@ -3,7 +3,6 @@ from opc.hue import getColorGen
 from math import sin, cos, pi
 from utils.frange import frange
 
-import logging
 
 DELTA_Z = 0.02
 

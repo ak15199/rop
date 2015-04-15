@@ -8,7 +8,6 @@ from random import random
 
 from utils.diamondsquare import DiamondSquareAlgorithm
 
-import logging
 
 SCALE = 8
 CENTERZONE = 16
