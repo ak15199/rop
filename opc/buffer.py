@@ -5,8 +5,6 @@ from scipy import signal
 from colors import BLACK
 from utils.prof import timefunc
 
-import logging
-
 DTYPE = np.uint8
 
 
@@ -36,14 +34,12 @@ class OPCBuffer(object):
     def __add___(self, other):
         pass
 
-    def __or___(self, other):
-        pass
-
     def __xor___(self, other):
         pass
 
-    def __and___(self, other):
-        pass
+    @timefunc
+    def mask(self, mask):
+        self.buf = self.buf.astype(dtype=DTYPE) & mask.buf.astype(dtype=DTYPE)
 
     @timefunc
     def reds(self):
@@ -166,6 +162,29 @@ class OPCBuffer(object):
                 output=DTYPE)
 
     @timefunc
+    def flip(self, ud, lr):
+        if not any((ud, lr)):
+            raise InvalidArgument("Must specify at least one of ud or lr")
+
+        # yes, these two really do get switched over. It's because we all
+        # have a different idea on which dimension is for x.
+        if lr:
+            self.buf = np.flipud(self.buf)
+
+        if ud:
+            self.buf = np.fliplr(self.buf)
+
+    @timefunc
+    def paste(self, source, mask):
+        mask = mask.buf.astype(dtype=DTYPE)
+        source = source.buf.astype(dtype=DTYPE)
+        self.buf = (self.buf.astype(dtype=DTYPE) & ~mask) | (source & mask)
+
+    @timefunc
+    def add(self, source):
+        self.buf = self.buf.astype(dtype=DTYPE) | source.buf.astype(dtype=DTYPE)
+
+    @timefunc
     def _convolve(self, kernel):
         guns = []
         scale = np.sum(kernel)*256
@@ -186,4 +205,3 @@ class OPCBuffer(object):
             ], dtype=np.float32)
 
         self._convolve(gaussian)
-        logging.info(str(self.buf))

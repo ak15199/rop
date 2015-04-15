@@ -191,12 +191,28 @@ class OPCMatrix(object):
         """Rotate the buffer by the given angle"""
         self.buf.rotate(angle)
 
+    def flip(self, ud=None, lr=None):
+        """Flip the buffer in one or both axes"""
+        self.buf.flip(ud, lr)
+
+    def mask(self, mask):
+        """Perform bit-wise mask on the buffer"""
+        self.buf.mask(mask.buf)
+
+    def paste(self, source, mask):
+        """Paste the masked part of the source buf into our buf"""
+        self.buf.paste(source.buf, mask.buf)
+
+    def add(self, source):
+        """Update the matrix with non-black pixels from the source"""
+        self.buf.add(source.buf)
+
     def clear(self, color=BLACK):
         """
         Wipe the matrix to any color, defaulting to black.
         """
         self.buf.clear(color)
-
+    
     @timefunc
     def show(self, channel=0):
         """
@@ -477,6 +493,9 @@ class OPCMatrix(object):
         polygons. In order to achieve that goal, you should consider
         stacking several polygons next to one another
         """
+        # preserve the original
+        points = list(points)
+
         # get a list of all of the points that bound the polygon
         edges = []
         prev = origin = points.pop(0)
