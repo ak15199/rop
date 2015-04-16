@@ -1,8 +1,9 @@
-from math import radians, sqrt, sin, cos
+from math import radians, sqrt, sin, cos, ceil
 from random import random
-from opc.colors import BLACK, WHITE
+from opc.colors import WHITE
 from opc.hue import getHueGen, hsvToRgb
 from opc.matrix import OPCMatrix
+
 
 class Point(object):
 
@@ -17,7 +18,7 @@ class Art(object):
 
     description = "Kaleidoscope"
 
-    FITHALF = 0.45
+    FITHALF = 0.45 # squeeze radius into 90% of display area
 
     def __init__(self, matrix):
         self.angle = 0
@@ -25,7 +26,11 @@ class Art(object):
         self.radius = sqrt(matrix.numpix) * self.FITHALF
         self.center = Point(matrix.midWidth, matrix.midHeight)
         self.pieslice = self._pieslice(-30, 30)
-        self.freq = max(1, 1024/matrix.numpix)
+
+        # used to help with scaling small displays
+        # freq will have a value of 1 for kilopix displays and hold a
+        # larger value for smaller displays (up to 4)
+        self.freq = min(4, max(1, 1024.0/matrix.numpix))
         self.clock = 0
 
         # create mask
@@ -56,21 +61,24 @@ class Art(object):
     def start(self, matrix):
         pass
 
+    def _draw(self, matrix):
+        x = matrix.width*random()
+        y = self.center.y + (self.pieslice[0][1]-self.center.y)*random()
+        z = 2 + random()*10/self.freq
+
+        offset = int(random()*4)/4.0 if random()<0.5 else 0
+        if random()<0.5:
+            matrix.drawRect(x, y, z, z, hsvToRgb(offset+self.hue.next(), 1, 1))
+        else:
+            matrix.fillRect(x, y, z, z, hsvToRgb(offset+self.hue.next(), 1, 1))
+
     def _update(self, matrix):
         self.clock += 1
-        if self.clock < self.freq:
-            return
-
-        x = self.pieslice[1][0] + (self.pieslice[0][0]-self.pieslice[1][0])*random()
-        y = self.center.y + (self.pieslice[0][1]-self.center.y)*random()
-
-        if random()<0.5:
-            offset = 0.5 if random()<0.5 else 0
-            matrix.drawRect(x, y, 5, 5, hsvToRgb(offset+self.hue.next(), 1, 1))
-        else:
-            matrix.drawRect(x, y, 5, 5, BLACK)
-
-        self.clock = 0
+        if self.clock % ceil(self.freq/2.0) == 0:
+            if self.clock % self.freq == 0:
+                matrix.copy(matrix, 1, 0)
+            for draws in range(5-self.freq):
+                self._draw(matrix)
 
     def refresh(self, matrix):
         #
@@ -111,8 +119,11 @@ class Art(object):
 
         matrix.copy(self.private)
 
-        self.angle += 1
+        self.angle -= 1
         matrix.rotate(self.angle)
 
     def interval(self):
-        return 100
+        if self.freq>2:
+            return 200
+        else:
+            return 150
