@@ -66,11 +66,16 @@ class Art(object):
         y = self.center.y + (self.pieslice[0][1]-self.center.y)*random()
         z = 2 + random()*10/self.freq
 
-        offset = int(random()*4)/4.0 if random()<0.5 else 0
-        if random()<0.5:
-            matrix.drawRect(x, y, z, z, hsvToRgb(offset+self.hue.next(), 1, 1))
+        if random()<0.1:
+            color = WHITE
         else:
-            matrix.fillRect(x, y, z, z, hsvToRgb(offset+self.hue.next(), 1, 1))
+            offset = int(random()*4)/4.0 if random()<0.5 else 0
+            color = hsvToRgb(offset+self.hue.next(), 1, 1)
+
+        if random()<0.5:
+            matrix.drawRect(x, y, z, z, color)
+        else:
+            matrix.fillRect(x, y, z, z, color)
 
     def _update(self, matrix):
         self.clock += 1
