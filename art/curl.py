@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from opc.colors import BLACK
 from opc.hue import hsvToRgb
 
@@ -25,7 +27,7 @@ DELTA_HUE = 0.006
 TRAIN_LEN = 16
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Loop the loop"
 

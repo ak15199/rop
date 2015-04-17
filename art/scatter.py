@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from opc.hue import hsvToRgb
 
 from random import random
@@ -6,7 +8,7 @@ from utils.lfsr import compoundLfsr
 HUEINCYCLES = 8
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Use an LFSR to 'randomly' fill the display"
 

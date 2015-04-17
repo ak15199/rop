@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from opc.hue import hsvToRgb
 from utils.fractools import Mandelbrot, Region
 
@@ -8,7 +10,7 @@ ITERSTEPS = 30
 DEBUG = False
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Auto-zooming mandelbrot"
 

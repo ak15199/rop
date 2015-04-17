@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from math import sin, cos
 
 from opc.colors import BLACK
@@ -6,7 +8,7 @@ from opc.hue import getColorGen
 SCALE = 4
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Downsample a high-res image to improve perceived clarity"
 

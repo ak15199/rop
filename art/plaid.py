@@ -1,9 +1,11 @@
+from _baseclass import ArtBaseClass
+
 from utils.pen import Pen
 
 PENS = 4
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Bouncy balls with trail"
 

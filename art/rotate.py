@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from math import sin, cos, sqrt
 from random import random
 
@@ -7,7 +9,7 @@ from opc.hue import getColorGen
 SCALE = 4
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Demo image rotation"
 

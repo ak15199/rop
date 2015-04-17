@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from collections import OrderedDict
 from math import sin, cos
 
@@ -13,7 +15,7 @@ SCALE = 8
 CENTERZONE = 16
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Traverse procedurally generated terrain"
 

@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from opc.hue import getColorGen
 
 from math import sin, cos, pi
@@ -7,7 +9,7 @@ from utils.frange import frange
 DELTA_Z = 0.02
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Lissajous figures"
 

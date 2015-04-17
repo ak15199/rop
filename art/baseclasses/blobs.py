@@ -1,3 +1,5 @@
+from .. _baseclass import ArtBaseClass
+
 from random import random, uniform
 
 from opc.matrix import HQ
@@ -9,7 +11,7 @@ SCALE = 3
 SIZE = 6
 
 
-class Blobs(object):
+class Blobs(ArtBaseClass):
 
     def __init__(self, matrix):
         with HQ(matrix):

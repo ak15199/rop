@@ -1,9 +1,11 @@
+from _baseclass import ArtBaseClass
+
 import math
 
 from opc.hue import getColorGen
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Rolling sine wave marks border between contrasting colors"
 

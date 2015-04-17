@@ -10,6 +10,7 @@ def moduleQualifies(dir, file, excludes, includes):
     return isfile(join(dir, file))                  \
         and file.endswith(".py")                    \
         and file not in excludes                    \
+        and file[0] != "_"                          \
         and (file in includes or len(includes) == 0)
 
 

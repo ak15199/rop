@@ -119,7 +119,7 @@ def main():
         _v("FLIPUP", False), _v("FLIPLR", False)
         )
 
-    arts = ImportPlugins("art", ["template.py"], args.art, matrix)
+    arts = ImportPlugins("art", [], args.art, matrix)
     if len(arts) == 0:
         matrix.terminate()
         print "Couldn't find any art to execute"

@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from opc.colors import CYAN, BLUE, RY2, YELLOW, GREEN, MAGENTA, RED, GRAY40
 
 from utils.array import array
@@ -273,7 +275,7 @@ class Game(object):
         self.well.draw(matrix)
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Anyone for a game of Tetris?"
 

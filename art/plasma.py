@@ -1,8 +1,10 @@
+from _baseclass import ArtBaseClass
+
 from opc.hue import hsvToRgb
 from math import sin, sqrt, fabs, fmod
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Classic plasma (almost)"
 

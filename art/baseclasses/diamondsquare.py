@@ -1,3 +1,5 @@
+from .. _baseclass import ArtBaseClass
+
 from opc.matrix import OPCMatrix
 
 from art.utils.diamondsquare import DiamondSquareAlgorithm
@@ -5,7 +7,7 @@ from art.utils.diamondsquare import DiamondSquareAlgorithm
 DFLTTICKS = 350
 
 
-class DiamondSquare(object):
+class DiamondSquare(ArtBaseClass):
 
     def __init__(self, matrix, generate, maxticks=DFLTTICKS, interpolate=True):
         self.diamond = DiamondSquareAlgorithm(matrix.width, matrix.height)

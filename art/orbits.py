@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from opc.colors import YELLOW, GRAY50, RY2, BLUE
 from math import sin, cos, atan2, sqrt
 
@@ -102,7 +104,7 @@ class Simulation(object):
             body.draw(matrix, cx, cy, scale)
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Simulate orbit of Mercury, Venus, and Earth"
 

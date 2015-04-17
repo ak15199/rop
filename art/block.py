@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from opc.hue import hsvToRgb
 
 from random import random, randrange
@@ -26,7 +28,7 @@ class Rectangle(object):
         return self.value < 1
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Random colored rectangles that fade with time"
 

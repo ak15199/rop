@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from opc.colors import rgb
 from random import randrange, random
 
@@ -237,7 +239,7 @@ class Ball(object):
         matrix.drawPixel(self.x, self.y, rgb["white"])
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Automated pong"
 

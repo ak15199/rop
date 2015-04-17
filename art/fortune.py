@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from opc.colors import BLUE
 from opc.text import OPCText, typeface_bbc
 from random import randint
@@ -6,7 +8,7 @@ import os
 FILE = "assets/fortunes.txt"
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Scroll classic fortunes across the display"
 

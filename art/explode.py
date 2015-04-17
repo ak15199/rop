@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from utils.pen import Pen
 from math import sin, cos, pi, sqrt
 from random import random
@@ -50,7 +52,7 @@ class Shrapnel(Pen):
         return self.paused
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "And then it exploded..."
 

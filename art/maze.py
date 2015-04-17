@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from opc.colors import GRAY40, WHITE, RED
 
 from copy import deepcopy
@@ -19,7 +21,7 @@ MZ_PRIMARIES = [
     ]
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Recursive backtracking maze generation"
 

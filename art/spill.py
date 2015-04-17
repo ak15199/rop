@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from opc import colors
 from opc.hue import hsvToRgb
 
@@ -11,7 +13,7 @@ Make sure that your art has implementations for these.
 
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Seeping spill color across the display"
 

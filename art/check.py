@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from opc.colors import WHITE
 from opc.hue import hsvToRgb
 
@@ -65,7 +67,7 @@ class BarSet(object):
         return self.px == matrix.width or self.py == matrix.height
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Generate checked plaid"
 

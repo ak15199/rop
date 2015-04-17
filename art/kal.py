@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from math import radians, sqrt, sin, cos, ceil
 from random import random
 from opc.colors import WHITE
@@ -14,7 +16,7 @@ class Point(object):
         return self.x, self.y
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Kaleidoscope"
 

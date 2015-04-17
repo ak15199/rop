@@ -1,10 +1,12 @@
+from .. _baseclass import ArtBaseClass
+
 from opc.hue import hsvToRgb
 
 from random import random
 from math import sin, pi
 
 
-class Flow(object):
+class Flow(ArtBaseClass):
 
     huecount = (8+1)  # the addition covers offscreen for recoloring
 
