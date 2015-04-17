@@ -31,9 +31,6 @@ class OPCBuffer(object):
     def __len__(self):
         return len(self.buf)
 
-    def __add___(self, other):
-        pass
-
     def __xor___(self, other):
         pass
 
@@ -184,7 +181,6 @@ class OPCBuffer(object):
     def add(self, source):
         self.buf = self.buf.astype(dtype=DTYPE) | source.buf.astype(dtype=DTYPE)
 
-    @timefunc
     def _convolve(self, kernel):
         guns = []
         scale = np.sum(kernel)*256
@@ -205,3 +201,31 @@ class OPCBuffer(object):
             ], dtype=np.float32)
 
         self._convolve(gaussian)
+
+    def _scroll_left(self, count):
+        a = self.buf[:-1,:].flatten()
+        b = self.buf[-1,:].flatten()
+        self.buf = np.concatenate((b, a)).reshape((self.width, self.height, 3))
+
+    def _scroll_right(self, count):
+        a = self.buf[0,:].flatten()
+        b = self.buf[1:,:].flatten()
+        self.buf = np.concatenate((b, a)).reshape((self.width, self.height, 3))
+
+    def _scroll_up(self, count):
+        raise NotImplementedError
+
+    def _scroll_down(self, count):
+        raise NotImplementedError
+
+    @timefunc
+    def scroll(self, direction, count=1):
+        dispatch = {
+                "left": self._scroll_left,
+                "right": self._scroll_right,
+                "up": self._scroll_up,
+                "down": self._scroll_down,
+                }
+
+        dispatch[direction](count)
+        

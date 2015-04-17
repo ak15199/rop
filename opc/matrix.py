@@ -212,7 +212,11 @@ class OPCMatrix(object):
         Wipe the matrix to any color, defaulting to black.
         """
         self.buf.clear(color)
-    
+
+    def scroll(self, direction):
+        """Scroll the matrix in the given direction (left, right, up, down)"""
+        self.buf.scroll(direction)
+
     @timefunc
     def show(self, channel=0):
         """
