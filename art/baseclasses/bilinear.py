@@ -1,10 +1,12 @@
+from .. _baseclass import ArtBaseClass
+
 from math import fmod
 from random import random
 
 from opc.hue import hsvToRgb
 
 
-class Bilinear(object):
+class Bilinear(ArtBaseClass):
 
     def __init__(self, matrix, bits=None):
         self.bits = bits

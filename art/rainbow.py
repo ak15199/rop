@@ -1,7 +1,9 @@
+from _baseclass import ArtBaseClass
+
 from opc.hue import hsvToRgb
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Slow transition of hues across the display"
 

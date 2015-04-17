@@ -1,9 +1,11 @@
+from _baseclass import ArtBaseClass
+
 from opc.hue import hsvToRgb
 
 from math import sin, cos, fmod, pi
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Radar-like, but without the enemy planes"
 

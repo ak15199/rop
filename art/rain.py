@@ -1,9 +1,11 @@
+from _baseclass import ArtBaseClass
+
 from random import random, randrange
 from math import sqrt
 from utils.pen import Pen
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Rain falling down the display"
 

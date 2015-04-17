@@ -1,17 +1,21 @@
+from _baseclass import ArtBaseClass
+
 from collections import OrderedDict
 from math import sin, cos
 
 from opc.colormap import Colormap
 from opc.colors import rgb
-from opc.scaledmatrix import ScaledMatrix
+from opc.matrix import OPCMatrix
+from random import random
 
 from utils.diamondsquare import DiamondSquareAlgorithm
 
-SCALE = 16
-CENTERZONE = 4
+
+SCALE = 8
+CENTERZONE = 16
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Traverse procedurally generated terrain"
 
@@ -19,7 +23,7 @@ class Art(object):
         self.width = matrix.width*SCALE
         self.height = matrix.height*SCALE
 
-        self.matrix = ScaledMatrix(matrix)
+        self.matrix = OPCMatrix(self.width, self.height, None)
         self.diamond = DiamondSquareAlgorithm(self.matrix.width,
                                               self.matrix.height,
                                               (self.matrix.width +
@@ -36,7 +40,7 @@ class Art(object):
 
         self.diamond.generate()
         self.diamond.translate(self.matrix, colormap=self.colormap)
-        self.matrix.soften(ratio=.5)
+        self.matrix.soften()
 
         self.theta = 0
         self.radius = 0
@@ -50,7 +54,7 @@ class Art(object):
         # center of the matrix:
         #  - when radius is max, then deltatheta is about .005 radians.
         #  - when radius is min, then deltatheta is about .1 radians.
-        deltatheta = 0.004
+        deltatheta = 0.01
         self.theta += deltatheta
         self.radius -= 0.05
 

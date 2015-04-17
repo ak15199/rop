@@ -1,4 +1,5 @@
-import logging
+from _baseclass import ArtBaseClass
+
 from math import sin, cos, pi
 from opc.hue import getColorGen
 from utils.frange import frange
@@ -30,7 +31,7 @@ class Racer(object):
         return self.polar.transform(angle)
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Racing pixels"
 

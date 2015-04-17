@@ -1,38 +1,31 @@
+from _baseclass import ArtBaseClass
+
 from math import sin, cos
 
 from opc.colors import BLACK
 from opc.hue import getColorGen
-from opc.scaledmatrix import ScaledMatrix
 
 SCALE = 4
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Downsample a high-res image to improve perceived clarity"
 
     def __init__(self, matrix):
         self.hue = getColorGen(0.001)
         self.theta = 0.0
-        self.matrix = ScaledMatrix(matrix, scale=SCALE)
-
-        # the width of the rectangle should allow for good fit when it is
-        # rotated 45 degrees. We can invoke the work of pythagoras to determine
-        # the hypotenuse, but rule of thumb (widest point is 1.7 broader than
-        # the narrowest
-        #
-        self.r = min(self.matrix.midWidth, self.matrix.midHeight) * 0.7
 
     def irnd(self, n):
         return int(round(n))
 
-    def poly(self, reduction):
+    def poly(self, matrix, reduction):
         tc = cos(self.theta)
         ts = sin(self.theta)
 
         r = self.r - reduction
-        x = self.matrix.midWidth
-        y = self.matrix.midHeight
+        x = matrix.midWidth
+        y = matrix.midHeight
 
         poly = [
             (self.irnd(x + r*tc - r*ts), self.irnd(y + r*tc + r*ts)),  # UL
@@ -44,17 +37,22 @@ class Art(object):
         return poly
 
     def start(self, matrix):
-        pass
+        matrix.hq(True)
+
+        # the width of the rectangle should allow for good fit when it is
+        # rotated 45 degrees. We can invoke the work of pythagoras to determine
+        # the hypotenuse, but rule of thumb (widest point is 1.7 broader than
+        # the narrowest
+        #
+        self.r = min(matrix.midWidth, matrix.midHeight) * 0.7
 
     def refresh(self, matrix):
-        self.matrix.clear()
         self.theta += 0.05
         color = self.hue.next()
 
-        self.matrix.fillPoly(self.poly(0), color)
-        self.matrix.fillPoly(self.poly(2*SCALE), BLACK)
-
-        self.matrix.scaleDown()
+        matrix.clear()
+        matrix.fillPoly(self.poly(matrix, 0), color)
+        matrix.fillPoly(self.poly(matrix, 2*SCALE), BLACK)
 
     def interval(self):
         return 80

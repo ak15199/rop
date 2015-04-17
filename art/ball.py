@@ -1,10 +1,12 @@
+from _baseclass import ArtBaseClass
+
 from opc.hue import hsvToRgb
 
 from random import random
 from math import fabs
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Bouncy ball"
 

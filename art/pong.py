@@ -1,5 +1,6 @@
-from opc.colors import rgb
+from _baseclass import ArtBaseClass
 
+from opc.colors import rgb
 from random import randrange, random
 
 WINTHRESH = 9
@@ -99,6 +100,7 @@ class Bat(object):
     def __init__(self, width, height, isLeft):
         self.width = width
         self.height = height
+
         self.y = self.height/2 - self.RADIUS
         if isLeft:
             self.x = width - 1
@@ -237,7 +239,7 @@ class Ball(object):
         matrix.drawPixel(self.x, self.y, rgb["white"])
 
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "Automated pong"
 
@@ -261,7 +263,6 @@ class Art(object):
         self.ball.serve(coinToss())
 
     def refresh(self, matrix):
-
         for player in self.players.values():
             opponent = self.players[player.opponent()]
             if opponent.score.wins(WINTHRESH):
