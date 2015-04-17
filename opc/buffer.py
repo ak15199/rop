@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.ndimage import interpolation
+from scipy.misc import imresize
 from scipy import signal
 
 from colors import BLACK
@@ -115,6 +116,9 @@ class OPCBuffer(object):
 
     @timefunc
     def scaledCopy(self, source):
+        #self.buf = imresize(source.buf, (self.width, self.height), interp='bilinear', mode=None)
+        #return 
+
         """
         Reduce the size of the source buffer to fit the destination buffer.
 
@@ -228,4 +232,3 @@ class OPCBuffer(object):
                 }
 
         dispatch[direction](count)
-        
