@@ -63,19 +63,19 @@ or to switch on profiling. Run with `--help` for more information.
 
 The directories are
 
-    .               application directory
-    ./art           contains classes for each of the animations.
-                    You'll notice a template.py file for the bare
-                    bones
-    ./art/utils     helper modules shared between animations
-    ./art/basecls   base classes that animations may derive from
-    ./assets        files that are used by the animations
-    ./opc           an extended interface for using OPC via python
-    ./opc/utils     various utilities used by the framework
+    .                  application directory
+    ./art              contains classes for each of the animations.
+                       You'll notice a template.py file for the bare
+                       bones
+    ./art/utils        helper modules shared between animations
+    ./art/baseclasses  base classes that animations may derive from
+    ./assets           files that are used by the animations
+    ./opc              an extended interface for using OPC via python
+    ./opc/utils        various utilities used by the framework
 
 Check out the existing animations for use as examples, and please commit
 back code that you create!
- 
+
 Running from the Web
 --------------------
 
