@@ -14,14 +14,14 @@ class Phase(object):
         self.angle = random()*pi
         self.freq = (random()+0.5)*0.06
         self.direction = direction
+        self.x = 0 if direction == "left" else self.matrix.width-1
 
     def clock(self, matrix):
         self.matrix.fade(0.96)
-        #self.matrix.drawLine(0, 0, 0, self.matrix.height, BLACK)
         self.matrix.scroll(self.direction)
         y = self.matrix.midHeight + self.matrix.midHeight*sin(self.angle)
         h = self.matrix.height/8
-        self.matrix.drawLine(0, y-h, 0, y+h, self.color)
+        self.matrix.drawLine(self.x, y-h, self.x, y+h, self.color)
         self.angle += self.freq
         matrix.add(self.matrix)
 
@@ -33,7 +33,7 @@ class Art(object):
         with HQ(matrix):
             self.phases = [Phase(matrix, direction, color)
                     for color in (RED, GREEN, BLUE)
-                    for direction in ("left", "right")]
+                    for direction in ["left", "right"]]
 
     def start(self, matrix):
         matrix.hq()
@@ -44,4 +44,4 @@ class Art(object):
             phase.clock(matrix)
 
     def interval(self):
-        return 100
+        return 150
