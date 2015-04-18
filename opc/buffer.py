@@ -1,4 +1,4 @@
-import Image
+from PIL import Image
 
 import numpy as np
 from scipy import signal

@@ -1,7 +1,7 @@
 from copy import deepcopy
 import colorsys
 import operator
-import Image
+from PIL import Image
 import numpy as np
 
 from colors import BLACK
