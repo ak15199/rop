@@ -17,6 +17,7 @@ class Art(ArtBaseClass):
 
     def start(self, matrix):
         matrix.hq()
+        matrix.clear()
 
     def refresh(self, matrix):
         offset = matrix.midHeight
