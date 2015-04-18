@@ -1,5 +1,6 @@
+import Image
+
 import numpy as np
-from scipy.ndimage import interpolation
 from scipy import signal
 
 from colors import BLACK
@@ -114,49 +115,19 @@ class OPCBuffer(object):
             self.buf[:][:] = window
 
     @timefunc
+    def copyImage(self, image):
+        self.buf = np.asarray(image)
+        self.buf.setflags(write=True)
+
+    @timefunc
     def scaledCopy(self, source):
-        """
-        Reduce the size of the source buffer to fit the destination buffer.
-
-        Process each gun independently. For each gun, we need to reshape
-        its array so as to line up all of the values associated with the
-        superpixel in a single row. This allws us to perform a mean
-        operation on the array, essentially building the new buffer
-
-        For the array a=np.arange(4*4*3).reshape((4,4,3)), reds will
-        consist of:
-
-              array([[ 0,  3,  6,  9],
-                     [12, 15, 18, 21],
-                     [24, 27, 30, 33],
-                     [36, 39, 42, 45]])
-
-        If we're going from 4x4 to 2x2, then the reduction ratio is 2,
-        meaning that we will take four values from the superpixel to
-        calculate the new value.  In this case, the top LH pixel will be
-        the average of (0, 3, 12, 15).
-        """
-
-        ratio = source.width / self.width
-        if ratio < 1:  # Can't zoom up
-            # XXX: This should throw
-            return
-
-        guns = []
-        r, g, b = source.reds(), source.greens(), source.blues()
-        for gun in (r, g, b):
-            new = np.average(np.split(np.average(np.split(gun, source.width //
-                             ratio, axis=1), axis=-1),
-                             source.height // ratio, axis=1),
-                             axis=-1)
-            guns.append(new)
-
-        self.buf = np.dstack(guns).reshape((self.width, self.height, 3))
+        i = Image.fromarray(source.buf.astype(DTYPE))
+        self.copyImage(i.resize((self.width, self.height), Image.ANTIALIAS))
 
     @timefunc
     def rotate(self, angle):
-        self.buf = interpolation.rotate(self.buf, angle, reshape=False,
-                output=DTYPE)
+        i = Image.fromarray(self.buf.astype(DTYPE))
+        self.copyImage(i.rotate(angle, Image.BICUBIC))
 
     @timefunc
     def flip(self, ud, lr):
@@ -228,4 +199,3 @@ class OPCBuffer(object):
                 }
 
         dispatch[direction](count)
-        
