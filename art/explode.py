@@ -1,55 +1,8 @@
 from _baseclass import ArtBaseClass
 
-from utils.pen import Pen
+from utils.shrapnel import Shrapnel
 from math import sin, cos, pi, sqrt
 from random import random
-
-
-class Shrapnel(Pen):
-    def __init__(self, matrix, motion_cycles):
-        self.centerx = matrix.width/2.0
-        self.centery = matrix.height/2.0
-        self.cycles = motion_cycles
-
-        # we will reset some params to sensible values in a minute, so let's
-        # not fuss with x, y, dx, dy now
-        super(Shrapnel, self).__init__(
-            matrix.width,
-            matrix.height,
-            0, 0, 0, 0,
-            )
-
-        super(Shrapnel, self).setBumpStrategy(self._pause, x=True, y=True)
-
-        self.reset(matrix)
-
-    def _pause(self, x=None, y=None):
-        self.paused = True
-
-    def reset(self, matrix):
-        # the furthest distance any pen will have to travel is on the diagonal
-        maxDimension = sqrt(matrix.width*matrix.width + matrix.height*matrix.height)
-
-        # slowest pens need to cover the distance in cycles time, but there may be
-        # some that go faster
-        velocity = maxDimension/(2.0*self.cycles) + 0.05*random()*maxDimension
-
-        angle = random()*2*pi
-        self.dx = velocity * sin(angle)
-        self.dy = velocity * cos(angle)
-
-        self.x = self.centerx
-        self.y = self.centery
-        self.paused = False
-
-    def clock(self, matrix):
-        super(Shrapnel, self).clock(matrix)
-
-        # slow over time
-        # XXX: this may cause problems for larger spans?
-        self.dx *= 0.99
-        self.dy *= 0.99
-        return self.paused
 
 
 class Art(ArtBaseClass):
@@ -63,7 +16,7 @@ class Art(ArtBaseClass):
         self.pieces = int(sqrt(matrix.numpix))
 
         cycles = int(sqrt(matrix.numpix)*2)
-        self.shrapnel = [Shrapnel(matrix, cycles) for i in range(self.pieces)]
+        self.shrapnel = [Shrapnel(matrix, cycles, decelerate=True) for i in range(self.pieces)]
 
     def start(self, matrix):
         matrix.clear()
