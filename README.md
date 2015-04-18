@@ -10,17 +10,23 @@ https://github.com/scanlime/fadecandy for more background on this project.
 Installation
 ------------
 
-The code has been run on OSX with Python 2.7, and the only extra you'll need
-is numpy to support fastopc and array math. Typically you'd run something
-like:
+The code has been run on OSX with Python 2.7, and there are a few extras
+you'll need before you can start. Typically you'd run something like:
 
     # pip install -r requirements.txt
 
-as the super user to install. On the off-chance that the installation gets
-a hiccup, numpy is pretty well documented and you should be able to figure
-it out. If you find that performance isn't as you'd expect, then it may be
-that there are some ancillary packages missing which numpy relies on for
-optimum performance. Again, the numpy docs are pretty good.
+as the super user to install. Or maybe - if you prefer - you'd install in
+a virtualenv. On the off-chance that the installation gets a hiccup:
+
+  - numpy is pretty well documented and you should be able to figure
+    it out. Some distros have a natively installable package to use instead
+    of the pip equivalent. If you ido install bug get crappy performance,
+    then it may be that there are some ancillary packages missing which numpy
+    relies on for optimum performance. Again, the numpy docs are pretty good.
+
+  - Either Pillow or it's predecessor PIL should work just fine, just
+    make sure that you have one or the other installed. Probably not both
+    though.
 
 Getting Started
 ---------------
@@ -57,19 +63,19 @@ or to switch on profiling. Run with `--help` for more information.
 
 The directories are
 
-    .               application directory
-    ./art           contains classes for each of the animations.
-                    You'll notice a template.py file for the bare
-                    bones
-    ./art/utils     helper modules shared between animations
-    ./art/basecls   base classes that animations may derive from
-    ./assets        files that are used by the animations
-    ./opc           an extended interface for using OPC via python
-    ./opc/utils     various utilities used by the framework
+    .                  application directory
+    ./art              contains classes for each of the animations.
+                       You'll notice a template.py file for the bare
+                       bones
+    ./art/utils        helper modules shared between animations
+    ./art/baseclasses  base classes that animations may derive from
+    ./assets           files that are used by the animations
+    ./opc              an extended interface for using OPC via python
+    ./opc/utils        various utilities used by the framework
 
 Check out the existing animations for use as examples, and please commit
 back code that you create!
- 
+
 Running from the Web
 --------------------
 
