@@ -1,6 +1,7 @@
 from copy import deepcopy
 import colorsys
 import operator
+import Image
 import numpy as np
 
 from colors import BLACK
@@ -522,9 +523,9 @@ class OPCMatrix(object):
             if y >= 0 and y < self.height:
                 self._fillPolyRow(y, sorted(set(rows[y])), color)
 
-        @timefunc
-        def drawImage(self, filename, scale=1, x=0, y=0):
-            i = Image.open(filename).rotate(-90, Image.BICUBIC)
-            i = i.resize((matrix.width, matrix.height), Image.ANTIALIAS)
+    @timefunc
+    def drawImage(self, filename, scale=1, x=0, y=0):
+        i = Image.open(filename).rotate(-90, Image.BICUBIC)
+        i = i.resize((self.width, self.height), Image.ANTIALIAS)
 
-            self.buf.copyImage(i)
+        self.buf.copyImage(i)
