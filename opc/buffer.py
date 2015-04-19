@@ -1,7 +1,6 @@
-from PIL import Image
+from PIL import Image, ImageFilter
 
 import numpy as np
-from scipy import signal
 
 from colors import BLACK
 from utils.prof import timefunc
@@ -152,26 +151,10 @@ class OPCBuffer(object):
     def add(self, source):
         self.buf = self.buf.astype(dtype=DTYPE) | source.buf.astype(dtype=DTYPE)
 
-    def _convolve(self, kernel):
-        guns = []
-        scale = np.sum(kernel)*256
-        r, g, b = self.reds(), self.greens(), self.blues()
-        for gun in (r, g, b):
-            new = signal.convolve2d(gun/scale, kernel, mode="same",
-            boundary="symm")
-            guns.append(new*255)
-
-        self.buf = np.dstack(guns).reshape((self.width, self.height, 3))
-
     @timefunc
-    def blur(self):
-        gaussian = np.array([
-            [1, 2, 1],
-            [2, 4, 2],
-            [1, 2, 1],
-            ], dtype=np.float32)
-
-        self._convolve(gaussian)
+    def blur(self, radius):
+        i = Image.fromarray(self.buf.astype(DTYPE))
+        self.copyImage(i.filter(ImageFilter.GaussianBlur(radius)))
 
     def _scroll_left(self, count):
         a = self.buf[:-1,:].flatten()

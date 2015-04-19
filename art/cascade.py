@@ -31,7 +31,6 @@ TUNE_ME = 1.03
 
 class Art(ArtBaseClass):
 
-    # XXX: Honestly, I have no idea how I made it do this.
     description = "Color cascade (needs tuning for > 32x32)"
 
     def __init__(self, matrix):
@@ -44,8 +43,9 @@ class Art(ArtBaseClass):
         matrix.clear()
 
     def refresh(self, matrix):
-        # XXX: magic follows
-        matrix.soften()
+        # this relies on the fact that the pixels we seed get multiplied and
+        # overfow the uint8
+        matrix.blur(3)
         matrix.buf.buf = (TUNE_ME*matrix.buf.buf).astype(np.uint8)
 
         self.amp += DELTA_AMP

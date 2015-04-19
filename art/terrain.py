@@ -40,7 +40,7 @@ class Art(ArtBaseClass):
 
         self.diamond.generate()
         self.diamond.translate(self.matrix, colormap=self.colormap)
-        self.matrix.soften()
+        self.matrix.blur()
 
         self.theta = 0
         self.radius = 0

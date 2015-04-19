@@ -184,9 +184,9 @@ class OPCMatrix(object):
         buf = self.buf.buf * divisor
         self.buf.buf = buf.astype(dtype=DTYPE)
 
-    def soften(self):
+    def blur(self, radius=3):
         """Soften influence pixel color from our neighbors"""
-        self.buf.blur()
+        self.buf.blur(radius)
 
     def rotate(self, angle):
         """Rotate the buffer by the given angle"""
