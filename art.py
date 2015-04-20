@@ -11,6 +11,7 @@ from traceback import format_exception
 import dpyinfo
 from importer import ImportPlugins
 
+from opc.colors import GRAY50, BLUE
 from opc.error import TtyTooSmall
 from opc.matrix import OPCMatrix
 import opc.utils.prof as prof
@@ -31,6 +32,7 @@ def matrixDone():
             pass
 
         matrix.terminate()
+
 
 def exceptionHandler(etype, evalue, etraceback):
     matrixDone()
@@ -93,6 +95,23 @@ def _v(attr, default):
         return default
 
 
+def progress(index, total):
+    global matrix
+
+    if total < 2:
+        return
+
+    matrix.clear()
+
+    width = matrix.width-2
+    offset = float(width*index)/total
+
+    matrix.fillRect(1, matrix.midHeight-1, width, 2, GRAY50)
+    matrix.fillRect(1, matrix.midHeight-1, offset, 2, BLUE)
+
+    matrix.show()
+
+
 def main():
     global matrix
 
@@ -119,7 +138,7 @@ def main():
         _v("FLIPUP", False), _v("FLIPLR", False)
         )
 
-    arts = ImportPlugins("art", [], args.art, matrix)
+    arts = ImportPlugins("art", [], args.art, matrix, progress=progress)
     if len(arts) == 0:
         matrix.terminate()
         print "Couldn't find any art to execute"

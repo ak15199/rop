@@ -22,11 +22,13 @@ def getPluginList(plugindir, excludes, includes):
             if moduleQualifies(dir, f, excludes, includes)]
 
 
-def ImportPlugins(dir, excludes, includes, args):
-    plugins = {}
+def ImportPlugins(dir, excludes, includes, args, progress=None):
+    output = {}
     excludes.append("__init__.py")
 
-    for plugin in getPluginList(dir, excludes, includes):
+    plugins = getPluginList(dir, excludes, includes)
+    total = len(plugins)
+    for index, plugin in enumerate(plugins):
         try:
             module = __import__(
                 dir+'.'+plugin,
@@ -42,7 +44,10 @@ def ImportPlugins(dir, excludes, includes, args):
             else:
                 logging.info("%s: [None]" % (plugin))
 
-            plugins[plugin] = obj
+            if progress is not None:
+                progress(index, total)
+
+            output[plugin] = obj
         except Exception:  # yes, we want to catch everything
             logging.error("%s: import failed, details follow: " % (plugin))
 
@@ -50,4 +55,4 @@ def ImportPlugins(dir, excludes, includes, args):
             for line in format_exception(etype, evalue, etraceback):
                 logging.error('    Exception: '+line.rstrip('\n'))
 
-    return plugins
+    return output
