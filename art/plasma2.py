@@ -20,7 +20,7 @@ class Art(DiamondSquare):
         self.colormap.flat(80, 90, RED)
         self.colormap.flat(110, 120, GREEN)
 
-        self.colormap.blur()
+        self.colormap.soften()
 
         self.diamond.generate()
 
