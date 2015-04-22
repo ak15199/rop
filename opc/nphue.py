@@ -54,7 +54,6 @@ def hsv_to_rgb(hsv):
 
 @timefunc
 def h_to_rgb(h, sat=1, val=255.0):
-    
     # Local variation of hsv_to_rgb that only cares about a variable
     # hue, with (s,v) assumed to be constant
     # h should be a numpy array with values between 0.0 and 1.0
@@ -63,17 +62,4 @@ def h_to_rgb(h, sat=1, val=255.0):
     v = np.full_like(h, val)
     hsv = np.dstack((h, s, v))
 
-    rgb = np.empty_like(hsv)
-    rgb[..., 3:] = hsv[..., 3:]
-    h, s, v = hsv[..., 0], hsv[..., 1], hsv[..., 2]
-    i = (h * 6.0).astype('uint8')
-    f = (h * 6.0) - i
-    p = v * (1.0 - s)
-    q = v * (1.0 - s * f)
-    t = v * (1.0 - s * (1.0 - f))
-    i = i % 6
-    conditions = [s == 0.0, i == 1, i == 2, i == 3, i == 4, i == 5]
-    rgb[..., 0] = np.select(conditions, [v, q, p, p, t, v], default=v)
-    rgb[..., 1] = np.select(conditions, [v, v, v, q, p, p], default=t)
-    rgb[..., 2] = np.select(conditions, [v, p, t, v, v, q], default=p)
-    return rgb.astype('uint8')
+    return hsv_to_rgb(hsv)
