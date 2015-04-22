@@ -41,7 +41,7 @@ class Art(ArtBaseClass):
 
         color = hsvToRgb(fmod(self.hue, 1), 1, 1)
 
-        matrix.drawRect(x-2, y-2, 4, 4, color)
+        matrix.drawRect(x-4, y-4, 8, 8, color)
 
     def interval(self):
         return 40
