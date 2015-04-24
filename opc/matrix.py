@@ -15,6 +15,7 @@ from fastopc import FastOPC as OpcClient
 
 from utils.prof import timefunc
 
+import logging
 
 DTYPE = np.uint8
 
@@ -524,8 +525,5 @@ class OPCMatrix(object):
                 self._fillPolyRow(y, sorted(set(rows[y])), color)
 
     @timefunc
-    def drawImage(self, filename, scale=1, x=0, y=0):
-        i = Image.open(filename).rotate(-90, Image.BICUBIC)
-        i = i.resize((self.width, self.height), Image.ANTIALIAS)
-
-        self.buf.copyImage(i)
+    def copyBuffer(self, buf):
+        self.buf.copyImage(buf)
