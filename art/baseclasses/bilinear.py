@@ -8,8 +8,7 @@ from opc.hue import hsvToRgb
 
 class Bilinear(ArtBaseClass):
 
-    def __init__(self, matrix, bits=None):
-        self.bits = bits
+    def __init__(self, matrix, config):
         self.cornerValueDeltas = [
             self._delta(), self._delta(), self._delta(), self._delta(),
             ]

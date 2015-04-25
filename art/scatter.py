@@ -12,7 +12,7 @@ class Art(ArtBaseClass):
 
     description = "Use an LFSR to 'randomly' fill the display"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         pass
 
     def start(self, matrix):

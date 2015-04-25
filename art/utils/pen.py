@@ -63,9 +63,15 @@ class Pen(object):
     def none(self, x=False, y=False):
         pass
 
+    def _plot(self, matrix, color):
+        if self.radius == 0:
+            matrix.drawPixel(self.x, self.y, color)
+        else:
+            matrix.fillCircle(self.x, self.y, self.radius, color)
+
     def clock(self, matrix):
         if not self.persist:
-            matrix.drawPixel(self.x, self.y, BLACK)
+            self._plot(matrix, BLACK)
 
         self.x += self.dx
         if (self.x < 1 and self.dx < 0) or \
@@ -77,11 +83,6 @@ class Pen(object):
                 (self.y >= self.h-1 and self.dy > 0):
             self.ay(y=True)
 
-        if self.radius == 0:
-            matrix.drawPixel(self.x, self.y,
-                             hsvToRgb(self.hue, s=self.saturation, v=self.value))
-        else:
-            matrix.fillCircle(self.x, self.y, self.radius,
-                              hsvToRgb(self.hue, s=self.saturation, v=self.value))
+        self._plot(matrix, hsvToRgb(self.hue, s=self.saturation, v=self.value))
 
         self.hue = fmod(self.hue + self.huedelta, 1)

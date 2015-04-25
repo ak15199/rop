@@ -4,39 +4,43 @@ from random import random, randrange
 from math import sqrt
 from utils.pen import Pen
 
+from opc.matrix import HQ
 
 class Art(ArtBaseClass):
 
     description = "Rain falling down the display"
 
-    def __init__(self, matrix):
-        hue = random()
-        pencount = int(sqrt(matrix.width*matrix.height/2))
+    def __init__(self, matrix, config):
+        with HQ(matrix):
+            hue = random()
+            pencount = int(sqrt(matrix.width*matrix.height/2))
 
-        self.pens = []
-        for pen in range(pencount):
-            speed = (1.0+pen)/pencount
+            self.pens = []
+            for pen in range(pencount):
+                speed = float(4*pen)/pencount
 
-            # height is longer than the height of the screen, so drops stay
-            # off screen for a little while
-            height = int(matrix.height*1.3)
+                # height is longer than the height of the screen, so drops stay
+                # off screen for a little while
+                height = int(matrix.height*1.1)
 
-            pen = Pen(
-                matrix.width, height,
-                randrange(matrix.width), height,
-                0, -speed,
-                hue=hue,
-                persist=False)
+                pen = Pen(
+                    matrix.width, height,
+                    randrange(matrix.width), height,
+                    0, -speed,
+                    hue=hue,
+                    radius=4,
+                    persist=False)
 
-            pen.setValue(speed)
-            pen.setBumpStrategy(pen.random, x=True)
-            pen.setBumpStrategy(pen.reset, y=True)
+                pen.setValue(speed)
+                pen.setBumpStrategy(pen.random, x=True)
+                pen.setBumpStrategy(pen.reset, y=True)
 
-            self.pens.append(pen)
+                self.pens.append(pen)
 
     def start(self, matrix):
-        matrix.setFirmwareConfig(nointerp=True)
+        #matrix.setFirmwareConfig(nointerp=True)
         matrix.clear()
+        matrix.hq()
 
     def refresh(self, matrix):
         for pen in self.pens:

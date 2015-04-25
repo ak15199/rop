@@ -8,7 +8,7 @@ import sys
 from time import sleep, time
 from traceback import format_exception
 
-import dpyinfo
+import config
 from importer import ImportPlugins
 
 from opc.colors import GRAY50, BLUE
@@ -90,7 +90,7 @@ def run(arts, args):
 
 def _v(attr, default):
     try:
-        return getattr(dpyinfo, attr)
+        return getattr(config, attr)
     except:
         return default
 
@@ -138,7 +138,8 @@ def main():
         _v("FLIPUP", False), _v("FLIPLR", False)
         )
 
-    arts = ImportPlugins("art", [], args.art, matrix, progress=progress)
+    arts = ImportPlugins("art", [], args.art, progress,
+            matrix, config.config)
     if len(arts) == 0:
         matrix.terminate()
         print "Couldn't find any art to execute"

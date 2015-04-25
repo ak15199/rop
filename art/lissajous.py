@@ -13,7 +13,7 @@ class Art(ArtBaseClass):
 
     description = "Lissajous figures"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.color = getColorGen(0.01)
         self.phase_z = 0
 

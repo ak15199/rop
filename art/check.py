@@ -71,7 +71,7 @@ class Art(ArtBaseClass):
 
     description = "Generate checked plaid"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.horizontal = True
 
     def start(self, matrix):

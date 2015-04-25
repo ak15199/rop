@@ -13,7 +13,7 @@ SIZE = 6
 
 class Blobs(ArtBaseClass):
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         with HQ(matrix):
             self.pens = []
             for i in range(PENS):

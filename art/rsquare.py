@@ -12,7 +12,7 @@ class Art(ArtBaseClass):
 
     description = "Downsample a high-res image to improve perceived clarity"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.hue = getColorGen(0.001)
         self.theta = 0.0
 

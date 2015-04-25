@@ -36,7 +36,7 @@ class Art(ArtBaseClass):
 
     description = "Grab random images from the internet and pan over them"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         w = matrix.width*16
         h = matrix.height*16
         self.url="http://lorempixel.com/%s/%d/"%(w, h)

@@ -6,7 +6,7 @@ class Art(ArtBaseClass):
 
     description = "Sparse Balistics"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.gun = Gun(matrix)
 
     def start(self, matrix):

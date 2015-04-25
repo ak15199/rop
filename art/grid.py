@@ -33,7 +33,7 @@ class Art(object):
 
     description = "RGB overlapping grids"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         with HQ(matrix):
             self.phases = [Phase(matrix, color)
                     for color in (RED, GREEN, BLUE, GRAY50)]

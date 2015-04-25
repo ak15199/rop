@@ -15,7 +15,7 @@ class Art(ArtBaseClass):
 
     description = "Loop the loop"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.hue = 0
         self.ang = 0
         self.amp = 0

@@ -10,10 +10,9 @@ class Flow(ArtBaseClass):
 
     huecount = (8+1)  # the addition covers offscreen for recoloring
 
-    def __init__(self, matrix, contiguous):
+    def __init__(self, matrix, config):
         self.base = 0
         self.offset = 0
-        self.contiguous = contiguous
         self.usecount = []
         self.blocksize = matrix.numpix/(self.huecount-1)
 

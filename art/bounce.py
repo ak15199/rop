@@ -67,7 +67,7 @@ class Art(object):
 
     description = "Your description goes right here"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         vectorcount = int(sqrt(matrix.numpix)/4)
         self.vectors = Vectors(matrix, vectorcount)
 

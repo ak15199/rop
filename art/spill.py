@@ -17,7 +17,7 @@ class Art(ArtBaseClass):
 
     description = "Seeping spill color across the display"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.width = matrix.width
         self.height = matrix.height
         self.perCycle = sqrt(matrix.numpix)/4

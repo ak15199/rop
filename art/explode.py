@@ -11,7 +11,7 @@ class Art(ArtBaseClass):
 
     PAUSE_CYCLES = 10
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.pause = 0
         self.pieces = int(sqrt(matrix.numpix))
 

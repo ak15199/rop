@@ -10,7 +10,7 @@ class Art(ArtBaseClass):
 
     description = "Bouncy ball"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.radius = 1.5
         self.x = self.radius
         self.dx = 5

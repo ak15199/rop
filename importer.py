@@ -22,7 +22,7 @@ def getPluginList(plugindir, excludes, includes):
             if moduleQualifies(dir, f, excludes, includes)]
 
 
-def ImportPlugins(dir, excludes, includes, args, progress=None):
+def ImportPlugins(dir, excludes, includes, progress, matrix, config):
     output = {}
     excludes.append("__init__.py")
 
@@ -36,7 +36,7 @@ def ImportPlugins(dir, excludes, includes, args, progress=None):
                 locals(),
                 ["Art"],
                 -1)
-            obj = module.Art(args)
+            obj = module.Art(matrix, config)
 
             desc = getattr(obj, "description", None)
             if desc is not None:

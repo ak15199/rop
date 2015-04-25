@@ -19,7 +19,7 @@ class Art(ArtBaseClass):
 
     description = "Traverse procedurally generated terrain"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.width = matrix.width*SCALE
         self.height = matrix.height*SCALE
 

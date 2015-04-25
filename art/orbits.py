@@ -108,7 +108,7 @@ class Art(ArtBaseClass):
 
     description = "Simulate orbit of Mercury, Venus, and Earth"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.scale = min(matrix.width, matrix.height) / (2 * AU)
         self.cx, self.cy = matrix.width/2.0, matrix.height/2.0
         self.simulation = Simulation()

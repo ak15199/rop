@@ -13,7 +13,7 @@ class Art(ArtBaseClass):
 
     description = "Demo image rotation"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.hue = getColorGen(0.006)
         self.margin = sqrt(matrix.numpix) * 0.7
         self.direction = 5

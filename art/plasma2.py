@@ -8,7 +8,7 @@ class Art(DiamondSquare):
 
     description = "Thin plasma using DiamondSquare and colormap rotation"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         super(Art, self).__init__(matrix, self.generate, maxticks=20,
                                   interpolate=False)
 

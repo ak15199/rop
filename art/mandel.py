@@ -14,7 +14,7 @@ class Art(ArtBaseClass):
 
     description = "Auto-zooming mandelbrot"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.mandel = Mandelbrot(matrix.width, matrix.height, ITERSTEPS)
         # this gives a pretty good view of the artifact at max zoom
         self.origin = Region(-2.0, -1.5, 1.0, 1.5)

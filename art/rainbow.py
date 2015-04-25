@@ -7,7 +7,7 @@ class Art(ArtBaseClass):
 
     description = "Slow transition of hues across the display"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.base = 0
 
     def start(self, matrix):

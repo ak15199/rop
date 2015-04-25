@@ -10,7 +10,7 @@ class Art(ArtBaseClass):
 
     description = "Churning candy"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         with HQ(matrix):
             self.pieces = int(sqrt(matrix.numpix))
 

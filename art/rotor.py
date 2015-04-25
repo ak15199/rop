@@ -9,7 +9,7 @@ class Art(ArtBaseClass):
 
     description = "Radar-like, but without the enemy planes"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.angle = 0.0
         self.hue = 0
         self.astep = pi/48

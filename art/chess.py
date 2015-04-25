@@ -6,7 +6,7 @@ class Art(ArtBaseClass):
 
     GRIDSIZE = 8
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         pass
 
     def start(self, matrix):

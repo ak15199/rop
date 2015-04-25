@@ -1,3 +1,5 @@
+from _baseclass import ArtBaseClass
+
 from math import sin, cos, pi
 from random import random
 
@@ -25,11 +27,11 @@ class Phase(object):
         self.angle += self.freq
         matrix.add(self.matrix)
 
-class Art(object):
+class Art(ArtBaseClass):
 
     description = "RGB variable frequency sine waves"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         with HQ(matrix):
             self.phases = [Phase(matrix, direction, color)
                     for color in (RED, GREEN, BLUE)

@@ -32,7 +32,7 @@ class Art(ArtBaseClass):
 
     description = "Random colored rectangles that fade with time"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.rect = Rectangle(matrix)
 
     def start(self, matrix):

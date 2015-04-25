@@ -7,7 +7,7 @@ class ArtBaseClass(object):
 
     description = "Art description goes here"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         raise NotImplementedError
 
     def start(self, matrix):

@@ -8,7 +8,7 @@ class Art(ArtBaseClass):
 
     description = "Classic plasma (almost)"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         ones = np.ones(matrix.numpix).reshape((matrix.height, matrix.width))
         self.x = ones*np.arange(matrix.width)
         self.y = np.flipud(np.rot90(ones*np.arange(matrix.height)))
@@ -43,4 +43,4 @@ class Art(ArtBaseClass):
         self.base += 0.1
 
     def interval(self):
-        return 100
+        return 60

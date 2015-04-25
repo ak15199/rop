@@ -40,7 +40,7 @@ class Art(ArtBaseClass):
     each direction, but this needs some work.
     """
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.width = matrix.width - 1
         self.height = matrix.height - 1
         self.matrix = matrix.clone()

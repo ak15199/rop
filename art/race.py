@@ -35,7 +35,7 @@ class Art(ArtBaseClass):
 
     description = "Racing pixels"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.hue = getColorGen(0.001)
         self.clock = 0
         self.racers = []

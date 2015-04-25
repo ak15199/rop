@@ -8,7 +8,7 @@ class Art(ArtBaseClass):
 
     description = "Bubbling pixels"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.pieces = int(sqrt(matrix.numpix))
 
         cycles = int(sqrt(matrix.numpix)*2)

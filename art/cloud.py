@@ -5,7 +5,7 @@ class Art(DiamondSquare):
 
     description = "Clouds drawn with the diamond square algorithm"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         super(Art, self).__init__(matrix, self.generate)
         self.hue = 0.1
 

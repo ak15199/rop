@@ -22,7 +22,7 @@ class Art(ArtBaseClass):
 
     FITHALF = 0.45 # squeeze radius into 90% of display area
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.angle = 0
         self.hue = getHueGen(0.01)
         self.radius = sqrt(matrix.numpix) * self.FITHALF

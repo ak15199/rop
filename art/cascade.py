@@ -33,7 +33,7 @@ class Art(ArtBaseClass):
 
     description = "Color cascade (needs tuning for > 32x32)"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.hue = 0
         self.ang = 0
         self.amp = 0

@@ -9,7 +9,7 @@ class Art(ArtBaseClass):
 
     description = "Rolling sine wave marks border between contrasting colors"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self.hue1 = getColorGen(step=0.00001, hue=0.0)
         self.hue2 = getColorGen(step=0.00001, hue=0.5)
 

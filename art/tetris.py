@@ -279,7 +279,7 @@ class Art(ArtBaseClass):
 
     description = "Anyone for a game of Tetris?"
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, config):
         self._newGame()
 
     def _newGame(self):
