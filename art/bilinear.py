@@ -8,5 +8,4 @@ class Art(Bilinear):
     def __init__(self, matrix, config):
         super(Art, self).__init__(matrix, config)
 
-
-
+        self.bits = None
