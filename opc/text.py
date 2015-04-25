@@ -2,7 +2,6 @@ typeface_bbc = {
     "description": "Typeface from the Acorn BBC Computer",
     "geometry": {"width": 8, "height": 8},
     "bitmaps": [
-
         0x00000000, 0x00000000, 0x18181818, 0x18001800,   # (spc) !
         0x6c6c6c00, 0x00000000, 0x36367f36, 0x7f363600,   # " #
         0x0c3f683e, 0x0b7e1800, 0x60660c18, 0x30660600,   # $ %
@@ -50,7 +49,7 @@ typeface_bbc = {
         0x0000663c, 0x183c6600, 0x00006666, 0x663e063c,   # x y
         0x00007e0c, 0x18307e00, 0x0c181870, 0x18180c00,   # z {
         0x18181800, 0x18181800, 0x3018180e, 0x18183000,   # | }
-
+        0x00000018, 0x18000000, 0x00000018, 0x18000000,   # n/a
     ],
 }
 
@@ -64,8 +63,9 @@ class OPCText(object):
     def __init__(self, typeface):
         self.typeface = typeface
 
-    def drawHalfLetter(self, matrix, x, y, letter, offset, fg, bg):
-        word = self.typeface["bitmaps"][2*letter+offset]
+    def drawHalfChar(self, matrix, x, y, char, offset, fg, bg):
+        word = self.typeface["bitmaps"][2*char+offset]
+
         ybase = y + 4*(1-offset)
         for window in range(4):
             byte = word & 0xff
@@ -78,10 +78,10 @@ class OPCText(object):
 
                 byte = byte >> 1
 
-    def drawLetter(self, matrix, x, y, char, fg, bg):
-        letter = ord(char) - 32  # printable ASCII starts at index 32
-        self.drawHalfLetter(matrix, x, y, letter, 0, fg, bg)
-        self.drawHalfLetter(matrix, x, y, letter, 1, fg, bg)
+    def drawChar(self, matrix, x, y, char, fg, bg):
+        char = ord(char) - 32  # printable ASCII starts at index 32
+        self.drawHalfChar(matrix, x, y, char, 0, fg, bg)
+        self.drawHalfChar(matrix, x, y, char, 1, fg, bg)
 
     def drawText(self, matrix, x, y, string, fg, bg):
         offset = 0
@@ -89,7 +89,10 @@ class OPCText(object):
             xpos = x+offset
             if xpos >= -7:
                 if xpos-7 < matrix.width:
-                    self.drawLetter(matrix, xpos, y, char, fg, bg)
+                    try:
+                        self.drawChar(matrix, xpos, y, char, fg, bg)
+                    except IndexError: # when char has no bitmap
+                        self.drawChar(matrix, xpos, y, chr(127), fg, bg)
                 else:
                     return None
 
