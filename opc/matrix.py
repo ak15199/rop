@@ -1,3 +1,4 @@
+from drivers import select
 from copy import deepcopy
 import colorsys
 import operator
@@ -9,15 +10,11 @@ from hue import rgbToHsv, hsvToRgb
 import nphue
 
 from buffer import OPCBuffer
-from ansiclient import AnsiClient
-from rawclient import RawClient
-from fastopc import FastOPC as OpcClient
 
 from utils.prof import timefunc
 
-import logging
-
 DTYPE = np.uint8
+
 
 class HQ(object):
 
@@ -34,7 +31,6 @@ class HQ(object):
 
                 with HQ(matrix):
                     initialization stuff...
-
     """
 
     def __init__(self, matrix):
@@ -50,23 +46,21 @@ class HQ(object):
 class OPCMatrix(object):
 
     """
-    This is loosely based on the Adafruit GFX library, although there
-    are a ton of differences. Some of the differences are where features
-    have not yet been implemented through necessity, but will be one day.
+    This is the main class for interacting with a display. Generally
+    speaking, most of what  you need to operate on a display is accessible
+    through the matrix api.
 
-    Others are additional effects that are here because they seemed
-    pretty cool. Like setting firmware configs on a connection, or
-    performing a HSV shift on the array.
+    Implementation-wise, the address you provide in the constructor
+    will determine which hardware driver is invoked.
 
-    check out the additional classes in this module for more code, and
-    see the examples provided for usage.
+    check out the other classes in this module for more information, and see
+    the provided examples for usage.
     """
 
     HQMULT = 4
 
     @timefunc
-    def __init__(self, width, height, address,
-            zigzag=False, flipud=False, fliplr=False):
+    def __init__(self, width, height, address, zigzag=False, flipud=False, fliplr=False):
         """
         width -- renderable width
         height -- renderable height
@@ -76,37 +70,27 @@ class OPCMatrix(object):
         fliplr -- left is right
         """
 
-        self.internal = address is None
+        self.width = width
+        self.height = height
+        self.zigzag = zigzag
+        self.flipud = flipud
+        self.fliplr = fliplr
 
         self.buf_std = OPCBuffer(width, height)
-        # only "real" displays get a high quality option
-        if self.internal:
+        if address is None:
+            # matrix instances without an address are used as intermediate
+            # buffers by various arts
+            self.client = None
             self.buf_hq = self.buf_std
+            self.internal = True
         else:
+            module = select.driver(address)
+            self.client = module.Driver(width, height, address)
+            # only "real" displays get a high quality option
             self.buf_hq = OPCBuffer(width*self.HQMULT, height*self.HQMULT)
+            self.internal = False
 
         self.hq(False)
-
-        if self.internal:
-            self.client = None
-        elif address[0:4] == 'ansi':
-            self.client = AnsiClient(address)
-            self.client.setGeometry(width, height)
-            self.zigzag = False
-            self.flipud = False
-            self.fliplr = False
-        elif address[0:3] == 'raw':
-            self.client = RawClient()
-            self.client.setGeometry(width, height)
-            self.zigzag = False
-            self.flipud = False
-            self.fliplr = True
-        else:
-            self.client = OpcClient(address)
-            self.zigzag = zigzag
-            self.flipud = flipud
-            self.fliplr = fliplr
-
         self.setCursor()
 
     @timefunc
@@ -475,10 +459,7 @@ class OPCMatrix(object):
 
     @timefunc
     def terminate(self):
-        try:
-            self.client.terminate()
-        except AttributeError:
-            pass  # pass if it's a non-ansi client
+        self.client.terminate()
 
     def _fillPolyRow(self, y, xs, color):
         # XXX: assume that the polygon is always convex or flat, never

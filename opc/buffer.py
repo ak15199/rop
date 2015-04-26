@@ -11,10 +11,6 @@ DTYPE = np.uint8
 class OPCBuffer(object):
     """
     Provdes primitive buffer-level storage and operations.
-
-    OPCBuffer is usually considered an internal class. But it
-    comes in handy (e.g.) if you want to draw on a larger "virtual"
-    array, and scale down for rendering on a physical array.
     """
 
     @timefunc

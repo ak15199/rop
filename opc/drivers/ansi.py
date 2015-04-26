@@ -3,8 +3,9 @@ from __future__ import division
 import curses
 import numpy as np
 
-from error import TtyTooSmall
-from utils.prof import timefunc
+from opc.drivers.baseclass import RopDriver
+from opc.error import TtyTooSmall
+from opc.utils.prof import timefunc
 
 stdscr = None  # for flake8
 
@@ -21,7 +22,7 @@ def exitCurses():
     curses.endwin()
 
 
-class AnsiClient(object):
+class Driver(RopDriver):
     """
     Simple text based client that displays a LED string as asciiart. There
     are several ways to do this, depending on the capability level of the
@@ -30,8 +31,11 @@ class AnsiClient(object):
 
     MAP10 = " .-:=+*#%@"    # ten step asciiart gradient
 
-    def __init__(self, server=None):
+    def __init__(self, width, height, address):
         global stdscr
+
+        self.width = width
+        self.height = height
 
         initCurses()
         stdscr.clear()
@@ -81,10 +85,6 @@ class AnsiClient(object):
                 curses.color_pair(curses.COLOR_YELLOW)+curses.A_BOLD,   # ax
                 curses.color_pair(curses.COLOR_WHITE)+curses.A_BOLD,
             ]
-
-    def setGeometry(self, width, height):
-        self.width = width
-        self.height = height
 
     @timefunc
     def _addstr(self, pixel):

@@ -19,7 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+#
+# This code is modified from the original.
    
+from opc.drivers.baseclass import RopDriver
 import json
 import numpy
 import os
@@ -28,15 +31,15 @@ import struct
 import time
 
 
-class FastOPC(object):
+class Driver(RopDriver):
     """High-performance Open Pixel Control client, using Numeric Python.
        By default, assumes the OPC server is running on localhost. This may be overridden
        with the OPC_SERVER environment variable, or the 'server' keyword argument.
        """
 
-    def __init__(self, server=None):
-        self.server = server or os.getenv('OPC_SERVER') or '127.0.0.1:7890'
-        self.host, port = self.server.split(':')
+    def __init__(self, width, height, address):
+        self.server = address or os.getenv('OPC_SERVER') or '127.0.0.1:7890'
+        self.host, port = self.server.split(':')[1:]
         self.port = int(port)
         self.socket = None
 
@@ -71,7 +74,6 @@ class FastOPC(object):
            This command accepts a list of pixel sources, which are concatenated and sent.
            Pixel sources may be:
 
-            - Strings or buffer objects containing pre-formatted 8-bit RGB pixel data
             - NumPy arrays or sequences containing 8-bit RGB pixel data.
               If values are out of range, the array is modified.
            """
@@ -80,13 +82,8 @@ class FastOPC(object):
         bytes = 0
 
         for source in sources:
-            if isinstance(source, buffer):
-                source = str(source)
-            elif not isinstance(source, str):
-                if not isinstance(source, numpy.ndarray):
-                    source = numpy.array(source)
-                numpy.clip(source, 0, 255, source)
-                source = source.astype('B').tostring()
+            numpy.clip(source, 0, 255, source)
+            source = source.astype('B').tostring()
 
             bytes += len(source)
             parts.append(source)
@@ -99,3 +96,6 @@ class FastOPC(object):
 
     def setGlobalColorCorrection(self, gamma, r, g, b):
         self.sysEx(1, 1, json.dumps({'gamma': gamma, 'whitepoint':[r,g,b]}))
+
+    def terminate(self):
+        pass
