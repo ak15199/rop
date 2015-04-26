@@ -134,7 +134,7 @@ def main():
 
     matrix = OPCMatrix(
         _v("WIDTH", 16), _v("HEIGHT", 16),
-        _v("ADDRESS", "ansi"), _v("ZIGZAG", False),
+        _v("DRIVER", "ansi"), _v("ZIGZAG", False),
         _v("FLIPUP", False), _v("FLIPLR", False)
         )
 
