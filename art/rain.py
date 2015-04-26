@@ -6,6 +6,7 @@ from utils.pen import Pen
 
 from opc.matrix import HQ
 
+
 class Art(ArtBaseClass):
 
     description = "Rain falling down the display"
@@ -38,8 +39,6 @@ class Art(ArtBaseClass):
                 self.pens.append(pen)
 
     def start(self, matrix):
-        #matrix.setFirmwareConfig(nointerp=True)
-        matrix.clear()
         matrix.hq()
 
     def refresh(self, matrix):

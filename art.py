@@ -57,6 +57,7 @@ def run(arts, args):
         for name, art in arts.iteritems():
             matrix.setFirmwareConfig()
             matrix.hq(False)
+            matrix.clear()
             art.start(matrix)
 
             time_sound = 0  # sound as in 'sound as a pound'
@@ -139,7 +140,7 @@ def main():
         )
 
     arts = ImportPlugins("art", [], args.art, progress,
-            matrix, config.config)
+                         matrix, config.config)
     if len(arts) == 0:
         matrix.terminate()
         print "Couldn't find any art to execute"

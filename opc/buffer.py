@@ -75,7 +75,7 @@ class OPCBuffer(object):
         """Blit from the source buf to the destination"""
         xend = ox+self.width
         yend = oy+self.height
-        try: # happy path
+        try:  # happy path
             self.buf[:][:] = source.buf[ox:xend, oy:yend]
         except ValueError:
             xbig = xend > source.width
@@ -91,21 +91,25 @@ class OPCBuffer(object):
                     # -- | -
                     # oo | @
                     window = source.buf[ox:(xend-xgap), oy:(yend-ygap)]
-                    window = np.concatenate((window, source.buf[0:xgap, oy:yend]), axis=0)
-                    window = np.concatenate((window, window[:, 0:xgap]), axis=1)
+                    window = np.concatenate((window, source.buf[0:xgap,
+                                             oy:yend]), axis=0)
+                    window = np.concatenate((window, window[:, 0:xgap]),
+                                            axis=1)
                 else:
                     # XXX
                     # XXX
                     # ---
                     # ooo
                     window = source.buf[ox:(xend-xgap), oy:yend]
-                    window = np.concatenate((window, source.buf[0:xgap, oy:yend]), axis=0)
+                    window = np.concatenate((window, source.buf[0:xgap,
+                                             oy:yend]), axis=0)
             elif ybig:
                     # XX | o
                     # XX | o
                     # XX | o
                     window = source.buf[ox:xend, oy:(yend-ygap)]
-                    window = np.concatenate((window, source.buf[ox:xend, 0:ygap]), axis=1)
+                    window = np.concatenate((window, source.buf[ox:xend,
+                                             0:ygap]), axis=1)
 
             self.buf[:][:] = window
 
@@ -145,7 +149,8 @@ class OPCBuffer(object):
 
     @timefunc
     def add(self, source):
-        self.buf = self.buf.astype(dtype=DTYPE) | source.buf.astype(dtype=DTYPE)
+        self.buf = (self.buf.astype(dtype=DTYPE) |
+                    source.buf.astype(dtype=DTYPE))
 
     @timefunc
     def blur(self, radius):
@@ -153,13 +158,13 @@ class OPCBuffer(object):
         self.copyImage(i.filter(ImageFilter.GaussianBlur(radius)))
 
     def _scroll_left(self, count):
-        a = self.buf[:-1,:].flatten()
-        b = self.buf[-1,:].flatten()
+        a = self.buf[:-1, :].flatten()
+        b = self.buf[-1, :].flatten()
         self.buf = np.concatenate((b, a)).reshape((self.width, self.height, 3))
 
     def _scroll_right(self, count):
-        a = self.buf[0,:].flatten()
-        b = self.buf[1:,:].flatten()
+        a = self.buf[0, :].flatten()
+        b = self.buf[1:, :].flatten()
         self.buf = np.concatenate((b, a)).reshape((self.width, self.height, 3))
 
     def _scroll_up(self, count):
@@ -171,10 +176,10 @@ class OPCBuffer(object):
     @timefunc
     def scroll(self, direction, count=1):
         dispatch = {
-                "left": self._scroll_left,
-                "right": self._scroll_right,
-                "up": self._scroll_up,
-                "down": self._scroll_down,
-                }
+            "left": self._scroll_left,
+            "right": self._scroll_right,
+            "up": self._scroll_up,
+            "down": self._scroll_down,
+            }
 
         dispatch[direction](count)

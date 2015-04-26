@@ -40,7 +40,7 @@ class ScrollText(ArtBaseClass):
         # didn't, then it's time to bring in the new one.
         if end is not None:
             self.typeface.drawText(matrix, end, y,
-                                     self.nextMessage, self.fg, self.bg)
+                                   self.nextMessage, self.fg, self.bg)
             if end == 1:
                 # this is the final pixel for the original text. So next time
                 # through, next message is the active messge.

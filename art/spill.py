@@ -6,11 +6,6 @@ from opc.hue import hsvToRgb
 from math import sqrt
 import operator
 from random import shuffle, random
-"""
-This is a sample template that will duck type successfully
-Make sure that your art has implementations for these.
-"""
-
 
 
 class Art(ArtBaseClass):
@@ -35,7 +30,8 @@ class Art(ArtBaseClass):
         self.filling = {}
         self.full = []
 
-        addr = self._encode(int(self.width*random()), int(self.height*random()))
+        addr = self._encode(int(self.width*random()),
+                            int(self.height*random()))
         self._setCell(matrix, addr, 0)
 
     def _encode(self, x, y):
@@ -45,7 +41,7 @@ class Art(ArtBaseClass):
         return [int(v) for v in addr.split("|")]
 
     def _cellIsValid(self, x, y):
-        return x>=0 and y>=0 and x<self.width and y<self.height
+        return x >= 0 and y >= 0 and x < self.width and y < self.height
 
     def _getNewNeighbor(self, cell):
         # find a neighbor to this cell that is empty
@@ -69,13 +65,13 @@ class Art(ArtBaseClass):
         here = self._decode(cell)
 
         for offset in self.offsets:
-            x, y = map(operator.add ,here, offset)
+            x, y = map(operator.add, here, offset)
             addr = self._encode(x, y)
             if self._cellIsValid(x, y) and addr in self.filling:
                 count = self.filling[addr]
                 neighbors += 1
                 if count == 3:
-                    self.full.append(addr) 
+                    self.full.append(addr)
                     del self.filling[addr]
                 else:
                     self.filling[addr] += 1

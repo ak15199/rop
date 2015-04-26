@@ -1,6 +1,5 @@
 from _baseclass import ArtBaseClass
 
-import random
 import requests
 
 from opc.image import Image
@@ -39,7 +38,7 @@ class Art(ArtBaseClass):
     def __init__(self, matrix, config):
         w = matrix.width*16
         h = matrix.height*16
-        self.url="http://lorempixel.com/%s/%d/"%(w, h)
+        self.url = "http://lorempixel.com/%s/%d/" % (w, h)
 
     def start(self, matrix):
         matrix.clear()

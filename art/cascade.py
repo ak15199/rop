@@ -29,6 +29,7 @@ TRAIN_LEN = 16
 
 TUNE_ME = 1.03
 
+
 class Art(ArtBaseClass):
 
     description = "Color cascade (needs tuning for > 32x32)"

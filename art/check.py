@@ -8,6 +8,7 @@ from random import random
 
 REPEATS = 4
 
+
 class BarSet(object):
 
     def __init__(self, matrix, horizontal):
@@ -21,7 +22,6 @@ class BarSet(object):
             self.pdx, self.pdy = 1, 0
             self.sdx, self.sdy = 0, 1
 
-
         if self._cointoss(0.1):
             self.color = WHITE
         else:
@@ -29,10 +29,10 @@ class BarSet(object):
 
         cycleSize = int(sqrt(matrix.width*matrix.height)/REPEATS)
 
-        self.bits = [ True ]
+        self.bits = [True]
         # bits can't be all True or all false
         while not any(self.bits) or all(self.bits):
-            self.bits = [ self._cointoss(0.3) for bit in range(cycleSize) ]
+            self.bits = [self._cointoss(0.3) for bit in range(cycleSize)]
 
         self.px, self.py = 0, 0
 
@@ -47,8 +47,8 @@ class BarSet(object):
 
     def draw(self, matrix):
         """
-        draw a single row on the display. call many times in order to traverse the
-        display. returns True when the far side of the display is reached.
+        draw a single row on the display. call many times in order to traverse
+        the display. returns True when the far side of the display is reached.
         """
 
         sx, sy = 0, 0

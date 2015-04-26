@@ -8,7 +8,8 @@ class Image(object):
 
     def __init__(self, filename=None, bytestream=None):
         if filename is not None:
-            self.image = PI.open(filename).rotate(-90, PI.BICUBIC).convert('RGB')
+            image = PI.open(filename).rotate(-90, PI.BICUBIC).convert('RGB')
+            self.image = image
 
         if bytestream is not None:
             self.image = PI.open(StringIO.StringIO(bytestream))
@@ -21,6 +22,7 @@ class Image(object):
         if scale == 0:
             i = self.image.resize((matrix.width, matrix.height), PI.ANTIALIAS)
         else:
-            i = self.image.resize((int(self.width/scale), int(self.height/scale)), PI.ANTIALIAS)
+            i = self.image.resize((int(self.width/scale),
+                                   int(self.height/scale)), PI.ANTIALIAS)
 
         return np.asarray(i.crop((x, y, x+matrix.width, y+matrix.height)))

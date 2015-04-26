@@ -4,6 +4,8 @@ import requests
 
 from opc.colors import rgb
 
+URL = "http://content.guardianapis.com/search?section=news&limit=20&api-key="
+
 
 class Art(ScrollText):
 
@@ -13,13 +15,13 @@ class Art(ScrollText):
     bg = rgb["firebrick"]
 
     def _fetchHeadlines(self):
+        url = URL+self.config["GUARDIAN_APIKEY"]
         try:
-            key = self.config["GUARDIAN_APIKEY"]
-            reply = requests.get("http://content.guardianapis.com/search?section=news&limit=20&api-key="+key)
+            reply = requests.get(url)
             if reply.status_code == 200:
                 results = reply.json()["response"]["results"]
                 return [result["webTitle"] for result in results]
-        except Exception: # XXX: Have to catch everything?
+        except Exception:  # XXX: Have to catch everything?
             pass
 
         return ["No news is good news"]

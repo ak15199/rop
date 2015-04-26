@@ -1,10 +1,11 @@
-from flask import Flask, Response, jsonify, request
+from flask import Flask, Response, jsonify
 
-import logging; logging.basicConfig(filename='web.log', level=logging.INFO)
+import logging
+logging.basicConfig(filename='web.log', level=logging.INFO)
 
 import os.path
 from random import seed
-from time import sleep, time
+from time import time
 
 from importer import ImportPlugins
 from opc.matrix import OPCMatrix
@@ -49,10 +50,10 @@ class Feed(object):
                     remaining = art.interval()/1000.0 - elapsed
 
                     yield {
-                            "interval": remaining,
-                            "expires": time()+remaining,
-                            "data": matrix.show(),
-                            }
+                        "interval": remaining,
+                        "expires": time()+remaining,
+                        "data": matrix.show(),
+                        }
 
     def _webHex(self, pix):
         return '{0:06x}'.format(((int(pix[0])*0x100) +
@@ -61,7 +62,8 @@ class Feed(object):
     def produce(self):
         if self.packet is None or time() > self.packet["expires"]:
             frame = self.generator.next()
-            data = [[self._webHex(pix) for pix in row] for row in frame["data"]]
+            data = [[self._webHex(pix) for pix in row]
+                    for row in frame["data"]]
 
             self.packet = {
                 "interval": frame["interval"],
@@ -109,7 +111,7 @@ def json_refresh():
 
 if __name__ == "__main__":
     global feed
-    
+
     feed = Feed()
 
     app.run(threaded=True, debug=True)

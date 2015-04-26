@@ -1,10 +1,9 @@
 from _baseclass import ArtBaseClass
 
-from math import sin, cos, pi
+from math import sin, pi
 from random import random
 
-from opc.colors import RED, GREEN, BLUE, BLACK
-from opc.hue import getColorGen
+from opc.colors import RED, GREEN, BLUE
 from opc.matrix import OPCMatrix, HQ
 
 
@@ -27,6 +26,7 @@ class Phase(object):
         self.angle += self.freq
         matrix.add(self.matrix)
 
+
 class Art(ArtBaseClass):
 
     description = "RGB variable frequency sine waves"
@@ -34,8 +34,8 @@ class Art(ArtBaseClass):
     def __init__(self, matrix, config):
         with HQ(matrix):
             self.phases = [Phase(matrix, direction, color)
-                    for color in (RED, GREEN, BLUE)
-                    for direction in ["left", "right"]]
+                           for color in (RED, GREEN, BLUE)
+                           for direction in ["left", "right"]]
 
     def start(self, matrix):
         matrix.hq()

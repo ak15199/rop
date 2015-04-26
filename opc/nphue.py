@@ -1,7 +1,9 @@
 import numpy as np
 from utils.prof import timefunc
 
-# from: http://stackoverflow.com/questions/7274221/changing-image-hue-with-python-pil
+# see:
+# http://stackoverflow.com/questions/7274221/changing-image-hue-with-python-pil
+
 
 @timefunc
 def rgb_to_hsv(rgb):
@@ -25,7 +27,8 @@ def rgb_to_hsv(rgb):
     gc[mask] = (maxc - g)[mask] / (maxc - minc)[mask]
     bc[mask] = (maxc - b)[mask] / (maxc - minc)[mask]
     hsv[..., 0] = np.select(
-        [r == maxc, g == maxc], [bc - gc, 2.0 + rc - bc], default=4.0 + gc - rc)
+        [r == maxc, g == maxc],
+        [bc - gc, 2.0 + rc - bc], default=4.0 + gc - rc)
     hsv[..., 0] = (hsv[..., 0] / 6.0) % 1.0
     return hsv
 

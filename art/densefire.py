@@ -2,6 +2,7 @@ from _baseclass import ArtBaseClass
 
 from utils.fire import Gun
 
+
 class Art(ArtBaseClass):
 
     description = "Dense Balistics"

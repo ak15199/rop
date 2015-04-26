@@ -1,6 +1,7 @@
 from opc.hue import getColorGen
 from math import sqrt
-from random import random, randint
+from random import random
+
 
 class Point(object):
 
@@ -25,7 +26,8 @@ class Point(object):
 class Vector(object):
 
     def __init__(self, bases, color):
-        self.points = [Point(base.x, base.y, base.dx, base.dy) for base in bases]
+        self.points = [Point(base.x, base.y, base.dx, base.dy)
+                       for base in bases]
         self.color = color
 
     def clock(self, matrix):
@@ -42,14 +44,15 @@ class Vectors(object):
 
         pointgen = self.positionGenerator(matrix)
         huegen = getColorGen(step=0.15, hue=random())
-        self.vecs = [Vector(pointgen.next(), huegen.next()) for v in range(count)]
+        self.vecs = [Vector(pointgen.next(), huegen.next())
+                     for v in range(count)]
 
     def positionGenerator(self, matrix):
         x = matrix.width/3
         y = matrix.height/3
 
         points = [
-            Point(x, matrix.midHeight + x , -1.1, 1.1),
+            Point(x, matrix.midHeight + x, -1.1, 1.1),
             Point(y, matrix.midHeight + y, 1.1, -1.1),
             ]
 

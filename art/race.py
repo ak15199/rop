@@ -55,8 +55,8 @@ class Art(ArtBaseClass):
 
         hue = self.hue.next()
         for racer in self.racers:
-           x, y = racer.next(self.clock)
-           matrix.drawPixel(x, y, hue)
+            x, y = racer.next(self.clock)
+            matrix.drawPixel(x, y, hue)
 
         self.clock += 0.01
 

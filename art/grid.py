@@ -1,8 +1,7 @@
-from math import sin, cos, pi
+from math import pi
 from random import random
 
 from opc.colors import RED, GREEN, BLUE, GRAY50, BLACK
-from opc.hue import getColorGen
 from opc.matrix import OPCMatrix, HQ
 
 
@@ -29,6 +28,7 @@ class Phase(object):
 
         matrix.add(self.matrix)
 
+
 class Art(object):
 
     description = "RGB overlapping grids"
@@ -36,7 +36,7 @@ class Art(object):
     def __init__(self, matrix, config):
         with HQ(matrix):
             self.phases = [Phase(matrix, color)
-                    for color in (RED, GREEN, BLUE, GRAY50)]
+                           for color in (RED, GREEN, BLUE, GRAY50)]
 
     def start(self, matrix):
         matrix.hq()

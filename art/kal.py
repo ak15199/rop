@@ -20,7 +20,7 @@ class Art(ArtBaseClass):
 
     description = "Kaleidoscope"
 
-    FITHALF = 0.45 # squeeze radius into 90% of display area
+    FITHALF = 0.45  # squeeze radius into 90% of display area
 
     def __init__(self, matrix, config):
         self.angle = 0
@@ -49,16 +49,16 @@ class Art(ArtBaseClass):
 
     def _offset(self, angle):
         return Point(
-                    self.center.x+self.radius*sin(radians(angle)),
-                    self.center.y+self.radius*cos(radians(angle)),
-                )
+            self.center.x+self.radius*sin(radians(angle)),
+            self.center.y+self.radius*cos(radians(angle)),
+            )
 
     def _pieslice(self, offset1, offset2):
         return [
-                self._offset(offset1).coords(),
-                self._offset(offset2).coords(),
-                self.center.coords(),
-                ]
+            self._offset(offset1).coords(),
+            self._offset(offset2).coords(),
+            self.center.coords(),
+            ]
 
     def start(self, matrix):
         pass
@@ -68,13 +68,13 @@ class Art(ArtBaseClass):
         y = self.center.y + (self.pieslice[0][1]-self.center.y)*random()
         z = 2 + random()*10/self.freq
 
-        if random()<0.1:
+        if random() < 0.1:
             color = WHITE
         else:
-            offset = int(random()*4)/4.0 if random()<0.5 else 0
+            offset = int(random()*4)/4.0 if random() < 0.5 else 0
             color = hsvToRgb(offset+self.hue.next(), 1, 1)
 
-        if random()<0.5:
+        if random() < 0.5:
             matrix.drawRect(x, y, z, z, color)
         else:
             matrix.fillRect(x, y, z, z, color)
@@ -130,7 +130,7 @@ class Art(ArtBaseClass):
         matrix.rotate(self.angle)
 
     def interval(self):
-        if self.freq>2:
+        if self.freq > 2:
             return 200
         else:
             return 150

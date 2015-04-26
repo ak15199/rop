@@ -91,7 +91,7 @@ class OPCText(object):
                 if xpos-7 < matrix.width:
                     try:
                         self.drawChar(matrix, xpos, y, char, fg, bg)
-                    except IndexError: # when char has no bitmap
+                    except IndexError:  # when char has no bitmap
                         self.drawChar(matrix, xpos, y, chr(127), fg, bg)
                 else:
                     return None

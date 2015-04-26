@@ -1,5 +1,6 @@
 from _baseclass import ArtBaseClass
 
+
 class Art(ArtBaseClass):
 
     description = "A silly boring chess board"

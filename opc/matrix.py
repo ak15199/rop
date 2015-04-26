@@ -1,12 +1,9 @@
 from drivers import select
 from copy import deepcopy
-import colorsys
 import operator
-from PIL import Image
 import numpy as np
 
 from colors import BLACK
-from hue import rgbToHsv, hsvToRgb
 import nphue
 
 from buffer import OPCBuffer
@@ -60,7 +57,8 @@ class OPCMatrix(object):
     HQMULT = 4
 
     @timefunc
-    def __init__(self, width, height, address, zigzag=False, flipud=False, fliplr=False):
+    def __init__(self, width, height, address, zigzag=False, flipud=False,
+                 fliplr=False):
         """
         width -- renderable width
         height -- renderable height
@@ -277,7 +275,7 @@ class OPCMatrix(object):
                   coord[0] >= 0 and coord[0] < self.width and
                   coord[1] >= 0 and coord[1] < self.height]
 
-        if not coords: # when everything is off screen
+        if not coords:  # when everything is off screen
             return
 
         xs, ys = zip(*coords)
@@ -287,7 +285,8 @@ class OPCMatrix(object):
         else:
             a0 = alpha
             a1 = 1-alpha
-            self.buf.buf[xs, ys] = np.asarray(color)*a0 + self.buf.buf[xs, ys]*a1
+            self.buf.buf[xs, ys] = (np.asarray(color)*a0 +
+                                    self.buf.buf[xs, ys]*a1)
 
     @timefunc
     def _line(self, x1, y1, x2, y2):
@@ -334,7 +333,7 @@ class OPCMatrix(object):
 
     @timefunc
     def movesCursor(self, x, y):
-        return self.cursor[0]!=x or self.cursor[1]!=y
+        return self.cursor[0] != x or self.cursor[1] != y
 
     @timefunc
     def getCursor(self):
@@ -434,13 +433,13 @@ class OPCMatrix(object):
 
         while x >= y:
             self._circlePair(x + x0, y + y0, -x + x0, y + y0, color, hasFill,
-                    alpha)
+                             alpha)
             self._circlePair(y + x0, x + y0, -y + x0, x + y0, color, hasFill,
-                    alpha)
+                             alpha)
             self._circlePair(-y + x0, -x + y0, y + x0, -x + y0, color, hasFill,
-                    alpha)
+                             alpha)
             self._circlePair(-x + x0, -y + y0, x + x0, -y + y0, color, hasFill,
-                    alpha)
+                             alpha)
 
             y += 1
             if radiusError < 0:

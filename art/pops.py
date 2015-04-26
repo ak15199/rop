@@ -12,7 +12,8 @@ class Art(ArtBaseClass):
         self.pieces = int(sqrt(matrix.numpix))
 
         cycles = int(sqrt(matrix.numpix)*2)
-        self.shrapnel = [Shrapnel(matrix, cycles, saturation=0.2) for i in range(self.pieces)]
+        self.shrapnel = [Shrapnel(matrix, cycles, saturation=0.2)
+                         for i in range(self.pieces)]
 
     def start(self, matrix):
         matrix.clear()

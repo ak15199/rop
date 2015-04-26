@@ -20,7 +20,7 @@ class Art(ArtBaseClass):
 
     def _dist(self, a, b, c, d):
         return np.sqrt((c-a)*(c-a)+(d-b)*(d-b))
-    
+
     def refresh(self, matrix):
 
         xb = self.x + self.base

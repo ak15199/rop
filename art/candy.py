@@ -1,10 +1,11 @@
 from _baseclass import ArtBaseClass
 
 from utils.shrapnel import Shrapnel
-from math import sin, cos, pi, sqrt
+from math import sqrt
 from random import random
 
 from opc.matrix import HQ
+
 
 class Art(ArtBaseClass):
 
@@ -15,7 +16,8 @@ class Art(ArtBaseClass):
             self.pieces = int(sqrt(matrix.numpix))
 
             cycles = int(sqrt(matrix.numpix)*2)
-            self.shrapnel = [Shrapnel(matrix, cycles, saturation=random(), radius=5) for i in range(self.pieces)]
+            self.shrapnel = [Shrapnel(matrix, cycles, saturation=random(),
+                             radius=5) for i in range(self.pieces)]
 
             for shrap in self.shrapnel:
                 shrap.dx = 8

@@ -4,7 +4,8 @@ from random import random
 
 
 class Shrapnel(Pen):
-    def __init__(self, matrix, motion_cycles, huedelta=0.001, saturation=1, radius=0, decelerate=False):
+    def __init__(self, matrix, motion_cycles, huedelta=0.001, saturation=1,
+                 radius=0, decelerate=False):
         self.centerx = matrix.width/2.0
         self.centery = matrix.height/2.0
         self.cycles = motion_cycles
@@ -30,10 +31,11 @@ class Shrapnel(Pen):
 
     def reset(self, matrix):
         # the furthest distance any pen will have to travel is on the diagonal
-        maxDimension = sqrt(matrix.width*matrix.width + matrix.height*matrix.height)
+        w, h = matrix.width, matrix.height
+        maxDimension = sqrt(w*w + h*h)
 
-        # slowest pens need to cover the distance in cycles time, but there may be
-        # some that go faster
+        # slowest pens need to cover the distance in cycles time, but there may
+        # be some that go faster
         velocity = maxDimension/(2.0*self.cycles) + 0.05*random()*maxDimension
 
         angle = random()*2*pi

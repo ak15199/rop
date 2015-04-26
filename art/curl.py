@@ -1,10 +1,8 @@
 from _baseclass import ArtBaseClass
 
-from opc.colors import BLACK
 from opc.hue import hsvToRgb
 
 from math import fmod, sin, cos
-
 
 DELTA_AMP = 0.09
 DELTA_ANG = 0.033

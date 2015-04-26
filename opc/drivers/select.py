@@ -4,8 +4,8 @@ import pkgutil
 def driver(address):
     driver = address.split(":")[0]
     drivers = {name: loader for loader, name, ispkg in
-            pkgutil.iter_modules(["opc/drivers"]) if
-            not ispkg}
+               pkgutil.iter_modules(["opc/drivers"]) if
+               not ispkg}
 
     try:
         module = drivers[driver].find_module(driver).load_module(driver)

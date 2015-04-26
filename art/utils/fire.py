@@ -1,7 +1,7 @@
 from opc.colors import BLACK
 from opc.hue import getHueGen, hsvToRgb
-from math import sqrt
-from random import random, randint
+from random import random
+
 
 class Point(object):
 
@@ -58,10 +58,12 @@ class Gun(object):
     def fire(self, matrix):
         location = self.location.next()
 
-        point = Point(location["x"], location["y"], location["dx"], location["dy"], self.hue.next())
+        point = Point(location["x"], location["y"], location["dx"],
+                      location["dy"], self.hue.next())
         self.points.append(point)
 
         expires = int(matrix.numpix/2)
-        self.points = [point for point in self.points if not point.expired(matrix, expires)]
+        self.points = [point for point in self.points
+                       if not point.expired(matrix, expires)]
         for point in self.points:
             point.update(matrix, expires)

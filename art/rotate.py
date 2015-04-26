@@ -1,9 +1,8 @@
 from _baseclass import ArtBaseClass
 
-from math import sin, cos, sqrt
+from math import sqrt
 from random import random
 
-from opc.colors import BLACK
 from opc.hue import getColorGen
 
 SCALE = 4
@@ -30,7 +29,7 @@ class Art(ArtBaseClass):
             ], color
             )
 
-        if random()<0.1:
+        if random() < 0.1:
             self.direction = -self.direction
         matrix.rotate(self.direction)
 
