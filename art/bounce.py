@@ -65,7 +65,7 @@ class Vectors(object):
 
 class Art(object):
 
-    description = "Your description goes right here"
+    description = "Bounce ends of a vector around the display"
 
     def __init__(self, matrix, config):
         vectorcount = int(sqrt(matrix.numpix)/4)
