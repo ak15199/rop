@@ -13,13 +13,16 @@ class Art(ScrollText):
     bg = rgb["firebrick"]
 
     def _fetchHeadlines(self):
-        key = self.config["GUARDIAN_APIKEY"]
-        reply = requests.get("http://content.guardianapis.com/search?section=news&limit=20&api-key="+key)
-        if reply.status_code == 200:
-            results = reply.json()["response"]["results"]
-            return [result["webTitle"] for result in results]
-        else:
-            return ["No news is good news"]
+        try:
+            key = self.config["GUARDIAN_APIKEY"]
+            reply = requests.get("http://content.guardianapis.com/search?section=news&limit=20&api-key="+key)
+            if reply.status_code == 200:
+                results = reply.json()["response"]["results"]
+                return [result["webTitle"] for result in results]
+        except Exception: # XXX: Have to catch everything?
+            pass
+
+        return ["No news is good news"]
 
     def _getText(self):
         try:

@@ -45,10 +45,13 @@ class Art(ArtBaseClass):
         matrix.clear()
 
     def _load(self, matrix):
-        r = requests.get(self.url)
-        if r.status_code == 200:
-            self.image = Image(bytestream=r.content)
-        else:
+        try:
+            r = requests.get(self.url)
+            if r.status_code == 200:
+                self.image = Image(bytestream=r.content)
+            else:
+                self.image = Image(filename="assets/images/lena.jpg")
+        except Exception:
             self.image = Image(filename="assets/images/lena.jpg")
 
         self.position = position(matrix, self.image)
