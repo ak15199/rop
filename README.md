@@ -54,6 +54,10 @@ tty, as curses will choke. In this case, you'll see a message saying that
 the terminal is too small. *The terminal needs to be three lines taller
 than the matrix in order to work*.
 
+The `config.py` file contains tunable parameters relating to the display,
+such as geometry, as well as configuration options specific to the
+individual art files.
+
 Most textual logging is delivered to art.log. If something doesn't
 look right, then check in this file for exceptions and other diagnostics.
 
@@ -70,6 +74,7 @@ The directories are
     ./art/utils        helper modules shared between animations
     ./art/baseclasses  base classes that animations may derive from
     ./assets           files that are used by the animations
+    ./config.py        various configuration options
     ./opc              an extended interface for using OPC via python
     ./opc/utils        various utilities used by the framework
 
