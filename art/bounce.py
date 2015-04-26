@@ -4,7 +4,7 @@ from random import random, randint
 
 class Point(object):
 
-    def __init__(self, x, y, dx=1, dy=1):
+    def __init__(self, x, y, dx, dy):
         self.x = x
         self.y = y
         self.dx = dx
@@ -12,11 +12,11 @@ class Point(object):
 
     def clock(self, matrix):
         self.x += self.dx
-        if self.x == 0 or self.x >= (matrix.width-1):
+        if self.x <= 0 or self.x >= (matrix.width-1):
             self.dx = -self.dx
 
         self.y += self.dy
-        if self.y == 0 or self.y >= (matrix.height-1):
+        if self.y <= 0 or self.y >= (matrix.height-1):
             self.dy = -self.dy
 
         return self
@@ -25,7 +25,7 @@ class Point(object):
 class Vector(object):
 
     def __init__(self, bases, color):
-        self.points = [Point(base.x, base.y) for base in bases]
+        self.points = [Point(base.x, base.y, base.dx, base.dy) for base in bases]
         self.color = color
 
     def clock(self, matrix):
@@ -45,12 +45,12 @@ class Vectors(object):
         self.vecs = [Vector(pointgen.next(), huegen.next()) for v in range(count)]
 
     def positionGenerator(self, matrix):
-        dx = randint(2, matrix.width/3)
-        dy = randint(2, matrix.height/3)
+        x = matrix.width/3
+        y = matrix.height/3
 
         points = [
-            Point(matrix.midWidth - dx, matrix.midHeight + (dx-1) , 2, 2),
-            Point(matrix.midWidth - dy, matrix.midHeight + (dy-1), 2, -2),
+            Point(x, matrix.midHeight + x , -1.1, 1.1),
+            Point(y, matrix.midHeight + y, 1.1, -1.1),
             ]
 
         while True:
@@ -76,7 +76,9 @@ class Art(object):
         matrix.clear()
 
     def refresh(self, matrix):
+        matrix.shift(dh=0.98, dv=0.95)
         self.vectors.clock(matrix)
+        matrix.rotate(-1)
 
     def interval(self):
         return 100
