@@ -1,9 +1,13 @@
 from opc.hue import hsvToRgb
+from opc.nphue import h_to_rgb
+
+import numpy as np
 
 from random import random
 from exceptions import AttributeError
 
 from art.utils.array import array
+from opc.utils.prof import timefunc
 
 
 class DiamondSquareAlgorithm(object):
@@ -80,27 +84,20 @@ class DiamondSquareAlgorithm(object):
             samplesize /= 2
             scale /= 2.0
 
+    @timefunc
     def translate(self, matrix, hue=None, colormap=None):
-        vmin = 100.0
-        vmax = -100.0
-
         if hue is None and colormap is None:
             raise AttributeError("Need either a hue or colormap")
 
-        for x in range(self.width):
-            for y in range(self.height):
-                value = self.values[x][y]
-                vmin = min(value, vmin)
-                vmax = max(value, vmax)
+        vmin = np.min(self.values)
+        vmax = np.max(self.values)
+        values = (self.values-vmin)/(vmax-vmin)
 
-        vscale = 1.0/(vmax-vmin)
-
-        for x in range(self.width):
-            for y in range(self.height):
-                value = vscale * (self.values[x][y] - vmin)
-                if hue is not None:
-                    color = hsvToRgb(hue+value/5, 1, value)
-                else:
-                    color = colormap.convert(value, 1)
-
-                matrix.drawPixel(x, y, color)
+        if colormap is None:
+            for x in range(self.width):
+                for y in range(self.height):
+                    color = hsvToRgb(hue+values[x, y]/5, 1, values[x, y])
+                    matrix.drawPixel(x, y, color)
+        else:
+            buffer = colormap.apply(values)
+            matrix.copyBuffer(buffer)
