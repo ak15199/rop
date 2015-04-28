@@ -63,6 +63,10 @@ class Colormap(object):
         index = int(min(self.size-1, max(0, point)))
         return self.cmap[index]
 
+    def apply(self, data, scale=None):
+        scale = self.size-1 if scale is None else scale
+        return self.cmap[(data*scale).astype(np.int)]
+
     def soften(self, neighbors=1):
         """
         Use inverse distance weighting to soften the transitions between colors
