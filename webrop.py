@@ -26,7 +26,7 @@ app.config.from_object(__name__)
 class Feed(object):
 
     def __init__(self):
-        matrix = OPCMatrix(M_WIDTH, M_HEIGHT, "raw")
+        matrix = OPCMatrix(M_WIDTH, M_HEIGHT, "echo")
         arts = ImportPlugins("art", ["template.py"], [], None, matrix,
                 config.config)
 
