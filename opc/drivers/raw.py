@@ -1,7 +1,7 @@
 from opc.drivers.baseclass import RopDriver
 
 
-class RawClient(RopDriver):
+class Driver(RopDriver):
     """
     Just pass back the raw data to the caller for rendering by the app
     """

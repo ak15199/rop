@@ -3,6 +3,8 @@ from flask import Flask, Response, jsonify
 import logging
 logging.basicConfig(filename='web.log', level=logging.INFO)
 
+import config
+
 import os.path
 from random import seed
 from time import time
@@ -25,7 +27,8 @@ class Feed(object):
 
     def __init__(self):
         matrix = OPCMatrix(M_WIDTH, M_HEIGHT, "raw")
-        arts = ImportPlugins("art", ["template.py"], [], matrix)
+        arts = ImportPlugins("art", ["template.py"], [], None, matrix,
+                config.config)
         if len(arts) == 0:
             matrix.terminate()
             print "Couldn't find any art to execute"
