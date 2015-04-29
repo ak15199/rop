@@ -93,9 +93,11 @@ class OPCMatrix(object):
 
     @timefunc
     def hq(self, ishq=True):
+        """Switches HQ mode on or off. Clears the display on switch-on"""
         if ishq and not self.internal:
             self.ishq = ishq
             self.buf = self.buf_hq
+            self.clear()
         else:
             self.ishq = False
             self.buf = self.buf_std
