@@ -29,6 +29,7 @@ class Feed(object):
         matrix = OPCMatrix(M_WIDTH, M_HEIGHT, "raw")
         arts = ImportPlugins("art", ["template.py"], [], None, matrix,
                 config.config)
+
         if len(arts) == 0:
             matrix.terminate()
             print "Couldn't find any art to execute"
