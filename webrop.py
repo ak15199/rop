@@ -8,6 +8,7 @@ import config
 import os.path
 from random import seed
 from time import time
+import traceback
 
 from importer import ImportPlugins
 from opc.matrix import OPCMatrix
@@ -43,13 +44,24 @@ class Feed(object):
             seed(time())
 
             for name, art in arts.iteritems():
-                art.start(matrix)
+                try:
+                    art.start(matrix)
+                except Exception as e:                                      
+                     logging.info("start bork: "+ str(e))                         
+                     logging.info("start bork: "+ traceback.format_exc())         
+                     continue
 
                 start_time = time()
 
                 while time()-start_time < DFLT_FLIPTIME_SECS:
                     cycle_time = time()
-                    art.refresh(matrix)
+                    try:
+                        art.refresh(matrix)
+                    except Exception as e:                                      
+                         logging.info("refresh bork: "+ str(e))                         
+                         logging.info("refresh bork: "+ traceback.format_exc())         
+                         break
+
                     elapsed = time() - cycle_time
                     remaining = art.interval()/1000.0 - elapsed
 
