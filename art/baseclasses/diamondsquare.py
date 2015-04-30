@@ -11,8 +11,8 @@ class DiamondSquare(ArtBaseClass):
 
     def __init__(self, matrix, generate, maxticks=DFLTTICKS, interpolate=True):
         self.diamond = DiamondSquareAlgorithm(matrix.width, matrix.height)
-        self.matrix = OPCMatrix(matrix.width, matrix.height, None,
-                                zigzag=matrix.zigzag)
+        self.matrix = OPCMatrix(matrix.width, matrix.height, None)
+
         self.generate = generate
         self.ticks = 0
         self.maxticks = maxticks
