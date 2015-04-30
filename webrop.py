@@ -44,6 +44,8 @@ class Feed(object):
             seed(time())
 
             for name, art in arts.iteritems():
+                matrix.hq(False)
+                matrix.clear()
                 try:
                     art.start(matrix)
                 except Exception as e:                                      
