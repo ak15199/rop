@@ -22,7 +22,7 @@
 #
 # This code is modified from the original.
 
-from opc.drivers.baseclass import RopDriver
+from drivers.baseclass import RopDriver
 import json
 import numpy
 import os

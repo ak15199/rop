@@ -1,6 +1,7 @@
 from _baseclass import ArtBaseClass
 
 from opc.hue import hsvToRgb
+from opc.matrix import HQ
 
 from math import fmod, sin, cos, sqrt
 
@@ -14,17 +15,18 @@ class Art(ArtBaseClass):
     description = "Loop the loop"
 
     def __init__(self, matrix, config):
-        self.hue = 0
-        self.ang = 0
-        self.amp = 0
-        self.radius = sqrt(matrix.numpix)/16
+        with HQ(matrix):
+            self.hue = 0
+            self.ang = 0
+            self.amp = 0
+            self.radius = sqrt(matrix.numpix)/16
 
     def start(self, matrix):
         matrix.hq()
         matrix.clear()
 
     def refresh(self, matrix):
-        matrix.fade(0.98)
+        matrix.fade(0.97)
 
         self.amp += DELTA_AMP
         self.hue += DELTA_HUE
