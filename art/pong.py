@@ -95,31 +95,31 @@ class Score(object):
 class Bat(object):
 
     COLOR = rgb["yellow"]
-    RADIUS = 2              # half the size of the bat
 
     def __init__(self, width, height, isLeft):
         self.width = width
         self.height = height
+        self.radius = max(2, height/16)
 
-        self.y = self.height/2 - self.RADIUS
+        self.y = self.height/2 - self.radius
         if isLeft:
             self.x = width - 1
         else:
             self.x = 0
 
     def up(self):
-        self.y = min(self.y+1, self.height-self.RADIUS-1)
+        self.y = min(self.y+1, self.height-self.radius-1)
 
     def down(self):
-        self.y = max(self.y-1, self.RADIUS)
+        self.y = max(self.y-1, self.radius)
 
     def display(self, matrix):
-        matrix.drawLine(self.x, self.y-self.RADIUS,
-                        self.x, self.y+self.RADIUS, self.COLOR)
+        matrix.drawLine(self.x, self.y-self.radius,
+                        self.x, self.y+self.radius, self.COLOR)
 
     def intersects(self, x, y):
-        return abs(x - self.x) == 1 and self.y-self.RADIUS < y \
-            and y < self.y+self.RADIUS
+        return abs(x - self.x) == 1 and self.y-self.radius < y \
+            and y < self.y+self.radius
 
     def behind(self, x, isLeft):
         if isLeft:

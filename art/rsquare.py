@@ -1,11 +1,9 @@
 from _baseclass import ArtBaseClass
 
-from math import sin, cos
+from math import sin, cos, sqrt
 
 from opc.colors import BLACK
 from opc.hue import getColorGen
-
-SCALE = 4
 
 
 class Art(ArtBaseClass):
@@ -13,6 +11,7 @@ class Art(ArtBaseClass):
     description = "Downsample a high-res image to improve perceived clarity"
 
     def __init__(self, matrix, config):
+        self.width = sqrt(matrix.numpix)/3
         self.hue = getColorGen(0.001)
         self.theta = 0.0
 
@@ -52,7 +51,7 @@ class Art(ArtBaseClass):
 
         matrix.clear()
         matrix.fillPoly(self.poly(matrix, 0), color)
-        matrix.fillPoly(self.poly(matrix, 2*SCALE), BLACK)
+        matrix.fillPoly(self.poly(matrix, self.width), BLACK)
 
     def interval(self):
         return 80

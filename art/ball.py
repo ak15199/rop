@@ -3,7 +3,7 @@ from _baseclass import ArtBaseClass
 from opc.hue import hsvToRgb
 
 from random import random
-from math import fabs
+from math import fabs, sqrt
 
 
 class Art(ArtBaseClass):
@@ -11,7 +11,7 @@ class Art(ArtBaseClass):
     description = "Bouncy ball"
 
     def __init__(self, matrix, config):
-        self.radius = 1.5
+        self.radius = sqrt(matrix.numpix)/16
         self.x = self.radius
         self.dx = 5
         self.timeslice = 50  # ms

@@ -2,7 +2,7 @@ from _baseclass import ArtBaseClass
 
 from opc.hue import hsvToRgb
 
-from math import fmod, sin, cos
+from math import fmod, sin, cos, sqrt
 
 DELTA_AMP = 0.09
 DELTA_ANG = 0.033
@@ -17,6 +17,7 @@ class Art(ArtBaseClass):
         self.hue = 0
         self.ang = 0
         self.amp = 0
+        self.radius = sqrt(matrix.numpix)/16
 
     def start(self, matrix):
         matrix.hq()
@@ -39,7 +40,7 @@ class Art(ArtBaseClass):
 
         color = hsvToRgb(fmod(self.hue, 1), 1, 1)
 
-        matrix.drawRect(x-4, y-4, 8, 8, color)
+        matrix.fillRect(x-self.radius, y-self.radius, 2*self.radius, 2*self.radius, color)
 
     def interval(self):
         return 40

@@ -1,5 +1,7 @@
 from _baseclass import ArtBaseClass
 
+from math import sqrt
+
 from opc.hue import hsvToRgb
 
 
@@ -18,7 +20,7 @@ class Art(ArtBaseClass):
         h = matrix.height - 1
 
         for x in range(matrix.width):
-            hue = ((self.base+32*x) % 1024)/1024.0
+            hue = (self.base+32*x) / (sqrt(matrix.numpix) * 64.0)
             for y in range(matrix.height):
                 sat = min(1, 0.25 + (1.5*y)/h)
                 val = min(1, 0.25 + (1.5*(h-y)/h))

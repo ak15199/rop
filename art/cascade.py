@@ -4,7 +4,7 @@ import numpy as np
 from opc.colors import BLACK
 from opc.hue import hsvToRgb
 
-from math import fmod, sin, cos
+from math import fmod, sin, cos, sqrt
 
 
 class ClearTrain(object):
@@ -27,8 +27,6 @@ DELTA_ANG = 0.033
 DELTA_HUE = 0.006
 TRAIN_LEN = 16
 
-TUNE_ME = 1.03
-
 
 class Art(ArtBaseClass):
 
@@ -38,6 +36,7 @@ class Art(ArtBaseClass):
         self.hue = 0
         self.ang = 0
         self.amp = 0
+        self.mult = 1+sqrt(matrix.numpix/32)/90
         self.train = ClearTrain(TRAIN_LEN)
 
     def start(self, matrix):
@@ -45,9 +44,9 @@ class Art(ArtBaseClass):
 
     def refresh(self, matrix):
         # this relies on the fact that the pixels we seed get multiplied and
-        # overfow the uint8
+        # overfow the uint8 in intresting ways
         matrix.blur(3)
-        matrix.buf.buf = (TUNE_ME*matrix.buf.buf).astype(np.uint8)
+        matrix.buf.buf = (self.mult*matrix.buf.buf).astype(np.uint8)
 
         self.amp += DELTA_AMP
         if self.amp >= 1 and False:
