@@ -19,6 +19,9 @@ class Colormap(object):
         else:
             raise AttributeError("Invalid Colormap Initializer")
 
+    def __len__(self):
+        return self.size
+
     def flat(self, index0, index1, color):
         """
         initialize a block of colormap entries with a particular color
