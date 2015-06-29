@@ -12,7 +12,6 @@ capture = cv2.VideoCapture(0)
 
 def get_frame():
     _, bgr = capture.read()
-    old = bgr
     rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
     return PIL.Image.fromarray(rgb)
 
