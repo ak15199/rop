@@ -2,11 +2,11 @@
 Display Configuration
 """
 # Display Geometry
-WIDTH, HEIGHT = 32, 32
+WIDTH, HEIGHT = 40, 50
 
 # Device type and address, where 'address' is an optional colon-separated
 # part of the value that is driver dependent
-DRIVER = 'ansi'                # For display to the TTY
+DRIVER = 'sdl2window'                # For display to the TTY
 # DRIVER = 'opc:localhost:7890' # OPC driver
 
 # Device configuration
@@ -19,4 +19,12 @@ Art Configuration Settings
 """
 config = {
     "GUARDIAN_APIKEY": "",   # See http://open-platform.theguardian.com/access/
-    }
+    "COMPOUND": [
+        ('persistent', {
+            "COMPOUND": [
+                ('fade', {}),
+                ('life', {}),
+            ]
+        }),
+    ]
+}
