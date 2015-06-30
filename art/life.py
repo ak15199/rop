@@ -21,9 +21,16 @@ class Art(object):
                 self.lifes[x, y] = random.randint(0, 1)
         self.reset_count = 0
         self.global_countdown = 1000
+        self.fade_countdown = 5
 
     def refresh(self, matrix):
-        matrix.clear()
+        matrix.fade(0.9)
+
+        if self.fade_countdown:
+            self.fade_countdown -= 1
+            return
+
+        self.fade_countdown = 5
 
         width = matrix.width
         height = matrix.height
@@ -55,16 +62,17 @@ class Art(object):
                         color = [255, 0, 0]
                     else:
                         next[x, y] = 0
-                        color = [0, 0, 0]
+                        color = None
                 else:
                     if neighbors == 3:
                         next[x, y] = 1
                         color = [0, 255, 0]
                     else:
                         next[x, y] = 0
-                        color = [0, 0, 0]
+                        color = None
 
-                matrix.drawPixel(x, y, color)
+                if color:
+                    matrix.drawPixel(x, y, color)
 
         if (next == self.prior).all() or (next == self.lifes).all():
             self.reset_count += 1
