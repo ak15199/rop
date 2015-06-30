@@ -21,16 +21,14 @@ class Art(object):
                 self.lifes[x, y] = random.randint(0, 1)
         self.reset_count = 0
         self.global_countdown = 1000
-        self.fade_countdown = 5
+        self.draw_countdown = 5
 
     def refresh(self, matrix):
-        matrix.fade(0.9)
-
-        if self.fade_countdown:
-            self.fade_countdown -= 1
+        if self.draw_countdown:
+            self.draw_countdown -= 1
             return
 
-        self.fade_countdown = 5
+        self.draw_countdown = 5
 
         width = matrix.width
         height = matrix.height
