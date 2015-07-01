@@ -15,6 +15,12 @@ class Art(object):
                 raise Exception('Could not find art %s' % (name,))
             self.__arts.append((name, art.get(name)))
 
+    def __getitem__(self, index):
+        return self.__arts[index]
+
+    def __len__(self):
+        return len(self.__arts)
+
     def start(self, matrix):
         for _, art in self.__arts:
             art.start(matrix)

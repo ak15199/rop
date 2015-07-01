@@ -14,17 +14,34 @@ DRIVER = 'sdl2window'                # For display to the TTY
 # FLIPUD = True                 # up-down display orientation
 # FLIPLR = True                 # left-right display orientation
 
+selection = 0
+def selector(new=None):
+    global selection
+    if new != None:
+        selection = new
+    return selection
+
+
 """
 Art Configuration Settings
 """
 config = {
-    "GUARDIAN_APIKEY": "",   # See http://open-platform.theguardian.com/access/
     "COMPOUND": [
         ('persistent', {
             "COMPOUND": [
                 ('fade', {}),
-                ('life', {}),
+                ('selector', {
+                    "COMPOUND": [
+                        ('life', {}),
+                        ('mirror', {}),
+                    ],
+                    "SELECTOR": selector,
+                }),
             ]
         }),
+        ('rotator', {
+            "SELECTOR": selector,
+            "TIMEOUT": 5,
+        })
     ]
 }
