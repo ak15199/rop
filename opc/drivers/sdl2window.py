@@ -32,12 +32,12 @@ class Driver(baseclass.RopDriver):
         self.__window = sdl2.ext.Window('ROP', size=(DISPLAY_WIDTH, display_height))
         self.__window.show()
 
-        self.__renderer = sdl2.ext.Renderer(self.__window)
+        self.__renderer = sdl2.ext.Renderer(self.__window, flags=sdl2.SDL_RENDERER_ACCELERATED)
 
         self.__space_width = DISPLAY_WIDTH / width
         self.__space_height = display_height / height
 
-        self.__pixel_size = min(self.__space_width / 3, self.__space_height / 3)
+        self.__pixel_size = min(self.__space_width / 2, self.__space_height / 2)
         self.__inset_x = self.__space_width / 2 - self.__pixel_size / 2
         self.__inset_y = self.__space_height / 2 - self.__pixel_size / 2
 
