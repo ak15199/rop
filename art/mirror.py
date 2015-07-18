@@ -6,14 +6,19 @@ import numpy
 try:
     import cv2
 except ImportError:
-    raise ImportError('Must install cv2 for video to work.  PiCamera coming soon.')
-
-capture = cv2.VideoCapture(0)
-
-def get_frame():
-    _, bgr = capture.read()
-    rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-    return PIL.Image.fromarray(rgb)
+    import io
+    import picamera
+    camera = picamera.PiCamera()
+    def get_frame():
+        stream = io.BytesIO()
+        camera.capture(stream, format='png')
+        return PIL.Image.open(stream)
+else:
+    capture = cv2.VideoCapture(0)
+    def get_frame():
+        _, bgr = capture.read()
+        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+        return PIL.Image.fromarray(rgb)
 
 
 class Art(object):

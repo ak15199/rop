@@ -2,12 +2,17 @@
 Display Configuration
 """
 # Display Geometry
-WIDTH, HEIGHT = 40, 50
+# Dimensions of mirror is 6x4
+WIDTH, HEIGHT = 50, 32
 
 # Device type and address, where 'address' is an optional colon-separated
 # part of the value that is driver dependent
-DRIVER = 'sdl2window'                # For display to the TTY
-# DRIVER = 'opc:localhost:7890' # OPC driver
+try:
+    import sdl2
+except ImportError:
+    DRIVER = 'opc:localhost:7890' # OPC driver
+else:
+    DRIVER = 'sdl2window'         # For display in SDL window
 
 # Device configuration
 # ZIGZAG = True                 # whether display reverses direction, line to line

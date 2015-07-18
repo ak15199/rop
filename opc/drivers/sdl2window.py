@@ -12,9 +12,9 @@ else:
 
 from opc.drivers import baseclass
 
-DISPLAY_WIDTH = 400
+DISPLAY_WIDTH = 600
 
-ASPECT_RATIO = 4, 6
+ASPECT_RATIO = 6, 4
 
 
 class Driver(baseclass.RopDriver):
