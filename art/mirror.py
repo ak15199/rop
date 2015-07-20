@@ -33,10 +33,11 @@ class Art(object):
 
     def refresh(self, matrix):
         frame = get_frame().rotate(90).resize((matrix.width, matrix.height), PIL.Image.BILINEAR)
+
         image = numpy.asarray(frame)
         for y in range(matrix.width):
             for x in range(matrix.height):
-                matrix.drawPixel(x, y, image[x, y], 0.3)
+                matrix.drawPixel(y, x, image[x, y], 0.3)
 
     def interval(self):
         return 30
