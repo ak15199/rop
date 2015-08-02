@@ -1,7 +1,11 @@
 __author__ = 'rafe'
 
+import colorsys
+
 import PIL
+from PIL import Image
 from PIL import ImageChops
+from PIL import ImageOps
 import numpy
 
 try:
@@ -15,13 +19,13 @@ except ImportError:
         stream = io.BytesIO()
         camera.capture(stream, format='png', use_video_port=True)
         stream.seek(0)
-        return PIL.Image.open(stream)
+        return Image.open(stream)
 else:
     capture = cv2.VideoCapture(0)
     def get_frame():
         _, bgr = capture.read()
         rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-        return PIL.Image.fromarray(rgb)
+        return Image.fromarray(rgb)
 
 
 class Art(object):
@@ -31,17 +35,32 @@ class Art(object):
 
     def __init__(self, matrix, config):
         self.brightness_threshold = config.get('BRIGHTNESS_THRESHOLD', 10)
+        self.hue_rotation = config.get('COLOR_ROTATION', 0.02)
 
     def start(self, matrix):
-        pass
+        self.hue = 0.0
 
     def refresh(self, matrix):
-        frame = get_frame().rotate(90).resize((matrix.width, matrix.height), PIL.Image.BILINEAR)
+        frame = get_frame()
+        frame = frame.convert('L')
+        frame = frame.rotate(90).resize((matrix.width, matrix.height), PIL.Image.BILINEAR)
         last_frame = self.last_orig_frame
         self.last_orig_frame = frame
         if last_frame:
             frame = ImageChops.subtract(last_frame, frame, 0.05)
-        image = numpy.asarray(frame.convert("RGB"))
+
+        r, g, b = colorsys.hsv_to_rgb(self.hue, 1.0, 1.0)
+        self.hue += self.hue_rotation
+        if self.hue > 1.0:
+            self.hue -= 1.0
+        if self.hue < 0.0:
+            self.hue += 1.0
+        r = int(r * 256)
+        g = int(g * 256)
+        b = int(b * 256)
+        frame = ImageOps.colorize(frame, (0, 0, 0), (r, g, b)).convert('RGB')
+
+        image = numpy.asarray(frame)
         draw_pixel = matrix.drawPixel
         brightness_threshold = self.brightness_threshold
         for y in range(matrix.width):
