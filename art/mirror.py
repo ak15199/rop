@@ -1,6 +1,8 @@
 __author__ = 'rafe'
 
 import PIL
+from PIL import ImageChops
+from PIL import ImageEnhance
 import numpy
 
 try:
@@ -37,6 +39,8 @@ def timeit():
 class Art(object):
 
     description = "Video Mirror"
+    last_orig_frame = None
+    last_xform_frame = None
 
     def __init__(self, matrix, config):
         pass
@@ -46,12 +50,22 @@ class Art(object):
 
     def refresh(self, matrix):
         frame = get_frame().rotate(90).resize((matrix.width, matrix.height), PIL.Image.BILINEAR)
+        last_frame = self.last_orig_frame
+        self.last_orig_frame = frame
+        if last_frame:
+            frame = ImageChops.subtract(last_frame, frame, 0.1)
+            xform_frame = self.last_xform_frame
+            if xform_frame:
+                enhancer = ImageEnhance.Brightness(xform_frame)
+                xform_frame = enhancer.enhance(0.9)
+                frame = ImageChops.add(frame, xform_frame)
+            self.last_xform_frame = frame
         image = numpy.asarray(frame)
         draw_pixel = matrix.drawPixel
         for y in range(matrix.width):
             for x in range(matrix.height):
                 rgb = image[x, y][:3]  # May need to strip alpha channel
-                draw_pixel(x, y, rgb, 0.3)
+                draw_pixel(y, x, rgb, 0.3)
 
     def interval(self):
         return 30
