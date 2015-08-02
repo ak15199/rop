@@ -65,7 +65,7 @@ class Art(object):
         for y in range(matrix.width):
             for x in range(matrix.height):
                 rgb = image[x, y][:3]  # May need to strip alpha channel
-                draw_pixel(y, x, rgb, 0.3)
+                draw_pixel(y, matrix.height - x, rgb, 0.3)
 
     def interval(self):
         return 30
