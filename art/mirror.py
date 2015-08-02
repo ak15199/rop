@@ -2,7 +2,6 @@ __author__ = 'rafe'
 
 import PIL
 from PIL import ImageChops
-from PIL import ImageEnhance
 import numpy
 
 try:
@@ -40,10 +39,9 @@ class Art(object):
 
     description = "Video Mirror"
     last_orig_frame = None
-    last_xform_frame = None
 
     def __init__(self, matrix, config):
-        pass
+        self.brightness_threshold = config.get('BRIGHTNESS_THRESHOLD', 10)
 
     def start(self, matrix):
         pass
@@ -53,19 +51,15 @@ class Art(object):
         last_frame = self.last_orig_frame
         self.last_orig_frame = frame
         if last_frame:
-            frame = ImageChops.subtract(last_frame, frame, 0.1)
-            xform_frame = self.last_xform_frame
-            if xform_frame:
-                enhancer = ImageEnhance.Brightness(xform_frame)
-                xform_frame = enhancer.enhance(0.9)
-                frame = ImageChops.add(frame, xform_frame)
-            self.last_xform_frame = frame
-        image = numpy.asarray(frame)
+            frame = ImageChops.subtract(last_frame, frame, 0.05)
+        image = numpy.asarray(frame.convert("RGB"))
         draw_pixel = matrix.drawPixel
+        brightness_threshold = self.brightness_threshold
         for y in range(matrix.width):
             for x in range(matrix.height):
-                rgb = image[x, y][:3]  # May need to strip alpha channel
-                draw_pixel(y, matrix.height - x, rgb, 0.3)
+                r, g, b = image[x, y]
+                if r > brightness_threshold or g > brightness_threshold or b > brightness_threshold:
+                    draw_pixel(y, matrix.height - x, (r, g, b), 0.3)
 
     def interval(self):
         return 30

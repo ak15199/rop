@@ -22,4 +22,14 @@ DRIVER = 'opc:localhost:7890'
 Art Configuration Settings
 """
 config = {
+    "COMPOUND": [
+        ('persistent', {
+            "COMPOUND": [
+                ('fade', {'FADE': 0.95}),
+                ('mirror', {
+                    'BRIGHTNESS_THRESHOLD': 100,
+                }),
+            ]
+        })
+    ]
 }
