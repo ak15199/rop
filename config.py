@@ -25,9 +25,9 @@ config = {
     "COMPOUND": [
         ('persistent', {
             "COMPOUND": [
-                ('fade', {'FADE': 0.95}),
+                ('shift', {'dv': 0.97}),
                 ('mirror', {
-                    'BRIGHTNESS_THRESHOLD': 100,
+                    'BRIGHTNESS_THRESHOLD': 200,
                 }),
             ]
         })
