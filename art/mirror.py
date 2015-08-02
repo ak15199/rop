@@ -24,17 +24,6 @@ else:
         return PIL.Image.fromarray(rgb)
 
 
-import contextlib
-import time
-@contextlib.contextmanager
-def timeit():
-    start = time.time()
-    try:
-        yield start
-    finally:
-        print '%03f' % (time.time() - start)
-
-
 class Art(object):
 
     description = "Video Mirror"
