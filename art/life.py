@@ -91,4 +91,4 @@ class Art(object):
             self.start(matrix)
 
     def interval(self):
-        return 120
+        return 300
