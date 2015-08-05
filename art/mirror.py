@@ -2,6 +2,8 @@ __author__ = 'rafe'
 
 import colorsys
 
+import time
+
 import PIL
 from PIL import Image
 from PIL import ImageChops
@@ -41,13 +43,29 @@ class Art(object):
         self.hue = 0.0
 
     def refresh(self, matrix):
+        print 'begin refresh'
+        ss = start = time.time()
         frame = get_frame()
+
+        now = time.time()
+        print 'get frame', now - start
+        start = now
+
         frame = frame.convert('L')
         frame = frame.rotate(90).resize((matrix.width, matrix.height), PIL.Image.BILINEAR)
+
+        now = time.time()
+        print 'all conversion', now - start
+        start = now
+
         last_frame = self.last_orig_frame
         self.last_orig_frame = frame
         if last_frame:
             frame = ImageChops.subtract(last_frame, frame, 0.05)
+
+        now = time.time()
+        print 'difference', now - start
+        start = now
 
         r, g, b = colorsys.hsv_to_rgb(self.hue, 1.0, 1.0)
         self.hue += self.hue_rotation
@@ -60,6 +78,10 @@ class Art(object):
         b = int(b * 256)
         frame = ImageOps.colorize(frame, (0, 0, 0), (r, g, b)).convert('RGB')
 
+        now = time.time()
+        print 'colorize', now - start
+        start = now
+
         image = numpy.asarray(frame)
         draw_pixel = matrix.drawPixel
         brightness_threshold = self.brightness_threshold
@@ -68,6 +90,9 @@ class Art(object):
                 r, g, b = image[x, y]
                 if r > brightness_threshold or g > brightness_threshold or b > brightness_threshold:
                     draw_pixel(y, matrix.height - x, (r, g, b), 0.3)
+        now = time.time()
+        print 'render', now - start
+        print 'total', now - ss
 
     def interval(self):
         return 30
