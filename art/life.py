@@ -1,8 +1,12 @@
 __author__ = 'rafe'
 
-import random
+from opc.hue import hue
 
+import random
 import numpy
+
+HSCALE = 0.1
+RESET_INTERVAL = 20
 
 
 class Art(object):
@@ -13,32 +17,31 @@ class Art(object):
         pass
 
     def start(self, matrix):
-        init = [random.randint(0, 1) for _ in range(matrix.width * matrix.height)]
-        self.lifes = numpy.array(init).reshape([matrix.width, matrix.height])
+        self.lifes = numpy.empty([matrix.width, matrix.height])
         self.prior = numpy.copy(self.lifes)
+
         for y in range(matrix.height):
             for x in range(matrix.width):
                 self.lifes[x, y] = random.randint(0, 1)
-        self.reset_count = 0
+
+        self.reset_counter = 0
         self.global_countdown = 1000
-        self.fade_countdown = 5
+
+        self.hue = random.random()
+
+    def _hue(self, offset):
+        return hue(self.hue+HSCALE*offset)
 
     def refresh(self, matrix):
-        matrix.fade(0.9)
-
-        if self.fade_countdown:
-            self.fade_countdown -= 1
-            return
-
-        self.fade_countdown = 5
+        matrix.shift(dh=0.9, dv=0.8)
 
         width = matrix.width
         height = matrix.height
 
         lifes = self.lifes
         next = numpy.copy(lifes)
-        for y in range(matrix.height):
-            for x in range(matrix.width):
+        for y in range(height):
+            for x in range(width):
                 minus_x = (x - 1) % width
                 minus_y = (y - 1) % height
                 plus_x = (x + 1) % width
@@ -57,16 +60,16 @@ class Art(object):
                 if lifes[x, y]:
                     if neighbors == 2:
                         next[x, y] = 1
-                        color = [255, 255, 0]
+                        color = self._hue(0)
                     elif neighbors == 3:
-                        color = [255, 0, 0]
+                        color = self._hue(1)
                     else:
                         next[x, y] = 0
                         color = None
                 else:
                     if neighbors == 3:
                         next[x, y] = 1
-                        color = [0, 255, 0]
+                        color = self._hue(2)
                     else:
                         next[x, y] = 0
                         color = None
@@ -75,18 +78,17 @@ class Art(object):
                     matrix.drawPixel(x, y, color)
 
         if (next == self.prior).all() or (next == self.lifes).all():
-            self.reset_count += 1
+            self.reset_counter += 1
         else:
-            self.reset_count = 0
+            self.reset_counter = 0
 
         self.prior = lifes
         self.lifes = next
 
         self.global_countdown -= 1
 
-        if self.reset_count == 20 or not self.global_countdown:
+        if self.reset_counter == RESET_INTERVAL or not self.global_countdown:
             self.start(matrix)
 
-
     def interval(self):
-        return 75
+        return 120
