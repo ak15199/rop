@@ -2,6 +2,7 @@ __author__ = 'rafe'
 
 from opc.hue import hue
 
+import math
 import random
 import numpy
 
@@ -14,39 +15,33 @@ class Art(object):
     description = "Conway's Game of Life"
 
     def __init__(self, matrix, config):
-        pass
+        self._interval = 300 if math.sqrt(matrix.numpix) < 20 else 75
+        self.hue = random.random()
+        self._init(matrix)
 
     def start(self, matrix):
+        pass
+
+    def _init(self, matrix):
         self.lifes = numpy.empty([matrix.width, matrix.height])
         self.prior = numpy.copy(self.lifes)
 
         for y in range(matrix.height):
             for x in range(matrix.width):
-                self.lifes[x, y] = random.randint(0, 1)
+                self.lifes[x, y] = bool(random.getrandbits(1))
 
         self.reset_counter = 0
-        self.global_countdown = 1000
-
-        self.hue = random.random()
 
     def _hue(self, offset):
         return hue(self.hue+HSCALE*offset)
 
-    def refresh(self, matrix):
-        matrix.shift(dh=0.9, dv=0.8)
-
-        width = matrix.width
-        height = matrix.height
-
+    def _neighbors(self, x, y, width, height):
+        minus_x = (x - 1) % width
+        minus_y = (y - 1) % height
+        plus_x = (x + 1) % width
+        plus_y = (y + 1) % height
         lifes = self.lifes
-        next = numpy.copy(lifes)
-        for y in range(height):
-            for x in range(width):
-                minus_x = (x - 1) % width
-                minus_y = (y - 1) % height
-                plus_x = (x + 1) % width
-                plus_y = (y + 1) % height
-                neighbors = sum([
+        return [
                     lifes[minus_x, minus_y],
                     lifes[x, minus_y],
                     lifes[plus_x, minus_y],
@@ -55,27 +50,40 @@ class Art(object):
                     lifes[minus_x, plus_y],
                     lifes[x, plus_y],
                     lifes[plus_x, plus_y],
-                ])
+                ].count(True)
 
+    def refresh(self, matrix):
+        self.hue += 0.01
+
+        matrix.shift(dh=0.9, dv=0.8)
+
+        width = matrix.width
+        height = matrix.height
+
+        lifes = self.lifes
+        next = numpy.empty([width, height])
+        pixelset = {_: [] for _ in range(4)}
+
+        for y in range(height):
+            for x in range(width):
+                neighbors = self._neighbors(x, y, width, height)
                 if lifes[x, y]:
-                    if neighbors == 2:
-                        next[x, y] = 1
-                        color = self._hue(0)
-                    elif neighbors == 3:
-                        color = self._hue(1)
+                    if neighbors == 2 or neighbors == 3:
+                        cell = neighbors
                     else:
-                        next[x, y] = 0
-                        color = None
+                        cell = 0
                 else:
-                    if neighbors == 3:
-                        next[x, y] = 1
-                        color = self._hue(2)
-                    else:
-                        next[x, y] = 0
-                        color = None
+                    cell = 1 if neighbors == 3 else 0
 
-                if color:
-                    matrix.drawPixel(x, y, color)
+                if cell > 0:
+                    pixelset[cell].append((x, y))
+                    next[x, y] = True
+                else:
+                    next[x, y] = False
+
+        for color, pixels in pixelset.iteritems():
+            if len(pixels):
+                matrix.drawPixels(pixels, self._hue(color))
 
         if (next == self.prior).all() or (next == self.lifes).all():
             self.reset_counter += 1
@@ -85,10 +93,8 @@ class Art(object):
         self.prior = lifes
         self.lifes = next
 
-        self.global_countdown -= 1
-
-        if self.reset_counter == RESET_INTERVAL or not self.global_countdown:
-            self.start(matrix)
+        if self.reset_counter == RESET_INTERVAL:
+            self._init(matrix)
 
     def interval(self):
-        return 300
+        return self._interval
