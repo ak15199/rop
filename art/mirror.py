@@ -18,7 +18,8 @@ except ImportError:
     import io
     import picamera
     camera = picamera.PiCamera()
-    camera.resolution = 50, 32
+    camera.resolution = 32, 50
+
     def get_frame():
         stream = io.BytesIO()
         camera.capture(stream, format='png', use_video_port=True)
@@ -42,15 +43,18 @@ class Art(object):
         self.brightness_threshold = config.get('BRIGHTNESS_THRESHOLD', 10)
         self.hue_rotation = config.get('COLOR_ROTATION', 0.02)
         self.fade = config.get('FADE', 0.95)
+        self.width = matrix.height
+        self.height = matrix.width
 
     def start(self, matrix):
         self.hue = 0.0
-        self.last_final_array = numpy.zeros((matrix.width, matrix.height, 3), dtype=int)
+        # The numpy.asarray function rotates the image, must invert axis.
+        self.last_final_array = numpy.zeros((self.height, self.width, 3), dtype=int)
 
     def refresh(self, matrix):
         frame = get_frame()
         frame = frame.convert('L')
-        frame = frame.resize((matrix.width, matrix.height), PIL.Image.BILINEAR)
+        frame = frame.resize((self.width, self.height), PIL.Image.BILINEAR)
 
         last_frame = self.last_orig_frame
         self.last_orig_frame = frame
