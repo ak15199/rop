@@ -50,7 +50,7 @@ class Art(object):
     def refresh(self, matrix):
         frame = get_frame()
         frame = frame.convert('L')
-        frame = frame.rotate(90).resize((matrix.height, matrix.width), PIL.Image.BILINEAR)
+        frame = frame.resize((matrix.width, matrix.height), PIL.Image.BILINEAR)
 
         last_frame = self.last_orig_frame
         self.last_orig_frame = frame
