@@ -10,6 +10,8 @@ from PIL import ImageChops
 from PIL import ImageOps
 import numpy
 
+from opc import matrix as matrix_module
+
 try:
     import cv2
 except ImportError:
@@ -34,38 +36,26 @@ class Art(object):
 
     description = "Video Mirror"
     last_orig_frame = None
+    last_final_array = None
 
     def __init__(self, matrix, config):
         self.brightness_threshold = config.get('BRIGHTNESS_THRESHOLD', 10)
         self.hue_rotation = config.get('COLOR_ROTATION', 0.02)
+        self.fade = config.get('FADE', 0.95)
 
     def start(self, matrix):
         self.hue = 0.0
+        self.last_final_array = numpy.zeros((matrix.width, matrix.height, 3), dtype=int)
 
     def refresh(self, matrix):
-        print 'begin refresh'
-        ss = start = time.time()
         frame = get_frame()
-
-        now = time.time()
-        print 'get frame', now - start
-        start = now
-
         frame = frame.convert('L')
-        frame = frame.rotate(90).resize((matrix.width, matrix.height), PIL.Image.BILINEAR)
-
-        now = time.time()
-        print 'all conversion', now - start
-        start = now
+        frame = frame.rotate(90).resize((matrix.height, matrix.width), PIL.Image.BILINEAR)
 
         last_frame = self.last_orig_frame
         self.last_orig_frame = frame
         if last_frame:
             frame = ImageChops.subtract(last_frame, frame, 0.05)
-
-        now = time.time()
-        print 'difference', now - start
-        start = now
 
         r, g, b = colorsys.hsv_to_rgb(self.hue, 1.0, 1.0)
         self.hue += self.hue_rotation
@@ -78,21 +68,11 @@ class Art(object):
         b = int(b * 256)
         frame = ImageOps.colorize(frame, (0, 0, 0), (r, g, b)).convert('RGB')
 
-        now = time.time()
-        print 'colorize', now - start
-        start = now
-
         image = numpy.asarray(frame)
-        draw_pixel = matrix.drawPixel
-        brightness_threshold = self.brightness_threshold
-        for y in range(matrix.width):
-            for x in range(matrix.height):
-                r, g, b = image[x, y]
-                if r > brightness_threshold or g > brightness_threshold or b > brightness_threshold:
-                    draw_pixel(y, matrix.height - x, (r, g, b), 0.3)
-        now = time.time()
-        print 'render', now - start
-        print 'total', now - ss
+        faded = (self.last_final_array * self.fade).astype(matrix_module.DTYPE)
+        image_mask = numpy.any(image > self.brightness_threshold, axis=2, keepdims=True)
+        self.last_final_array = numpy.where(image_mask, image, faded)
+        matrix.buf.buf = self.last_final_array
 
     def interval(self):
         return 30

@@ -27,7 +27,8 @@ config = {
             "COMPOUND": [
                 ('shift', {'dv': 0.97}),
                 ('mirror', {
-                    'BRIGHTNESS_THRESHOLD': 200,
+                    'BRIGHTNESS_THRESHOLD': 50,
+                    'FADE': 0.92
                 }),
             ]
         })

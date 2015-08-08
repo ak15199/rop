@@ -114,13 +114,16 @@ if __name__ == "__main__":
 	sensed = False
 
 	for i in [0,1,2,3]:
-		hats[i].check_all_and_restart()
-		time.sleep(10)
+		for motorname, motor in hats[i].motors.items():
+			hats[i].run(motorname, 'F', 50)
+			# hats[i].check_all_and_restart()
+		# time.sleep(10)
 		# for j in [1,2,3,4]:
 		# 	hats[i].run(j, 'F', 50)
 		# 	time.sleep(3)
 		# 	hats[i].shutdown_one(j)
-
+	
+	time.sleep(30)
 	# while True:
 	# 	# change this to poll sensor then write to sensed.
 	# 	with open("/home/pi/sensed", 'r') as presence:
