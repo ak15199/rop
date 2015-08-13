@@ -18,7 +18,7 @@ except ImportError:
     import io
     import picamera
     camera = picamera.PiCamera(resolution=(50, 32), framerate=45)
-    camera.start_preview(hflip=True)
+#    camera.start_preview(hflip=True)
 
     def get_frame():
         stream = io.BytesIO()

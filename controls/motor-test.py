@@ -4,15 +4,7 @@
 # :Date: 4 Aug 2015
 # :License: GPL v2
 #
-# motor controller for k Hats with a list of motors on each Hat
-#
-# Todo:
-#  -- add polling for sensors on ADC (see cmtd code)
-#  -- what process for determining presence? average last second?
-#  -- write poll result to sensor file
-#  -- switch motor action from file polling to presence calc.
-#  -- control illumination lights? slow up, slow down. (whiteleds.py)
-#
+# motor tester for k Hats with a list of motors on each Hat
 
 
 import time
@@ -120,74 +112,3 @@ if __name__ == "__main__":
 			hats[i].run(motorname, 'B', 75)
 			time.sleep(10)
 			hats[i].shutdown_one(motorname)
-
-		# for j in [1,2,3,4]:
-		# 	hats[i].run(j, 'F', 50)
-		# 	time.sleep(3)
-		# 	hats[i].shutdown_one(j)
-	
-
-	# while True:
-	 	# change this to poll sensor then write to sensed.
-	# 	with open("/home/pi/sensed", 'r') as presence:
-	# 		sensed = presence.read().strip()[-1]
-
-	 	# if sensed not in ["0", "1"] or sensed == "0":
-	# 	if not sensed:
-	# 		if running:
-	# 			shutdown(quit=False)
-	# 		running = False
-	# 		time.sleep(poll_interval/2.0)
-	# 		continue
-
-	# 	if not running:
-	 		# startup code: bring up IR light, then start motors
-	# 		running = True
-
-	# 	for hat in hats:
-	# 		hat.check_all_and_restart()
-
-	# 	time.sleep(poll_interval) # possible to go slower?
-
-	# shutdown(quit=True)
-
-
-
-# prototype code for ADC reader
-#
-# import time, signal, sys
-# from Adafruit_ADS1x15 import ADS1x15
-
-# def signal_handler(signal, frame):
-#         #print 'You pressed Ctrl+C!'
-#         sys.exit(0)
-# signal.signal(signal.SIGINT, signal_handler)
-# print 'Press Ctrl+C to exit'
-
-# ADS1015 = 0x00  # 12-bit ADC
-# ADS1115 = 0x01  # 16-bit ADC
-
-# # Initialise the ADC using the default mode (use default I2C address)
-# # Set this to ADS1015 or ADS1115 depending on the ADC you are using!
-# adc = ADS1x15(ic=ADS1015)
-
-# V_per_mV_read = 63.69
-# A_per_mV_read = 18.3
-
-# while True:
-#     # Read channels 2 and 3 in single-ended mode, at +/-4.096V and 250sps
-#     volts_single = [
-#                 adc.readADCSingleEnded(0, 4096, 250)/1000.0,
-#                 adc.readADCSingleEnded(1, 2048, 250)/1000.0,
-#                 adc.readADCSingleEnded(2, 1024, 250)/1000.0,
-#                 adc.readADCSingleEnded(3, 1024, 250)/1000.0
-#             ]
-
-
-#     print "v0=%s, v1=%s, v2=%s, v3=%s" % tuple(volts_single)
-#     meas_V = round((volts_single[3]/V_per_mV_read)*1000, 1)
-#     meas_A = round((volts_single[1]/A_per_mV_read)*1000, 1)
-#     meas_D = round( volts_single[0] / (5.3/512.0) , 1)
-#     print "measured A=%s, measured V=%s, measured D=%s" % (meas_A, meas_V, meas_D)
-
-#     time.sleep(1)
