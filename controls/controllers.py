@@ -16,6 +16,8 @@
 
 
 import time
+import collections
+import datetime
 import atexit
 import random
 import signal
@@ -104,6 +106,10 @@ if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
 	verbose = True
 
+	ADS1015 = 0x00  # 12-bit ADC
+	adc = ADS1x15(ic=ADS1015)
+	V_per_mV_read = 200.8
+
 	hats = [Hat('0x67', [1,2,3,4], verbose=verbose),
 			Hat('0x61', [1,2,3,4], verbose=verbose),
 			Hat('0x60', [1,2,3,4], verbose=verbose),
@@ -112,57 +118,60 @@ if __name__ == "__main__":
 	poll_interval = 1
 	running = False
 	sensed = False
+	log_rec = dict()
+	voltages = collections.deque(maxlen=100)
+	logfile = "/home/pi/var/log/%s.log" % datetime.datetime.now().isoformat().replace(':', '-').split('.')[0]
+	with open(logfile, 'w') as logFH:
+		logFH.write('# beginning log')
 
-	for i in [0,1,2,3]:
-		for motorname, motor in hats[i].motors.items():
-			hats[i].run(motorname, 'F', 75)
-			time.sleep(10)
-			hats[i].run(motorname, 'B', 75)
-			time.sleep(10)
-			hats[i].shutdown_one(motorname)
+	while True:
+	    sensors = {'volts': adc.readADCSingleEnded(0, 4096, 250),
+	               'dist':  adc.readADCSingleEnded(3, 4096, 250)
+	              }
+	    # print "v0=%s, v1=%s, v2=%s" % tuple(volts_single)
+	    measured_V = round(sensors['volts']/V_per_mV_read, 2)
+	    measured_D = round(sensors['dist']/(5.3/512.0) , 0)
+	    voltages.append(measured_V)
+	    mean_V = sum(voltages)/len(voltages)
+	    # print "time: %s. measured V=%s, measured D=%s" % (
+	    #    int(time.time()), measured_V, measured_D)
 
-		# for j in [1,2,3,4]:
-		# 	hats[i].run(j, 'F', 50)
-		# 	time.sleep(3)
-		# 	hats[i].shutdown_one(j)
-	
+		log_rec = {'timestamp': int(time.time()),
+					'running': running, sensed: sensed,
+					'volts': mean_V, 'distance': meas_D}
+		with open(logfile, 'a') as logFH:
+			logFH.write(json.dumps(log_rec))
 
-	# while True:
+		# now take action.
+		if mean_V < 11.1:
+			# shut it down!
+			time.sleep(poll_interval * 10)
+			continue
+
 	 	# change this to poll sensor then write to sensed.
-	# 	with open("/home/pi/sensed", 'r') as presence:
-	# 		sensed = presence.read().strip()[-1]
+		with open("/home/pi/sensed", 'r') as presence:
+			sensed = presence.read().strip()[-1]
 
-	 	# if sensed not in ["0", "1"] or sensed == "0":
-	# 	if not sensed:
-	# 		if running:
-	# 			shutdown(quit=False)
-	# 		running = False
-	# 		time.sleep(poll_interval/2.0)
-	# 		continue
+	 	if sensed not in ["0", "1"] or sensed == "0":
+			if running:
+				shutdown(quit=False)
+			running = False
+			time.sleep(poll_interval/2.0)
+			continue
 
-	# 	if not running:
+		if not running:
 	 		# startup code: bring up IR light, then start motors
-	# 		running = True
+			running = True
 
-	# 	for hat in hats:
-	# 		hat.check_all_and_restart()
+		for hat in hats:
+			hat.check_all_and_restart()
 
-	# 	time.sleep(poll_interval) # possible to go slower?
+		# here log what's going on: lamp, sensed, voltage, motor status
+		time.sleep(poll_interval) # possible to go slower?
 
-	# shutdown(quit=True)
+	shutdown(quit=True)
 
 
-
-# prototype code for ADC reader
-#
-# import time, signal, sys
-# from Adafruit_ADS1x15 import ADS1x15
-
-# def signal_handler(signal, frame):
-#         #print 'You pressed Ctrl+C!'
-#         sys.exit(0)
-# signal.signal(signal.SIGINT, signal_handler)
-# print 'Press Ctrl+C to exit'
 
 # ADS1015 = 0x00  # 12-bit ADC
 # ADS1115 = 0x01  # 16-bit ADC
