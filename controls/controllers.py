@@ -27,16 +27,35 @@ from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 sys.path.append("/home/pi/Adafruit-Raspberry-Pi-Python-Code/Adafruit_ADS1x15")
 import Adafruit_ADS1x15
 
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
+ARDUINO_PIN = 17
+LAMP_PIN = 27
+BUTTON_PIN = 22
 
-def signal_handler(signal, frame):
+
+def handle_INT(signal, frame):
 	print("SIGINT caught, exiting gracefully.")
-	shutdown()
+	shutdown(quit=True)
 
-def shutdown(quit=True):
+def handle_TERM(signal, frame):
+	print("SIGTERM caught, exiting gracefully.")
+	shutdown(halt=True, quit=True)
+
+def halt():
+	shutdown(halt=True)
+
+def shutdown(quit=False, halt=False):
 	for hat in hats:
 		hat.shutdown()
-	if quit:
+	GPIO.output(ARDUINO_PIN, GPIO.LOW)
+    GPIO.output(LAMP_PIN, GPIO.LOW)
+    GPIO.cleanup()
+	if halt:
+	    os.system("sudo shutdown -h now")
+	if quit or halt:
 		sys.exit(0)
+
 
 class Hat(object):
 	def __init__(self, addr, motorlist, verbose=False):
@@ -103,7 +122,15 @@ class Hat(object):
 
 
 if __name__ == "__main__":
-	signal.signal(signal.SIGINT, signal_handler)
+	signal.signal(signal.SIGINT, handle_INT)
+	signal.signal(signal.SIGTERM, handle_TERM)
+
+	GPIO.setup(LAMP_PIN, GPIO.OUT, initial=GPIO.LOW)
+	GPIO.setup(ARDUINO_PIN, GPIO.OUT, initial=GPIO.LOW)
+	GPIO.setup(BUTTON_PIN, GPIO.IN, initial=GPIO.LOW)
+	GPIO.add_event_detect(BUTTON_PIN, GPIO.FALLING,
+    	callback=halt, bouncetime=500)
+
 	verbose = True
 
 	ADS1015 = 0x00  # 12-bit ADC
@@ -163,6 +190,7 @@ if __name__ == "__main__":
 	 		# startup code: bring up IR light, then start motors
 			running = True
 
+
 		for hat in hats:
 			hat.check_all_and_restart()
 
@@ -170,33 +198,3 @@ if __name__ == "__main__":
 		time.sleep(poll_interval) # possible to go slower?
 
 	shutdown(quit=True)
-
-
-
-# ADS1015 = 0x00  # 12-bit ADC
-# ADS1115 = 0x01  # 16-bit ADC
-
-# # Initialise the ADC using the default mode (use default I2C address)
-# # Set this to ADS1015 or ADS1115 depending on the ADC you are using!
-# adc = ADS1x15(ic=ADS1015)
-
-# V_per_mV_read = 63.69
-# A_per_mV_read = 18.3
-
-# while True:
-#     # Read channels 2 and 3 in single-ended mode, at +/-4.096V and 250sps
-#     volts_single = [
-#                 adc.readADCSingleEnded(0, 4096, 250)/1000.0,
-#                 adc.readADCSingleEnded(1, 2048, 250)/1000.0,
-#                 adc.readADCSingleEnded(2, 1024, 250)/1000.0,
-#                 adc.readADCSingleEnded(3, 1024, 250)/1000.0
-#             ]
-
-
-#     print "v0=%s, v1=%s, v2=%s, v3=%s" % tuple(volts_single)
-#     meas_V = round((volts_single[3]/V_per_mV_read)*1000, 1)
-#     meas_A = round((volts_single[1]/A_per_mV_read)*1000, 1)
-#     meas_D = round( volts_single[0] / (5.3/512.0) , 1)
-#     print "measured A=%s, measured V=%s, measured D=%s" % (meas_A, meas_V, meas_D)
-
-#     time.sleep(1)
