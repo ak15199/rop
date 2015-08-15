@@ -43,6 +43,7 @@ class Art(object):
         self.brightness_threshold = config.get('BRIGHTNESS_THRESHOLD', 10)
         self.hue_rotation = config.get('COLOR_ROTATION', 0.02)
         self.fade = config.get('FADE', 0.95)
+        self.event_generator = config.get('EVENTS', None)
         self.width = matrix.height
         self.height = matrix.width
 
@@ -52,6 +53,20 @@ class Art(object):
         self.last_final_array = numpy.zeros((self.height, self.width, 3), dtype=int)
 
     def refresh(self, matrix):
+        if self.event_generator:
+            event = self.event_generator.next()
+            while event:
+                if event['event'] == 'inc':
+                    if event['id'] == 1:
+                        self.hue_rotation = max(self.hue_rotation - 0.005, 0.005)
+                    else:
+                        self.fade = max(self.fade - 0.01, 90)
+                elif event['event'] == 'dec':
+                    if event['event'] == 1:
+                        self.hue_rotation = min(self.hue_rotation + 0.005, 0.1)
+                    else:
+                        self.fade = min(self.fade + 0.01, 0.99)
+                event = self.event_generator.next()
         frame = get_frame()
         frame = frame.convert('L')
         frame = frame.resize((self.width, self.height), PIL.Image.BILINEAR)
