@@ -41,7 +41,12 @@ if __name__ == "__main__":
             new_val = int(data)
         except ValueError:
             pass # val stays the same
+
         if 0 <= val and val <= 100 and val != new_val:
+            log_rec = {'timestamp': int(time.time()),
+                   'old_lamp_DC': val, 'new_lamp_DC': new_val}
+            with open("/home/pi/var/log/status.log", 'a') as logFH:
+                logFH.write(json.dumps(log_rec))
             val = new_val
             pwm.ChangeDutyCycle(val)
         time.sleep(poll_interval)

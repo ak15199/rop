@@ -17,7 +17,7 @@
 
 import time
 import collections
-import datetime
+import os
 import atexit
 import random
 import signal
@@ -26,12 +26,6 @@ import sys
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 sys.path.append("/home/pi/Adafruit-Raspberry-Pi-Python-Code/Adafruit_ADS1x15")
 import Adafruit_ADS1x15
-
-import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM)
-ARDUINO_PIN = 17
-LAMP_PIN = 27
-BUTTON_PIN = 22
 
 
 def handle_INT(signal, frame):
@@ -46,11 +40,14 @@ def halt():
 	shutdown(halt=True)
 
 def shutdown(quit=False, halt=False):
+	log_rec = {'timestamp': int(time.time()),
+				'message': "shutting down IR lamp and motors."}
+	with open(logfile, 'a') as logFH:
+		logFH.write("%s\n" % json.dumps(log_rec))
+	with open('/home/pi/var/spool/ir-dutycycle', 'r') as dcFH:
+		dcFH.write("0\n")
 	for hat in hats:
 		hat.shutdown()
-	GPIO.output(ARDUINO_PIN, GPIO.LOW)
-    GPIO.output(LAMP_PIN, GPIO.LOW)
-    GPIO.cleanup()
 	if halt:
 	    os.system("sudo shutdown -h now")
 	if quit or halt:
@@ -125,17 +122,13 @@ if __name__ == "__main__":
 	signal.signal(signal.SIGINT, handle_INT)
 	signal.signal(signal.SIGTERM, handle_TERM)
 
-	GPIO.setup(LAMP_PIN, GPIO.OUT, initial=GPIO.LOW)
-	GPIO.setup(ARDUINO_PIN, GPIO.OUT, initial=GPIO.LOW)
-	GPIO.setup(BUTTON_PIN, GPIO.IN, initial=GPIO.LOW)
-	GPIO.add_event_detect(BUTTON_PIN, GPIO.FALLING,
-    	callback=halt, bouncetime=500)
-
 	verbose = True
 
 	ADS1015 = 0x00  # 12-bit ADC
 	adc = ADS1x15(ic=ADS1015)
 	V_per_mV_read = 200.8
+
+	IR_VALUE = 100  # tune this
 
 	hats = [Hat('0x67', [1,2,3,4], verbose=verbose),
 			Hat('0x61', [1,2,3,4], verbose=verbose),
@@ -147,8 +140,13 @@ if __name__ == "__main__":
 	sensed = False
 	log_rec = dict()
 	voltages = collections.deque(maxlen=100)
-	logfile = "/home/pi/var/log/%s.log" % datetime.datetime.now().isoformat().replace(':', '-').split('.')[0]
-	with open(logfile, 'w') as logFH:
+
+	# needs to rotate the status.log to its timestamp
+	logpath = "/home/pi/var/log/status.log"
+	logstat = os.stat(logpath)
+ 	newpath = "/home/pi/var/log/%s.log" % time.strftime("%Y-%m-%d-%H.%M.%SZ", time.gmtime(logstat))
+ 	os.rename(logpath, newpath)
+	with open(logpath, 'w') as logFH:
 		logFH.write('# beginning log')
 
 	while True:
@@ -164,32 +162,40 @@ if __name__ == "__main__":
 	    #    int(time.time()), measured_V, measured_D)
 
 		log_rec = {'timestamp': int(time.time()),
-					'running': running, sensed: sensed,
+					'running': running, 'sensed': sensed,
 					'volts': mean_V, 'distance': meas_D}
-		with open(logfile, 'a') as logFH:
-			logFH.write(json.dumps(log_rec))
+		with open(logpath, 'a') as logFH:
+			logFH.write("%s\n" % json.dumps(log_rec))
 
 		# now take action.
 		if mean_V < 11.1:
+			log_rec = {'timestamp': int(time.time()),
+						'message': "mean volts too low, shutting down."}
+		with open(logpath, 'a') as logFH:
+			logFH.write("%s\n" % json.dumps(log_rec))
+			shutdown(quit=True, halt=True)
 			# shut it down!
 			time.sleep(poll_interval * 10)
 			continue
 
-	 	# change this to poll sensor then write to sensed.
-		with open("/home/pi/sensed", 'r') as presence:
+		# todo:
+	 	# might want to leave motors running all the time.
+	 	# would require rethinking shutdown()
+		with open("/home/pi/var/spool/sensed", 'r') as presence:
 			sensed = presence.read().strip()[-1]
 
 	 	if sensed not in ["0", "1"] or sensed == "0":
 			if running:
 				shutdown(quit=False)
-			running = False
+				running = False
 			time.sleep(poll_interval/2.0)
 			continue
 
 		if not running:
 	 		# startup code: bring up IR light, then start motors
 			running = True
-
+			with open('/home/pi/var/spool/ir-dutycycle', 'r') as dcFH:
+				dcFH.write("%s\n" % IR_VALUE)
 
 		for hat in hats:
 			hat.check_all_and_restart()
