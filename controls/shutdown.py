@@ -9,9 +9,10 @@
 #
 import os
 import time
+import json 
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
-BUTTON_PIN = 22
+BUTTON_PIN = 17  # pin 11
 
 def handle_INT(signal, frame):
     print("SIGINT caught, exiting gracefully.")
@@ -21,7 +22,7 @@ def handle_TERM(signal, frame):
     print("SIGTERM caught, exiting gracefully.")
     shutdown()
 
-def shutdown():
+def shutdown(channel):
     log_rec = {'timestamp': int(time.time()),
                'message': 'shutting down by button'}
     with open("/home/pi/var/log/status.log", 'a') as logFH:
@@ -34,7 +35,7 @@ if __name__ == "__main__":
     poll_interval = 1
     GPIO.setup(BUTTON_PIN, GPIO.IN, initial=GPIO.LOW)
     GPIO.add_event_detect(BUTTON_PIN, GPIO.FALLING,
-        callback=halt, bouncetime=500)
+        callback=shutdown, bouncetime=500)
 
     while True:
         time.sleep(poll_interval) # possible to go slower?
