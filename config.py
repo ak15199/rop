@@ -75,7 +75,7 @@ config = {
             ]
         })
     ],
-    'BRIGHTNESS_THRESHOLD': 100,
+    'BRIGHTNESS_THRESHOLD': 120,
     'FADE': 0.92,
     'COLOR_ROTATION': 0.05,
 }

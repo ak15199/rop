@@ -24,7 +24,8 @@ class Art(object):
         self.draw_countdown = 5
 
     def refresh(self, matrix):
-        if self.draw_countdown:
+        matrix.clear()
+        if self.draw_countdown and False:
             self.draw_countdown -= 1
             return
 
@@ -87,4 +88,4 @@ class Art(object):
 
 
     def interval(self):
-        return 75
+        return 500
