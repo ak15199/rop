@@ -1,7 +1,8 @@
 __author__ = 'rafe'
 
 import colorsys
-
+import os
+import signal
 import time
 
 import PIL
@@ -50,6 +51,14 @@ class Art(object):
         self.rotator = rotator.Art(matrix, config.get('ARTS', {}))
         self.width = matrix.height
         self.height = matrix.width
+        self.term_handler = signal.signal(signal.SIGTERM, self.term_handler)
+        print os.getpid()
+
+    def term_handler(self, signum, stack):
+        print 'TERM signal received'
+        os.kill(os.getpid(), signal.SIGINT)
+        if self.term_handler:
+            self.term_handler(signum, stack)
 
     def start(self, matrix):
         self.hue = 0.0
