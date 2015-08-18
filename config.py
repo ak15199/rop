@@ -73,6 +73,12 @@ config = {
                     ('psyblobs', {}),
                 ],
             }),
+            ('persistent', {
+                'COMPOUND': [
+                    ('shift', {'dv': 0.97}),
+                    ('life', {}),
+                ],
+            }),
             ('spill', {}),
             ('rotor', {}),
         ],
