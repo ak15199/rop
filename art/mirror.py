@@ -9,6 +9,7 @@ import PIL
 from PIL import Image
 from PIL import ImageChops
 from PIL import ImageOps
+from PIL import ImageDraw
 import numpy
 
 from art import rotator
@@ -44,15 +45,35 @@ class Art(object):
 
     def __init__(self, matrix, config):
         self.brightness_threshold = config.get('BRIGHTNESS_THRESHOLD', 10)
-        self.hue_rotation = config.get('COLOR_ROTATION', 0.02)
-        self.fade = config.get('FADE', 0.95)
+        self.hue_rotation_min, self.hue_rotation_max = config.get('COLOR_ROTATION', (0.005, 0.1))
+        self.fade_min, self.fade_max = config.get('FADE', (0.90, 0.99))
         self.event_generator = config.get('EVENTS', None)
-        self.movement_timeout = config.get('MOVEMENT_TIMEOUT', 1)
+        self.movement_timeout = config.get('MOVEMENT_TIMEOUT', 5)
+        self.control_timeout = config.get('CONTROL_TIMEOUT', 2)
         self.rotator = rotator.Art(matrix, config.get('ARTS', {}))
         self.width = matrix.height
         self.height = matrix.width
         self.term_handler = signal.signal(signal.SIGTERM, self.term_handler)
-        print os.getpid()
+
+        self.control_steps = self.height
+
+        self.fade_range = self.fade_max - self.fade_min
+        self.fade_step = self.fade_range / self.control_steps
+        self.fade_index = int(self.control_steps / 2)
+
+        self.hue_rotation_range = self.hue_rotation_max - self.hue_rotation_min
+        self.hue_rotation_step = self.hue_rotation_range / self.control_steps
+        self.hue_rotation_index = int(self.control_steps / 2)
+
+        print 'Starting mirror at pid', os.getpid()
+
+    @property
+    def fade(self):
+        return self.fade_min + self.fade_step * self.fade_index
+
+    @property
+    def hue_rotation(self):
+        return self.hue_rotation_min + self.hue_rotation_step * self.hue_rotation_index
 
     def term_handler(self, signum, stack):
         print 'TERM signal received'
@@ -67,24 +88,42 @@ class Art(object):
         self.last_move = 0
         self.rotator.start(matrix)
         self.showing = True
+        self.last_control_time = 0
 
-    def refresh(self, matrix):
+    def _receive_events(self):
         if self.event_generator:
             event = self.event_generator.next()
             while event:
-                print 'EVENT', event
+                self.last_control_time = time.time()
                 if event['event'] == 'inc':
                     if event['id'] == 1:
-                        self.hue_rotation = max(self.hue_rotation - 0.005, 0.005)
+                        self.hue_rotation = max(self.hue_rotation - self.hue_rotation_step,
+                                                self.hue_rotation_min)
                     else:
-                        self.fade = max(self.fade - 0.01, 0.90)
+                        self.fade = max(self.fade - self.fade_step, self.fade_min)
                 elif event['event'] == 'dec':
                     if event['id'] == 1:
-                        self.hue_rotation = min(self.hue_rotation + 0.005, 0.1)
+                        self.hue_rotation = min(self.hue_rotation + self.hue_rotation_step,
+                                                self.hue_rotation_max)
                     else:
-                        self.fade = min(self.fade + 0.01, 0.99)
+                        self.fade = min(self.fade + self.fade_step, self.fade_max)
                 event = self.event_generator.next()
-                print self.hue_rotation, self.fade
+
+    def _render_controls(self, frame):
+        now = time.time()
+        show = (now - self.last_control_time) <= self.control_timeout
+        if not show and False:
+            return
+        draw = ImageDraw.Draw(frame)
+
+        draw.fill = 255, 255, 255
+        draw.rectangle([0, self.height - 1, 3, self.height - self.fade_index])
+        draw.rectangle([self.width - 1, self.height - 1,
+                        self.width - 4, self.height - self.hue_rotation_index])
+
+    def refresh(self, matrix):
+        self._receive_events()
+
         frame = get_frame()
         frame = frame.convert('L')
         frame = frame.resize((self.width, self.height), PIL.Image.BILINEAR)
@@ -104,6 +143,8 @@ class Art(object):
         g = int(g * 256)
         b = int(b * 256)
         frame = ImageOps.colorize(frame, (0, 0, 0), (r, g, b)).convert('RGB')
+
+        self._render_controls(frame)
 
         image = numpy.asarray(frame)
 

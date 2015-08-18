@@ -63,8 +63,6 @@ Art Configuration Settings
 config = {
     "EVENTS": event_generator(),
     'BRIGHTNESS_THRESHOLD': 100,
-    'FADE': 0.92,
-    'COLOR_ROTATION': 0.05,
     'ARTS': {
         'TIMEOUT': 5,
         'COMPOUND': [
