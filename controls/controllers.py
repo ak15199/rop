@@ -16,6 +16,8 @@
 
 
 import time
+import collections
+import os
 import atexit
 import random
 import signal
@@ -26,15 +28,31 @@ sys.path.append("/home/pi/Adafruit-Raspberry-Pi-Python-Code/Adafruit_ADS1x15")
 import Adafruit_ADS1x15
 
 
-def signal_handler(signal, frame):
+def handle_INT(signal, frame):
 	print("SIGINT caught, exiting gracefully.")
-	shutdown()
+	shutdown(quit=True)
 
-def shutdown(quit=True):
+def handle_TERM(signal, frame):
+	print("SIGTERM caught, exiting gracefully.")
+	shutdown(halt=True, quit=True)
+
+def halt():
+	shutdown(halt=True)
+
+def shutdown(quit=False, halt=False):
+	log_rec = {'timestamp': int(time.time()),
+				'message': "shutting down IR lamp and motors."}
+	with open(logfile, 'a') as logFH:
+		logFH.write("%s\n" % json.dumps(log_rec))
+	with open('/home/pi/var/spool/ir-dutycycle', 'r') as dcFH:
+		dcFH.write("0\n")
 	for hat in hats:
 		hat.shutdown()
-	if quit:
+	if halt:
+	    os.system("sudo shutdown -h now")
+	if quit or halt:
 		sys.exit(0)
+
 
 class Hat(object):
 	def __init__(self, addr, motorlist, verbose=False):
@@ -81,9 +99,9 @@ class Hat(object):
 
 	def run_random(self, motorname):
 		direction = "F" if random.getrandbits(1) == 0 else "B"
-		speedpct = abs(int(random.gauss(40, 30)))
-		runtime = abs(random.gauss(10, 3))
-		speedpct = 0 if speedpct > 70 or runtime > 20 else speedpct
+		speedpct = abs(int(random.gauss(60, 40)))
+		runtime = abs(random.gauss(6, 3))
+		speedpct = 0 if speedpct < 35 or runtime > 20 else speedpct
 		self.run_for(motorname, direction, speedpct, runtime)
 
 	def check_all_and_restart(self):
@@ -101,90 +119,88 @@ class Hat(object):
 
 
 if __name__ == "__main__":
-	signal.signal(signal.SIGINT, signal_handler)
+	signal.signal(signal.SIGINT, handle_INT)
+	signal.signal(signal.SIGTERM, handle_TERM)
+
 	verbose = True
+
+	ADS1015 = 0x00  # 12-bit ADC
+	adc = ADS1x15(ic=ADS1015)
+	V_per_mV_read = 200.8
+
+	IR_VALUE = 100  # tune this
 
 	hats = [Hat('0x67', [1,2,3,4], verbose=verbose),
 			Hat('0x61', [1,2,3,4], verbose=verbose),
-			Hat('0x66', [1,2,3,4], verbose=verbose),
-			Hat('0x60', [1,2,3,4], verbose=verbose)]
+			Hat('0x60', [1,2,3,4], verbose=verbose),
+			Hat('0x66', [1,2,3,4], verbose=verbose)]
 
 	poll_interval = 1
 	running = False
 	sensed = False
+	log_rec = dict()
+	voltages = collections.deque(maxlen=100)
 
-	for i in [0,1,2,3]:
-		for motorname, motor in hats[i].motors.items():
-			hats[i].run(motorname, 'F', 50)
-			# hats[i].check_all_and_restart()
-		# time.sleep(10)
-		# for j in [1,2,3,4]:
-		# 	hats[i].run(j, 'F', 50)
-		# 	time.sleep(3)
-		# 	hats[i].shutdown_one(j)
-	
-	time.sleep(30)
-	# while True:
-	# 	# change this to poll sensor then write to sensed.
-	# 	with open("/home/pi/sensed", 'r') as presence:
-	# 		sensed = presence.read().strip()[-1]
+	# needs to rotate the status.log to its timestamp
+	logpath = "/home/pi/var/log/status.log"
+	logstat = os.stat(logpath)
+ 	newpath = "/home/pi/var/log/%s.log" % time.strftime("%Y-%m-%d-%H.%M.%SZ", time.gmtime(logstat))
+ 	os.rename(logpath, newpath)
+	with open(logpath, 'w') as logFH:
+		logFH.write('# beginning log')
 
-	# 	# if sensed not in ["0", "1"] or sensed == "0":
-	# 	if not sensed:
-	# 		if running:
-	# 			shutdown(quit=False)
-	# 		running = False
-	# 		time.sleep(poll_interval/2.0)
-	# 		continue
+	while True:
+	    sensors = {'volts': adc.readADCSingleEnded(0, 4096, 250),
+	               'dist':  adc.readADCSingleEnded(3, 4096, 250)
+	              }
+	    # print "v0=%s, v1=%s, v2=%s" % tuple(volts_single)
+	    measured_V = round(sensors['volts']/V_per_mV_read, 2)
+	    measured_D = round(sensors['dist']/(5.3/512.0) , 0)
+	    voltages.append(measured_V)
+	    mean_V = sum(voltages)/len(voltages)
+	    # print "time: %s. measured V=%s, measured D=%s" % (
+	    #    int(time.time()), measured_V, measured_D)
 
-	# 	if not running:
-	# 		# startup code: bring up IR light, then start motors
-	# 		running = True
+		log_rec = {'timestamp': int(time.time()),
+					'running': running, 'sensed': sensed,
+					'volts': mean_V, 'distance': meas_D}
+		with open(logpath, 'a') as logFH:
+			logFH.write("%s\n" % json.dumps(log_rec))
 
-	# 	for hat in hats:
-	# 		hat.check_all_and_restart()
+		# now take action.
+		if mean_V < 11.1:
+			log_rec = {'timestamp': int(time.time()),
+						'message': "mean volts too low, shutting down."}
+		with open(logpath, 'a') as logFH:
+			logFH.write("%s\n" % json.dumps(log_rec))
+			shutdown(quit=True, halt=True)
+			# shut it down!
+			time.sleep(poll_interval * 10)
+			continue
 
-	# 	time.sleep(poll_interval) # possible to go slower?
+		# todo:
+	 	# might want to leave motors running all the time.
+	 	# would require rethinking shutdown()
+		with open("/home/pi/var/spool/sensed", 'r') as presence:
+			sensed = presence.read().strip()[-1]
+
+	 	if sensed not in ["0", "1"] or sensed == "0":
+			if running:
+				shutdown(quit=False)
+				running = False
+			time.sleep(poll_interval/2.0)
+			continue
+
+		if not running:
+	 		# startup code: bring up IR light, then start motors
+			running = True
+			with open('/home/pi/var/spool/ir-dutycycle', 'r') as dcFH:
+				dcFH.write("%s\n" % IR_VALUE)
+
+		for hat in hats:
+			hat.check_all_and_restart()
+
+		# here log what's going on: lamp, sensed, voltage, motor status
+		time.sleep(poll_interval) # possible to go slower?
 
 	shutdown(quit=True)
-
-
-
-# prototype code for ADC reader
-#
-# import time, signal, sys
-# from Adafruit_ADS1x15 import ADS1x15
-
-# def signal_handler(signal, frame):
-#         #print 'You pressed Ctrl+C!'
-#         sys.exit(0)
-# signal.signal(signal.SIGINT, signal_handler)
-# print 'Press Ctrl+C to exit'
-
-# ADS1015 = 0x00  # 12-bit ADC
-# ADS1115 = 0x01  # 16-bit ADC
-
-# # Initialise the ADC using the default mode (use default I2C address)
-# # Set this to ADS1015 or ADS1115 depending on the ADC you are using!
-# adc = ADS1x15(ic=ADS1015)
-
-# V_per_mV_read = 63.69
-# A_per_mV_read = 18.3
-
-# while True:
-#     # Read channels 2 and 3 in single-ended mode, at +/-4.096V and 250sps
-#     volts_single = [
-#                 adc.readADCSingleEnded(0, 4096, 250)/1000.0,
-#                 adc.readADCSingleEnded(1, 2048, 250)/1000.0,
-#                 adc.readADCSingleEnded(2, 1024, 250)/1000.0,
-#                 adc.readADCSingleEnded(3, 1024, 250)/1000.0
-#             ]
-
-
-#     print "v0=%s, v1=%s, v2=%s, v3=%s" % tuple(volts_single)
-#     meas_V = round((volts_single[3]/V_per_mV_read)*1000, 1)
-#     meas_A = round((volts_single[1]/A_per_mV_read)*1000, 1)
-#     meas_D = round( volts_single[0] / (5.3/512.0) , 1)
-#     print "measured A=%s, measured V=%s, measured D=%s" % (meas_A, meas_V, meas_D)
-
-#     time.sleep(1)

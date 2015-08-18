@@ -20,7 +20,7 @@ except ImportError:
     import io
     import picamera
     camera = picamera.PiCamera(resolution=(50, 32), framerate=45)
-    camera.start_preview(hflip=True)
+#    camera.start_preview(hflip=True)
 
     def get_frame():
         stream = io.BytesIO()
@@ -63,17 +63,19 @@ class Art(object):
         if self.event_generator:
             event = self.event_generator.next()
             while event:
+                print 'EVENT', event
                 if event['event'] == 'inc':
                     if event['id'] == 1:
                         self.hue_rotation = max(self.hue_rotation - 0.005, 0.005)
                     else:
-                        self.fade = max(self.fade - 0.01, 90)
+                        self.fade = max(self.fade - 0.01, 0.90)
                 elif event['event'] == 'dec':
-                    if event['event'] == 1:
+                    if event['id'] == 1:
                         self.hue_rotation = min(self.hue_rotation + 0.005, 0.1)
                     else:
                         self.fade = min(self.fade + 0.01, 0.99)
                 event = self.event_generator.next()
+                print self.hue_rotation, self.fade
         frame = get_frame()
         frame = frame.convert('L')
         frame = frame.resize((self.width, self.height), PIL.Image.BILINEAR)

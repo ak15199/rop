@@ -6,6 +6,8 @@ import serial
 import traceback
 import json
 
+PORT = '/dev/ttyAMA0'
+
 def event_generator():
     ser = None
     buffer = []
@@ -13,9 +15,11 @@ def event_generator():
     while True:
         if not ser:
             try:
-                ser = serial.Serial(baudrate=9600, port='/dev/cu.usbserial-A101KWG0')
+                ser = serial.Serial(baudrate=9600, port=PORT)
             except OSError:
                 ser = None
+            else:
+                print 'serial connected'
         if not ser:
             yield None
             continue
