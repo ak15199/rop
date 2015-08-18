@@ -10,7 +10,7 @@ class Art(compound.Art):
 
     def start(self, matrix):
         self.__persistent = type(matrix)(matrix.width, matrix.height, None)
-        super(Art, self).start(matrix)
+        super(Art, self).start(self.__persistent)
 
     def refresh(self, matrix):
         super(Art, self).refresh(self.__persistent)
