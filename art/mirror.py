@@ -10,7 +10,9 @@ from PIL import ImageChops
 from PIL import ImageOps
 import numpy
 
+from art import rotator
 from opc import matrix as matrix_module
+from opc import buffer
 
 try:
     import cv2
@@ -44,6 +46,8 @@ class Art(object):
         self.hue_rotation = config.get('COLOR_ROTATION', 0.02)
         self.fade = config.get('FADE', 0.95)
         self.event_generator = config.get('EVENTS', None)
+        self.movement_timeout = config.get('MOVEMENT_TIMEOUT', 1)
+        self.rotator = rotator.Art(matrix, config.get('ARTS', {}))
         self.width = matrix.height
         self.height = matrix.width
 
@@ -51,6 +55,9 @@ class Art(object):
         self.hue = 0.0
         # The numpy.asarray function rotates the image, must invert axis.
         self.last_final_array = numpy.zeros((self.height, self.width, 3), dtype=int)
+        self.last_move = 0
+        self.rotator.start(matrix)
+        self.showing = True
 
     def refresh(self, matrix):
         if self.event_generator:
@@ -88,10 +95,24 @@ class Art(object):
         frame = ImageOps.colorize(frame, (0, 0, 0), (r, g, b)).convert('RGB')
 
         image = numpy.asarray(frame)
+
         faded = (self.last_final_array * self.fade).astype(matrix_module.DTYPE)
         image_mask = numpy.any(image > self.brightness_threshold, axis=2, keepdims=True)
-        self.last_final_array = numpy.where(image_mask, image, faded)
-        matrix.buf.buf = self.last_final_array
+        movement = bool(numpy.count_nonzero(image_mask))
+        now = time.time()
+        if movement:
+            self.last_move = now
+        seconds_since_movement = now - self.last_move
+        show_mirror =  seconds_since_movement < self.movement_timeout
+
+        if show_mirror:
+            self.last_final_array = numpy.where(image_mask, image, faded)
+            matrix.buf.buf = self.last_final_array
+        else:
+            if self.showing:
+                matrix.buf.buf = numpy.empty(shape=(self.height, self.width, 3), dtype=buffer.DTYPE)
+            self.rotator.refresh(matrix)
+        self.showing = show_mirror
 
     def interval(self):
         return 30

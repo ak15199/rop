@@ -58,20 +58,19 @@ Art Configuration Settings
 """
 config = {
     "EVENTS": event_generator(),
-    "COMPOUND": [
-        ('persistent', {
-            "COMPOUND": [
-                ('shift', {'dv': 0.97}),
-                ('mirror', {
-                    'BRIGHTNESS_THRESHOLD': 100,
-                    'FADE': 0.92,
-                    'COLOR_ROTATION': 0.05,
-                    "EVENTS": event_generator(),
-                }),
-            ]
-        })
-    ],
     'BRIGHTNESS_THRESHOLD': 100,
     'FADE': 0.92,
     'COLOR_ROTATION': 0.05,
+    'ARTS': {
+        'TIMEOUT': 5,
+        'COMPOUND': [
+            ('persistent', {
+                'COMPOUND': [
+                    ('psyblobs', {}),
+                ],
+            }),
+            ('spill', {}),
+            ('rotor', {}),
+        ],
+    },
 }
