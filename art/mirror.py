@@ -117,5 +117,8 @@ class Art(object):
         self.showing = show_mirror
 
     def interval(self):
-        return 30
+        if self.showing:
+            return 30
+        else:
+            return self.rotator.interval()
 

@@ -40,4 +40,8 @@ class Art(compound.Art):
             matrix.clear()
 
     def interval(self):
-        return 30
+        selected = self.selected
+        if selected:
+            return selected.interval()
+        else:
+            return 30
