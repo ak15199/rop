@@ -121,17 +121,19 @@ class Art(object):
                         self.fade = min(self.fade + self.fade_step, self.fade_max)
                 event = self.event_generator.next()
 
-    def _render_controls(self, frame):
+    def _render_controls(self):
         now = time.time()
         show = (now - self.last_control_time) <= self.control_timeout
         if not show and False:
             return
-        draw = ImageDraw.Draw(frame)
+        control_image = Image.new('RGB', (self.width, self.height))
+        draw = ImageDraw.Draw(control_image)
 
         draw.fill = 255, 255, 255
         draw.rectangle([0, self.height - 1, 3, self.height - self.fade_index])
         draw.rectangle([self.width - 1, self.height - 1,
                         self.width - 4, self.height - self.hue_rotation_index])
+        return control_image
 
     def refresh(self, matrix):
         self._receive_events()
@@ -156,8 +158,6 @@ class Art(object):
         b = int(b * 256)
         frame = ImageOps.colorize(frame, (0, 0, 0), (r, g, b)).convert('RGB')
 
-        self._render_controls(frame)
-
         image = numpy.asarray(frame)
 
         faded = (self.last_final_array * self.fade).astype(matrix_module.DTYPE)
@@ -171,11 +171,13 @@ class Art(object):
 
         if show_mirror:
             self.last_final_array = numpy.where(image_mask, image, faded)
+
             matrix.buf.buf = self.background | self.last_final_array
         else:
             if self.showing:
                 matrix.buf.buf = numpy.empty(shape=(self.height, self.width, 3), dtype=buffer.DTYPE)
             self.rotator.refresh(matrix)
+        matrix.buf.buf |= numpy.asarray(self._render_controls())
         self.showing = show_mirror
 
     def interval(self):

@@ -64,7 +64,7 @@ config = {
     "EVENTS": event_generator(),
     'BRIGHTNESS_THRESHOLD': 100,
     'ARTS': {
-        'TIMEOUT': 5,
+        'TIMEOUT': 1,
         'COMPOUND': [
             ('persistent', {
                 'COMPOUND': [
