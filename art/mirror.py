@@ -65,7 +65,19 @@ class Art(object):
         self.hue_rotation_step = self.hue_rotation_range / self.control_steps
         self.hue_rotation_index = int(self.control_steps / 2)
 
+        self._create_background_image()
+
         print 'Starting mirror at pid', os.getpid()
+
+    def _create_background_image(self):
+        background_image = Image.new('RGB', (self.width, self.height), (0, 0, 0))
+
+        renderer = ImageDraw.Draw(background_image)
+        for y in range(self.height):
+            shade = (64 / self.height) * y
+            renderer.line((0, y, self.width - 1, y), (shade, shade, shade))
+
+        self.background = numpy.asarray(background_image)
 
     @property
     def fade(self):
@@ -159,7 +171,7 @@ class Art(object):
 
         if show_mirror:
             self.last_final_array = numpy.where(image_mask, image, faded)
-            matrix.buf.buf = self.last_final_array
+            matrix.buf.buf = self.background | self.last_final_array
         else:
             if self.showing:
                 matrix.buf.buf = numpy.empty(shape=(self.height, self.width, 3), dtype=buffer.DTYPE)
