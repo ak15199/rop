@@ -125,7 +125,7 @@ class Art(object):
         now = time.time()
         show = (now - self.last_control_time) <= self.control_timeout
         control_image = Image.new('RGB', (self.width, self.height))
-        if not show and False:
+        if not show:
             return control_image
         draw = ImageDraw.Draw(control_image)
 
