@@ -64,7 +64,7 @@ config = {
     "EVENTS": event_generator(),
     'BRIGHTNESS_THRESHOLD': 100,
     'ARTS': {
-        'TIMEOUT': 1,
+        'TIMEOUT': 5,
         'COMPOUND': [
             ('persistent', {
                 'COMPOUND': [
@@ -74,6 +74,8 @@ config = {
             ('life', {'HSCALE': 0.025, 'ITERATIONS': 10000}),
             ('spill', {}),
             ('rotor', {}),
+            ('race', {}),
+            ('pops', {}),
         ],
     },
 }
