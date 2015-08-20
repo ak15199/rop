@@ -62,7 +62,7 @@ Art Configuration Settings
 """
 config = {
     "EVENTS": event_generator(),
-    'BRIGHTNESS_THRESHOLD': 100,
+    'BRIGHTNESS_THRESHOLD': 150,
     'ARTS': {
         'TIMEOUT': 5,
         'COMPOUND': [

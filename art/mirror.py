@@ -91,10 +91,10 @@ class Art(object):
 
     def term_handler(self, signum, stack):
         print 'TERM signal received'
+        self.terminated = True
         os.kill(os.getpid(), signal.SIGINT)
         if self.term_handler:
             self.term_handler(signum, stack)
-        self.terminated = True
 
     def start(self, matrix):
         self.hue = 0.0
@@ -129,7 +129,7 @@ class Art(object):
         show = (now - self.last_control_time) <= self.control_timeout
         control_image = Image.new('RGB', (self.width, self.height))
         if not show:
-            return control_image
+            return None
         draw = ImageDraw.Draw(control_image)
 
         draw.fill = 255, 255, 255
@@ -176,13 +176,14 @@ class Art(object):
 
         if show_mirror:
             self.last_final_array = numpy.where(image_mask, image, faded)
-
-            matrix.buf.buf = self.background | self.last_final_array
+            matrix.buf.buf = numpy.copy(self.last_final_array)
+            controls = self._render_controls()
+            if controls is not None:
+                matrix.buf.buf |= numpy.asarray(controls)
         else:
             if self.showing:
                 matrix.buf.buf = numpy.empty(shape=(self.height, self.width, 3), dtype=buffer.DTYPE)
             self.rotator.refresh(matrix)
-        matrix.buf.buf |= numpy.asarray(self._render_controls())
         self.showing = show_mirror
 
     def interval(self):
