@@ -67,6 +67,8 @@ class Art(object):
 
         self._create_background_image()
 
+        self.terminated = False
+
         print 'Starting mirror at pid', os.getpid()
 
     def _create_background_image(self):
@@ -92,6 +94,7 @@ class Art(object):
         os.kill(os.getpid(), signal.SIGINT)
         if self.term_handler:
             self.term_handler(signum, stack)
+        self.terminated = True
 
     def start(self, matrix):
         self.hue = 0.0
@@ -136,6 +139,8 @@ class Art(object):
         return control_image
 
     def refresh(self, matrix):
+        if self.terminated:
+            raise KeyboardInterrupt
         self._receive_events()
 
         frame = get_frame()
