@@ -109,16 +109,16 @@ class Art(object):
                 self.last_control_time = time.time()
                 if event['event'] == 'inc':
                     if event['id'] == 1:
-                        self.hue_rotation = max(self.hue_rotation - self.hue_rotation_step,
-                                                self.hue_rotation_min)
+                        self.hue_rotation_index = max(0, self.hue_rotation_index - 1)
                     else:
-                        self.fade = max(self.fade - self.fade_step, self.fade_min)
+                        self.fade_index = max(0, self.fade_index - 1)
                 elif event['event'] == 'dec':
                     if event['id'] == 1:
-                        self.hue_rotation = min(self.hue_rotation + self.hue_rotation_step,
-                                                self.hue_rotation_max)
+                        self.hue_rotation_index = min(self.control_steps - 1,
+                                                      self.hue_rotation_index + 1)
                     else:
-                        self.fade = min(self.fade + self.fade_step, self.fade_max)
+                        self.fade_index = min(self.control_steps - 1,
+                                              self.fade_index + 1)
                 event = self.event_generator.next()
 
     def _render_controls(self):
