@@ -17,7 +17,7 @@ from opc import matrix as matrix_module
 from opc import buffer
 
 try:
-    import cv2
+    import cv2  # Not for use on pi
 except ImportError:
     import io
     import picamera
