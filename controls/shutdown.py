@@ -9,7 +9,7 @@
 #
 import os
 import time
-import json 
+import json
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 BUTTON_PIN = 17  # pin 11
@@ -26,12 +26,18 @@ def shutdown(channel):
     log_rec = {'timestamp': int(time.time()),
                'message': 'shutting down by button'}
     with open("/home/pi/var/log/status.log", 'a') as logFH:
-        logFH.write(json.dumps(log_rec))
+        logFH.write("%s\n" % json.dumps(log_rec))
     os.system("sudo shutdown -h now")
+
+def startup():
+    log_rec = {'timestamp': int(time.time()),
+               'message': 'booted up, watching shutdown button'}
+    with open("/home/pi/var/log/status.log", 'a') as logFH:
+        logFH.write("%s\n" % json.dumps(log_rec))
 
 
 if __name__ == "__main__":
-
+    startup()
     poll_interval = 1
     GPIO.setup(BUTTON_PIN, GPIO.IN, initial=GPIO.LOW)
     GPIO.add_event_detect(BUTTON_PIN, GPIO.FALLING,
