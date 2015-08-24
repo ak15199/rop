@@ -192,7 +192,7 @@ class Art(object):
 
         if show_mirror:
             if not self.showing:
-                print 'Waking up'
+                pass  # Wake up
             self.last_final_array = numpy.where(image_mask, image, faded)
             matrix.buf.buf = numpy.copy(self.last_final_array)
             controls = self._render_controls()
@@ -200,7 +200,6 @@ class Art(object):
                 matrix.buf.buf |= numpy.asarray(controls)
         else:
             if self.showing:  # Enter dream state.
-                print 'Dreaming'
                 matrix.buf.buf = numpy.empty(shape=(self.height, self.width, 3), dtype=buffer.DTYPE)
                 self.last_sleep = now
             self.rotator.refresh(matrix)
