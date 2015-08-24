@@ -197,7 +197,7 @@ class Art(object):
             self.move_count = 0
         enough_movement = self.showing or self.move_count >= self.min_wake_move
 
-        show_mirror = (enough_movement and saw_movement) or self.screen_save
+        show_mirror = (enough_movement and saw_movement) or not self.screen_save
 
         if show_mirror:
             if not self.showing:
