@@ -74,14 +74,19 @@ config = {
     'ARTS': {
         'TIMEOUT': 5,
         'COMPOUND': [
+            ('drops', {
+               'DROP_CHANCE': 0.3,       # Chance each frame of new drop - hight == more drops
+               'DROP_SPEED': (0.2, 0.4), # Drop speed (min, max) value between 0.0 and 1.0
+               'DROP_FADE': 0.95,        # Number between 0.0 and 1.1 - higher means longer trails
+            }),
             ('persistent', {
                 'COMPOUND': [
                     ('psyblobs', {}),
                 ],
             }),
             ('life', {'HSCALE': 0.025, 'ITERATIONS': 10000}),
-            ('spill', {}),
-            ('rotor', {}),
+            #('spill', {}),
+            #('rotor', {}),
             ('race', {}),
             ('pops', {}),
         ],
