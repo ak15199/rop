@@ -182,7 +182,7 @@ class Art(object):
                         seconds_since_sleep < self.min_sleep)
 
         if show_mirror:
-            if not showing:
+            if not self.showing:
                 print 'Waking up'
             self.last_final_array = numpy.where(image_mask, image, faded)
             matrix.buf.buf = numpy.copy(self.last_final_array)
