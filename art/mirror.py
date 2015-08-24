@@ -121,6 +121,10 @@ class Art(object):
 
                 if event['event'] == 'down':
                     self.screen_save = not self.screen_save
+                    if not self.screen_save:
+                        # Reset the movement count stuff.
+                        self.last_sleep = 0
+                        self.last_move = 0
 
                 elif event['event'] == 'inc':
                     if event['id'] == 1:
