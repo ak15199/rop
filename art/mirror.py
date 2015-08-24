@@ -122,7 +122,7 @@ class Art(object):
                 if event['event'] == 'down':
                     self.screen_save = not self.screen_save
 
-                if event['event'] == 'inc':
+                elif event['event'] == 'inc':
                     if event['id'] == 1:
                         self.hue_rotation_index = max(0, self.hue_rotation_index - 1)
                     else:
@@ -193,7 +193,7 @@ class Art(object):
             self.move_count = 0
         enough_movement = self.showing or self.move_count >= self.min_wake_move
 
-        show_mirror = enough_movement and saw_movement and not self.screen_save
+        show_mirror = (enough_movement and saw_movement) or self.screen_save
 
         if show_mirror:
             if not self.showing:
