@@ -179,7 +179,8 @@ class Art(object):
         seconds_since_movement = now - self.last_move
         seconds_since_sleep = now - self.last_sleep
         show_mirror =  (seconds_since_movement < self.movement_timeout and
-                        seconds_since_sleep < self.min_sleep)
+                        seconds_since_sleep >= self.min_sleep)
+        print seconds_since_sleep, self.min_sleep, show_mirror
 
         if show_mirror:
             if not self.showing:
