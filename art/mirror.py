@@ -51,8 +51,10 @@ class Art(object):
         self.movement_timeout = config.get('MOVEMENT_TIMEOUT', 5)
         self.control_timeout = config.get('CONTROL_TIMEOUT', 2)
         self.min_move_count = config.get('MIN_MOVE_COUNT', 5)
-        self.rotator = rotator.Art(matrix, config.get('ARTS', {}))
+        self.min_sleep = config.get('MIN_SLEEP_TIME', 5)
+        self.arts = config.get('ARTS', {})
 
+        self.rotator = rotator.Art(matrix, self.arts)
         self.width = matrix.height
         self.height = matrix.width
         self.term_handler = signal.signal(signal.SIGTERM, self.term_handler)
@@ -103,6 +105,7 @@ class Art(object):
         # The numpy.asarray function rotates the image, must invert axis.
         self.last_final_array = numpy.zeros((self.height, self.width, 3), dtype=int)
         self.last_move = 0
+        self.last_sleep = 0
         self.rotator.start(matrix)
         self.showing = True
         self.last_control_time = 0
@@ -169,22 +172,28 @@ class Art(object):
 
         faded = (self.last_final_array * self.fade).astype(matrix_module.DTYPE)
         image_mask = numpy.any(image > self.brightness_threshold, axis=2, keepdims=True)
-        movement = bool(numpy.count_nonzero(image_mask) >= self.min_move_count)
+        movement = numpy.count_nonzero(image_mask) >= self.min_move_count
         now = time.time()
         if movement:
             self.last_move = now
         seconds_since_movement = now - self.last_move
-        show_mirror =  seconds_since_movement < self.movement_timeout
+        seconds_since_sleep = now - self.last_sleep
+        show_mirror =  (seconds_since_movement < self.movement_timeout and
+                        seconds_since_sleep < self.min_sleep)
 
         if show_mirror:
+            if not showing:
+                print 'Waking up'
             self.last_final_array = numpy.where(image_mask, image, faded)
             matrix.buf.buf = numpy.copy(self.last_final_array)
             controls = self._render_controls()
             if controls is not None:
                 matrix.buf.buf |= numpy.asarray(controls)
         else:
-            if self.showing:
+            if self.showing:  # Enter dream state.
+                print 'Dreaming'
                 matrix.buf.buf = numpy.empty(shape=(self.height, self.width, 3), dtype=buffer.DTYPE)
+                self.last_sleep = now
             self.rotator.refresh(matrix)
         self.showing = show_mirror
 

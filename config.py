@@ -69,6 +69,7 @@ config = {
     'CONTROL_TIMEOUT': 2,               # How long controls linger
     'COLOR_ROTATION': (0.005, 0.1),     # Color rotation speed per iteration (low, high)
     'MIN_MOVE_COUNT': 10,               # Minimum number of pixels to trigger movement sense.
+    'MIN_SLEEP_TIME': 5,                # Minimum number of seconds to enter dream state.
     'ARTS': {
         'TIMEOUT': 5,
         'COMPOUND': [
