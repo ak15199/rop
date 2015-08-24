@@ -121,7 +121,10 @@ class Art(object):
 
                 if event['event'] == 'down':
                     self.screen_save = not self.screen_save
-                    if not self.screen_save:
+                    if self.screen_save:
+                        print 'Enter screensave mode'
+                    else:
+                        print 'Exit screensave mode'
                         # Reset the movement count stuff.
                         self.last_sleep = 0
                         self.last_move = 0
