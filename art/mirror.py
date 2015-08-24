@@ -111,12 +111,17 @@ class Art(object):
         self.showing = True
         self.last_control_time = 0
         self.move_count = 0
+        self.screen_save = False
 
     def _receive_events(self):
         if self.event_generator:
             event = self.event_generator.next()
             while event:
                 self.last_control_time = time.time()
+
+                if event['event'] == 'down':
+                    self.screen_save = not self.screen_save
+
                 if event['event'] == 'inc':
                     if event['id'] == 1:
                         self.hue_rotation_index = max(0, self.hue_rotation_index - 1)
@@ -188,7 +193,7 @@ class Art(object):
             self.move_count = 0
         enough_movement = self.showing or self.move_count >= self.min_wake_move
 
-        show_mirror = enough_movement and saw_movement
+        show_mirror = enough_movement and saw_movement and not self.screen_save
 
         if show_mirror:
             if not self.showing:
