@@ -50,6 +50,7 @@ class Art(object):
         self.event_generator = config.get('EVENTS', None)
         self.movement_timeout = config.get('MOVEMENT_TIMEOUT', 5)
         self.control_timeout = config.get('CONTROL_TIMEOUT', 2)
+        self.min_move_count = config.get('MIN_MOVE_COUNT', 5)
         self.rotator = rotator.Art(matrix, config.get('ARTS', {}))
 
         self.width = matrix.height
@@ -168,7 +169,7 @@ class Art(object):
 
         faded = (self.last_final_array * self.fade).astype(matrix_module.DTYPE)
         image_mask = numpy.any(image > self.brightness_threshold, axis=2, keepdims=True)
-        movement = bool(numpy.count_nonzero(image_mask))
+        movement = bool(numpy.count_nonzero(image_mask) >= self.min_move_count)
         now = time.time()
         if movement:
             self.last_move = now

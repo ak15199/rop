@@ -19,24 +19,25 @@ def event_generator():
             except OSError:
                 ser = None
             else:
+                ser.timeout = 1
                 print 'serial connected'
         if not ser:
             yield None
             continue
         try:
             while ser.inWaiting():
-                c = ser.read()
-                if c == '\r': continue
-                elif c == '\n':
-                    text = ''.join(buffer)
-                    try:
+                try:
+                    c = ser.read()
+                    if c == '\r': continue
+                    elif c == '\n':
+                        text = ''.join(buffer)
                         yield json.loads(text)
-                    except:
-                        print text
-                        traceback.print_exc()
-                    buffer[:] = []
-                else:
-                    buffer.append(c)
+                        buffer[:] = []
+                    else:
+                        buffer.append(c)
+                except:
+                    print text
+                    traceback.print_exc()
         except IOError:
             ser = None
         yield None
@@ -62,7 +63,12 @@ Art Configuration Settings
 """
 config = {
     "EVENTS": event_generator(),
-    'BRIGHTNESS_THRESHOLD': 150,
+    'BRIGHTNESS_THRESHOLD': 150,        # Between and 255, pixels must be so bright to be "seen".
+    'FADE': (0.90, 0.99),               # Fadeout speed per iteration (low, high)
+    'MOVEMENT_TIMEOUT': 5,              # In seconds
+    'CONTROL_TIMEOUT': 2,               # How long controls linger
+    'COLOR_ROTATION': (0.005, 0.1),     # Color rotation speed per iteration (low, high)
+    'MIN_MOVE_COUNT': 10,               # Minimum number of pixels to trigger movement sense.
     'ARTS': {
         'TIMEOUT': 5,
         'COMPOUND': [
