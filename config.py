@@ -72,7 +72,7 @@ config = {
     'MIN_SLEEP_TIME': 5,                # Minimum number of seconds to enter dream state
     'MIN_WAKE_MOVE': 10,                # Minimum number of frames must see movement to awake
     'ARTS': {
-        'TIMEOUT': 5,
+        'TIMEOUT': 90,
         'COMPOUND': [
             ('drops', {
                'DROP_CHANCE': 0.3,       # Chance each frame of new drop - hight == more drops
