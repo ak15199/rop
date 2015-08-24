@@ -51,6 +51,7 @@ class Art(object):
         self.movement_timeout = config.get('MOVEMENT_TIMEOUT', 5)
         self.control_timeout = config.get('CONTROL_TIMEOUT', 2)
         self.rotator = rotator.Art(matrix, config.get('ARTS', {}))
+
         self.width = matrix.height
         self.height = matrix.width
         self.term_handler = signal.signal(signal.SIGTERM, self.term_handler)
