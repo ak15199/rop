@@ -63,13 +63,14 @@ Art Configuration Settings
 """
 config = {
     "EVENTS": event_generator(),
-    'BRIGHTNESS_THRESHOLD': 150,        # Between and 255, pixels must be so bright to be "seen".
+    'BRIGHTNESS_THRESHOLD': 100,        # Between and 255, pixels must be so bright to be "seen"
     'FADE': (0.90, 0.99),               # Fadeout speed per iteration (low, high)
     'MOVEMENT_TIMEOUT': 5,              # In seconds
     'CONTROL_TIMEOUT': 2,               # How long controls linger
     'COLOR_ROTATION': (0.005, 0.1),     # Color rotation speed per iteration (low, high)
-    'MIN_MOVE_COUNT': 10,               # Minimum number of pixels to trigger movement sense.
-    'MIN_SLEEP_TIME': 5,                # Minimum number of seconds to enter dream state.
+    'MIN_MOVE_COUNT': 10,               # Minimum number of pixels to trigger movement sense
+    'MIN_SLEEP_TIME': 5,                # Minimum number of seconds to enter dream state
+    'MIN_WAKE_MOVE': 5,                 # Minimum number of frames must see movement to awake
     'ARTS': {
         'TIMEOUT': 5,
         'COMPOUND': [

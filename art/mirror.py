@@ -52,6 +52,7 @@ class Art(object):
         self.control_timeout = config.get('CONTROL_TIMEOUT', 2)
         self.min_move_count = config.get('MIN_MOVE_COUNT', 5)
         self.min_sleep = config.get('MIN_SLEEP_TIME', 5)
+        self.min_wake_move = config.get('MIN_WAKE_MOVE', 3)
         self.arts = config.get('ARTS', {})
 
         self.rotator = rotator.Art(matrix, self.arts)
@@ -109,6 +110,7 @@ class Art(object):
         self.rotator.start(matrix)
         self.showing = True
         self.last_control_time = 0
+        self.move_count = 0
 
     def _receive_events(self):
         if self.event_generator:
@@ -178,9 +180,15 @@ class Art(object):
             self.last_move = now
         seconds_since_movement = now - self.last_move
         seconds_since_sleep = now - self.last_sleep
-        show_mirror =  (seconds_since_movement < self.movement_timeout and
+        saw_movement = (seconds_since_movement < self.movement_timeout and
                         seconds_since_sleep >= self.min_sleep)
-        print seconds_since_sleep, self.min_sleep, show_mirror
+        if saw_movement:
+            self.move_count += 1
+        else:
+            self.move_count = 0
+        enough_movement = self.showing or self.move_count >= self.min_wake_move
+
+        show_mirror = enough_movement and saw_movement
 
         if show_mirror:
             if not self.showing:
