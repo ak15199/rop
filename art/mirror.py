@@ -112,6 +112,7 @@ class Art(object):
         self.last_control_time = 0
         self.move_count = 0
         self.screen_save = False
+        self.button_debounce = 0
 
     def _receive_events(self):
         if self.event_generator:
@@ -120,15 +121,17 @@ class Art(object):
                 self.last_control_time = time.time()
 
                 if event['event'] == 'down':
-                    print event
-                    self.screen_save = not self.screen_save
-                    if self.screen_save:
-                        print 'Enter screensave mode'
-                    else:
-                        print 'Exit screensave mode'
-                        # Reset the movement count stuff.
-                        self.last_sleep = 0
-                        self.last_move = 0
+                    now = time.time()
+                    if (now - self.button_debounce) >= 0.1:
+                        self.button_debounce = now
+                        self.screen_save = not self.screen_save
+                        if self.screen_save:
+                            print 'Enter screensave mode'
+                        else:
+                            print 'Exit screensave mode'
+                            # Reset the movement count stuff.
+                            self.last_sleep = 0
+                            self.last_move = 0
 
                 elif event['event'] == 'inc':
                     if event['id'] == 1:
