@@ -38,6 +38,7 @@ def event_generator():
                 except:
                     print text
                     traceback.print_exc()
+                    buffer[:] = []
         except IOError:
             ser = None
         yield None
@@ -87,7 +88,7 @@ config = {
             ('life', {'HSCALE': 0.025, 'ITERATIONS': 10000}),
             ('spill', {}),
             ('rotor', {}),
-            #('race', {}),
+            ('race', {}),
             ('pops', {}),
         ],
     },

@@ -120,6 +120,7 @@ class Art(object):
                 self.last_control_time = time.time()
 
                 if event['event'] == 'down':
+                    print event
                     self.screen_save = not self.screen_save
                     if self.screen_save:
                         print 'Enter screensave mode'
