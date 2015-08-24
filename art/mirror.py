@@ -204,11 +204,12 @@ class Art(object):
             self.move_count = 0
         enough_movement = self.showing or self.move_count >= self.min_wake_move
 
-        show_mirror = (enough_movement and saw_movement) or not self.screen_save
+        show_mirror = enough_movement and saw_movement
 
-        if show_mirror:
+        if show_mirror and not self.screen_save:
             if not self.showing:
                 pass  # Wake up
+            self.showing = True
             self.last_final_array = numpy.where(image_mask, image, faded)
             matrix.buf.buf = numpy.copy(self.last_final_array)
             controls = self._render_controls()
@@ -218,8 +219,8 @@ class Art(object):
             if self.showing:  # Enter dream state.
                 matrix.buf.buf = numpy.empty(shape=(self.height, self.width, 3), dtype=buffer.DTYPE)
                 self.last_sleep = now
+            self.showing = False
             self.rotator.refresh(matrix)
-        self.showing = show_mirror
 
     def interval(self):
         if self.showing:
