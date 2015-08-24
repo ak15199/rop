@@ -70,7 +70,7 @@ config = {
     'COLOR_ROTATION': (0.005, 0.1),     # Color rotation speed per iteration (low, high)
     'MIN_MOVE_COUNT': 10,               # Minimum number of pixels to trigger movement sense
     'MIN_SLEEP_TIME': 5,                # Minimum number of seconds to enter dream state
-    'MIN_WAKE_MOVE': 5,                 # Minimum number of frames must see movement to awake
+    'MIN_WAKE_MOVE': 10,                # Minimum number of frames must see movement to awake
     'ARTS': {
         'TIMEOUT': 5,
         'COMPOUND': [
