@@ -1,12 +1,12 @@
 __author__ = 'rafe'
 
-from opc.hue import hue
+from opc.hue import hsvToRgb
 
 import math
 import random
 import numpy
 
-HSCALE = 0.1
+HSCALE = 0.01
 RESET_INTERVAL = 20
 
 
@@ -33,7 +33,7 @@ class Art(object):
         self.reset_counter = 0
 
     def _hue(self, offset):
-        return hue(self.hue+HSCALE*offset)
+        return hsvToRgb(self.hue+HSCALE*offset)
 
     def _neighbors(self, x, y, width, height):
         minus_x = (x - 1) % width
