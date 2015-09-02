@@ -78,6 +78,10 @@ The directories are
     ./opc              an extended interface for using OPC via python
     ./opc/utils        various utilities used by the framework
 
+To help get up to speed on the library, you can use Pydoc. For example:
+
+  % pydoc opc.matrix
+
 Check out the existing animations for use as examples, and please commit
 back code that you create!
 

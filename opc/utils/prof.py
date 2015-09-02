@@ -1,5 +1,6 @@
 import time
 import logging
+from functools import wraps
 
 active = False
 records = {}
@@ -98,6 +99,7 @@ def timefunc(f, reference=False):
 
     records[f.__name__] = Record(f.__name__, reference)
 
+    @wraps(f)
     def f_timer(*args, **kwargs):
         global active
 
