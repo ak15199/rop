@@ -21,7 +21,7 @@ class Art(ArtBaseClass):
         self.offsets = [[-1, 0], [1, 0], [0, -1], [0, 1]]
 
     def start(self, matrix):
-        matrix.clear(colors.WHITE)
+        matrix.clear((0,0,0))#colors.WHITE)
         self._initialize(matrix)
 
     def _initialize(self, matrix):
