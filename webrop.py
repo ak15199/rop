@@ -44,8 +44,8 @@ class Feed(object):
                 matrix.clear()
                 try:
                     art.start(matrix)
-                except Exception as e:
-                    logging.info("start bork: " + str(e))
+                except Exception as error:
+                    logging.info("start bork: " + str(error))
                     logging.info("start bork: " + traceback.format_exc())
                     continue
 
@@ -55,8 +55,8 @@ class Feed(object):
                     cycle_time = time()
                     try:
                         art.refresh(matrix)
-                    except Exception as e:
-                        logging.info("refresh bork: " + str(e))
+                    except Exception as error:
+                        logging.info("refresh bork: " + str(error))
                         logging.info("refresh bork: " + traceback.format_exc())
                         break
 
