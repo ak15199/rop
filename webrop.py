@@ -1,18 +1,15 @@
-from flask import Flask, Response, jsonify
-
-import logging
-logging.basicConfig(filename='web.log', level=logging.INFO)
-
 import config
-
+import logging
 import os.path
+import traceback
 from random import seed
 from time import time
-import traceback
 
+from flask import Flask, Response, jsonify
 from importer import ImportPlugins
 from opc.matrix import OPCMatrix
 
+logging.basicConfig(filename='web.log', level=logging.INFO)
 
 # This code remains experimental. Configurtions are contained within the file.
 M_WIDTH = 64
@@ -48,9 +45,9 @@ class Feed(object):
                 matrix.clear()
                 try:
                     art.start(matrix)
-                except Exception as e:                                      
-                     logging.info("start bork: "+ str(e))                         
-                     logging.info("start bork: "+ traceback.format_exc())         
+                except Exception as e:
+                     logging.info("start bork: "+ str(e))
+                     logging.info("start bork: "+ traceback.format_exc())
                      continue
 
                 start_time = time()
@@ -59,9 +56,9 @@ class Feed(object):
                     cycle_time = time()
                     try:
                         art.refresh(matrix)
-                    except Exception as e:                                      
-                         logging.info("refresh bork: "+ str(e))                         
-                         logging.info("refresh bork: "+ traceback.format_exc())         
+                    except Exception as e:
+                         logging.info("refresh bork: "+ str(e))
+                         logging.info("refresh bork: "+ traceback.format_exc())
                          break
 
                     elapsed = time() - cycle_time
