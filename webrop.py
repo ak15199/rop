@@ -76,8 +76,9 @@ class Feed(object):
     def produce(self):
         if self.packet is None or time() > self.packet["expires"]:
             frame = self.generator.next()
-            data = [[self._webHex(pix) for pix in row] for row in frame["data"]
-                    ]
+            data = [
+                [self._webHex(pix) for pix in row] for row in frame["data"]
+            ]
 
             self.packet = {
                 "interval": frame["interval"],
