@@ -7,6 +7,10 @@ grid of LEDs via OPC, to a FadeCandy board.
 If you're not already familiar, go check out
 https://github.com/scanlime/fadecandy for more background on this project.
 
+Here's a test picture of the plasma art running on a physical array:
+
+![example](http://i.imgur.com/KlEZBC8m.jpg)
+
 Installation
 ------------
 
