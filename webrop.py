@@ -1,18 +1,15 @@
-from flask import Flask, Response, jsonify
-
-import logging
-logging.basicConfig(filename='web.log', level=logging.INFO)
-
 import config
-
+import logging
 import os.path
+import traceback
 from random import seed
 from time import time
-import traceback
 
+from flask import Flask, Response, jsonify
 from importer import ImportPlugins
 from opc.matrix import OPCMatrix
 
+logging.basicConfig(filename='web.log', level=logging.INFO)
 
 # This code remains experimental. Configurtions are contained within the file.
 M_WIDTH = 64
@@ -25,11 +22,10 @@ app.config.from_object(__name__)
 
 
 class Feed(object):
-
     def __init__(self):
         matrix = OPCMatrix(M_WIDTH, M_HEIGHT, "echo", fliplr=True)
         arts = ImportPlugins("art", ["template.py"], [], None, matrix,
-                config.config)
+                             config.config)
 
         if len(arts) == 0:
             matrix.terminate()
@@ -48,46 +44,47 @@ class Feed(object):
                 matrix.clear()
                 try:
                     art.start(matrix)
-                except Exception as e:                                      
-                     logging.info("start bork: "+ str(e))                         
-                     logging.info("start bork: "+ traceback.format_exc())         
-                     continue
+                except Exception as e:
+                    logging.info("start bork: " + str(e))
+                    logging.info("start bork: " + traceback.format_exc())
+                    continue
 
                 start_time = time()
 
-                while time()-start_time < DFLT_FLIPTIME_SECS:
+                while time() - start_time < DFLT_FLIPTIME_SECS:
                     cycle_time = time()
                     try:
                         art.refresh(matrix)
-                    except Exception as e:                                      
-                         logging.info("refresh bork: "+ str(e))                         
-                         logging.info("refresh bork: "+ traceback.format_exc())         
-                         break
+                    except Exception as e:
+                        logging.info("refresh bork: " + str(e))
+                        logging.info("refresh bork: " + traceback.format_exc())
+                        break
 
                     elapsed = time() - cycle_time
-                    remaining = art.interval()/1000.0 - elapsed
+                    remaining = art.interval() / 1000.0 - elapsed
 
                     yield {
                         "interval": remaining,
-                        "expires": time()+remaining,
+                        "expires": time() + remaining,
                         "data": matrix.show(),
-                        }
+                    }
 
     def _webHex(self, pix):
-        return '{0:06x}'.format(((int(pix[0])*0x100) +
-                                int(pix[1]))*0x100 + int(pix[2]))
+        return '{0:06x}'.format(((int(pix[0]) * 0x100) + int(pix[1])) * 0x100 +
+                                int(pix[2]))
 
     def produce(self):
         if self.packet is None or time() > self.packet["expires"]:
             frame = self.generator.next()
-            data = [[self._webHex(pix) for pix in row]
-                    for row in frame["data"]]
+            data = [
+                [self._webHex(pix) for pix in row] for row in frame["data"]
+            ]
 
             self.packet = {
                 "interval": frame["interval"],
                 "expires": frame["expires"],
                 "data": data,
-                }
+            }
 
         return self.packet
 
@@ -112,10 +109,7 @@ def docroot():
 
 @app.route("/initialize.json")
 def json_initialize():
-    packet = {
-        "xrange": M_WIDTH,
-        "yrange": M_HEIGHT,
-        }
+    packet = {"xrange": M_WIDTH, "yrange": M_HEIGHT, }
 
     return jsonify(packet)
 
