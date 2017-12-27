@@ -11,7 +11,7 @@ class Art(ArtBaseClass):
     def __init__(self, matrix, config):
         ones = np.ones(matrix.numpix).reshape((matrix.height, matrix.width))
         self.x = ones*np.arange(matrix.width)
-        self.y = np.flipud(np.rot90(ones*np.arange(matrix.height)))
+        self.y = np.flipud(np.rot90(np.rot90(ones)*np.arange(matrix.height)))
 
         self.base = 128000
 
@@ -38,7 +38,7 @@ class Art(ArtBaseClass):
 
         for y in range(matrix.height):
             for x in range(matrix.width):
-                matrix.drawPixel(x, y, rgb[x, y])
+                matrix.drawPixel(x, y, rgb[y, x])
 
         self.base += 0.1
 
