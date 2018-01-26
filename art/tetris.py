@@ -280,10 +280,10 @@ class Art(ArtBaseClass):
     description = "Anyone for a game of Tetris?"
 
     def __init__(self, matrix, config):
-        self._newGame()
+        self._newGame(matrix)
 
-    def _newGame(self):
-        self.game = Game(10, 16)
+    def _newGame(self, matrix):
+        self.game = Game(matrix.width, matrix.height)
         self.time = 0
 
     def start(self, matrix):
@@ -292,14 +292,12 @@ class Art(ArtBaseClass):
     def refresh(self, matrix):
         matrix.clear()
 
-        matrix.fillRect(11, 0, 6, 16, GRAY40)
-
         self.time += 1
         self.game.clock(self.time)
         self.game.draw(matrix)
 
         if self.game.finished:
-            self._newGame()
+            self._newGame(matrix)
 
         self.game.draw(matrix)
 
