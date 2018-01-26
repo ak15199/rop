@@ -139,10 +139,10 @@ class OPCMatrix(object):
             self.buf.panCopy(source.buf, x, y)
 
     def _clipx(self, x):
-        return max(min(x, self.width-1), 0)
+        return int(max(min(x, self.width-1), 0))
 
     def _clipy(self, y):
-        return max(min(y, self.height-1), 0)
+        return int(max(min(y, self.height-1), 0))
 
     @timefunc
     def _clip(self, x, y):
