@@ -105,6 +105,7 @@ class OPCMatrix(object):
         self.width = self.buf.width
         self.height = self.buf.height
         self.numpix = self.width * self.height
+        self.smallest = min(self.height, self.width)
         self.midWidth = self.width / 2.0
         self.midHeight = self.height / 2.0
 
@@ -260,6 +261,8 @@ class OPCMatrix(object):
                 x < 0 or y < 0 or color is None:
             return
 
+        x, y = int(x), int(y)
+
         if alpha is None:
             self.buf.buf[x, y] = color
         else:
@@ -349,6 +352,8 @@ class OPCMatrix(object):
         """
         Draw a line from the current cursor position to the specified address
         """
+        x1, y1 = int(x1), int(y1)
+
         x0, y0 = self.getCursor()
         self.drawLine(x0, y0, x1, y1, color, alpha)
         self.setCursor((x1, y1))
@@ -360,7 +365,10 @@ class OPCMatrix(object):
         horizontal or vertical, then we can optimize the plotting by calling
         it a one pixel wide rectangle
         """
-        if int(x1) == int(x2) or int(y1) == int(y2):
+        x1, y1 = int(x1), int(y1)
+        x2, y2 = int(x2), int(y2)
+
+        if x1 == x2 or y1 == y2:
             self.fillRectAbsolute(x1, y1, x2, y2, color)
         else:
             coords = self._line(x1, y1, x2, y2)
@@ -502,7 +510,7 @@ class OPCMatrix(object):
             rows.setdefault(xy[1], []).append(xy[0])
 
         # the xs in each row should have dups removed
-        for y in rows.keys():
+        for y in list(map(int, rows.keys())):
             if y >= 0 and y < self.height:
                 self._fillPolyRow(y, sorted(set(rows[y])), color)
 
