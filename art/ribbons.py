@@ -15,7 +15,8 @@ class Phase(object):
         self.angle = random()*pi
         self.freq = (random()+0.5)*0.06
         self.direction = direction
-        self.x = 0 if direction == "left" else self.matrix.width-1
+        #self.x = 0 if direction == "left" else self.matrix.width-1
+        self.x = self.matrix.width/2 if direction == "left" else self.matrix.width/2+1
 
     def clock(self, matrix):
         self.matrix.fade(0.96)
@@ -32,6 +33,7 @@ class Art(ArtBaseClass):
     description = "RGB variable frequency sine waves"
 
     def __init__(self, matrix, config):
+
         with HQ(matrix):
             self.phases = [Phase(matrix, direction, color)
                            for color in (RED, GREEN, BLUE)

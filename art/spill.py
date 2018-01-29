@@ -20,9 +20,11 @@ class Art(ArtBaseClass):
 
         self.offsets = [[-1, 0], [1, 0], [0, -1], [0, 1]]
 
-    def start(self, matrix):
         matrix.clear(colors.WHITE)
         self._initialize(matrix)
+
+    def start(self, matrix):
+        pass
 
     def _initialize(self, matrix):
         self.value = 1

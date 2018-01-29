@@ -25,14 +25,15 @@ class Art(ArtBaseClass):
     def __init__(self, matrix, config):
         self.angle = 0
         self.hue = getHueGen(0.01)
-        self.radius = sqrt(matrix.numpix) * self.FITHALF
+        self.radius = matrix.smallest * self.FITHALF
         self.center = Point(matrix.midWidth, matrix.midHeight)
         self.pieslice = self._pieslice(-30, 30)
 
         # used to help with scaling small displays
         # freq will have a value of 1 for kilopix displays and hold a
         # larger value for smaller displays (up to 4)
-        self.freq = min(4, max(1, 1024.0/matrix.numpix))
+        self.freq = int(min(4, max(1, 1024.0/matrix.numpix)))
+        print self.freq
         self.clock = 0
 
         # create mask
@@ -81,7 +82,7 @@ class Art(ArtBaseClass):
 
     def _update(self, matrix):
         self.clock += 1
-        if self.clock % ceil(self.freq/2.0) == 0:
+        if self.clock % (ceil(self.freq*4)) == 0:
             if self.clock % self.freq == 0:
                 matrix.copy(matrix, 1, 0)
             for draws in range(5-self.freq):

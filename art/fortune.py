@@ -1,6 +1,6 @@
 from baseclasses.scrolltext import ScrollText
 
-from opc.colors import BLUE
+from opc.colors import BLUE, WHITE
 from random import randint
 import os
 
@@ -11,7 +11,7 @@ class Art(ScrollText):
 
     description = "Scroll classic fortunes across the display"
 
-    fg = (192, 192, 255)
+    fg = WHITE
     bg = BLUE
 
     def _initText(self):

@@ -40,6 +40,8 @@ class Vector(object):
 
 class Vectors(object):
 
+    DELTA = 0.41
+
     def __init__(self, matrix, count):
 
         pointgen = self.positionGenerator(matrix)
@@ -52,8 +54,8 @@ class Vectors(object):
         y = matrix.height/3
 
         points = [
-            Point(x, matrix.midHeight + x, -1.1, 1.1),
-            Point(y, matrix.midHeight + y, 1.1, -1.1),
+            Point(x, matrix.midHeight, -self.DELTA, self.DELTA),
+            Point(matrix.midWidth, y, self.DELTA, -self.DELTA)
             ]
 
         while True:
@@ -71,7 +73,7 @@ class Art(object):
     description = "Bounce ends of a vector around the display"
 
     def __init__(self, matrix, config):
-        vectorcount = int(sqrt(matrix.numpix)/4)
+        vectorcount = int(matrix.smallest/4)
         self.vectors = Vectors(matrix, vectorcount)
 
     def start(self, matrix):
@@ -84,4 +86,4 @@ class Art(object):
         matrix.rotate(-1)
 
     def interval(self):
-        return 100
+        return 60
