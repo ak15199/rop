@@ -120,8 +120,10 @@ class OPCBuffer(object):
 
     @timefunc
     def scaledCopy(self, source):
+        # we transpose (width, height) in the copy, this is deliberate
+        # since the dimensions are reversed between Image and the buffer.
         i = Image.fromarray(source.buf.astype(DTYPE))
-        self.copyImage(i.resize((self.width, self.height), Image.ANTIALIAS))
+        self.copyImage(i.resize((self.height, self.width), Image.ANTIALIAS))
 
     @timefunc
     def rotate(self, angle):
