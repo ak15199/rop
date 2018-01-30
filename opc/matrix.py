@@ -9,9 +9,13 @@ import nphue
 from buffer import OPCBuffer
 
 from utils.prof import timefunc
+from utils.wrapexception import wrapexception
 
 DTYPE = np.uint8
 
+
+import logging
+logger = logging.getLogger(__name__)
 
 class HQ(object):
 
@@ -58,7 +62,7 @@ class OPCMatrix(object):
 
     @timefunc
     def __init__(self, width, height, address, zigzag=False, flipud=False,
-                 fliplr=False):
+                 fliplr=False, debug=False):
         """
         width -- renderable width
         height -- renderable height
@@ -73,6 +77,8 @@ class OPCMatrix(object):
         self.zigzag = zigzag
         self.flipud = flipud
         self.fliplr = fliplr
+
+        self.debug = debug
 
         self.buf_std = OPCBuffer(width, height)
         if address is None:
@@ -235,8 +241,8 @@ class OPCMatrix(object):
         Exposed helper method that sets a given pixel in the unrolled strip
         of LEDs.
         """
-        x = z / self.width
-        y = z % self.width
+        x = z / self.height
+        y = z % self.height
 
         self.buf.buf[x, y] = color
 
@@ -252,15 +258,12 @@ class OPCMatrix(object):
         return self.buf.buf[x, y]
 
     @timefunc
+    @wrapexception(logger)
     def drawPixel(self, x, y, color, alpha=None):
         """
         Set the pixel tuple at the specified location.  Perform no operation
         if the color value is None, or the address out of bounds
         """
-        if x >= self.width or y >= self.height or \
-                x < 0 or y < 0 or color is None:
-            return
-
         x, y = int(x), int(y)
 
         if alpha is None:
@@ -271,6 +274,7 @@ class OPCMatrix(object):
             self.buf.buf[x, y] = np.asarray(color)*a0 + self.buf.buf[x, y]*a1
 
     @timefunc
+    @wrapexception(logger)
     def drawPixels(self, coords, color, alpha=None):
         """
         Set the pixel tuple at the set of specified locations.  Like drawPixel,
@@ -316,9 +320,9 @@ class OPCMatrix(object):
         points = []
         while x1 <= x2:
             if steep:
-                points.append((y1, x1))
+                points.append((int(y1), int(x1)))
             else:
-                points.append((x1, y1))
+                points.append((int(x1), int(y1)))
 
             x1 += 1
             err -= dy
@@ -390,6 +394,9 @@ class OPCMatrix(object):
 
     @timefunc
     def fillRectAbsolute(self, x1, y1, x2, y2, color):
+        """
+        Draw an unrotated filled rectangle
+        """
         x1, y1 = self._clip(x1, y1)
         x2, y2 = self._clip(x2, y2)
 
@@ -408,7 +415,7 @@ class OPCMatrix(object):
     @timefunc
     def fillRect(self, x1, y1, w, h, color):
         """
-        Draw a filled rectangle
+        Draw an unrotated filled rectangle
         """
         x1, y1 = int(x1), int(y1)
         w, h = int(w), int(h)
@@ -419,7 +426,7 @@ class OPCMatrix(object):
     @timefunc
     def drawRect(self, x1, y1, w, h, color):
         """
-        Draw a rectangle
+        Draw a rotated filled rectangle
         """
         self.drawPoly([
             (x1, y1), (x1+w, y1), (x1+w, y1+h), (x1, y1+h)
@@ -485,13 +492,16 @@ class OPCMatrix(object):
     @timefunc
     def fillPoly(self, points, color):
         """
-        fill a flat or convex polygon. This will not work for concave
-        polygons. In order to achieve that goal, you should consider
-        stacking several polygons next to one another
+        fill a flat or convex polygon.
+
+        Specify all points in the path, and the closing edge will be automatically
+        added for you.
+
+        This function will not work for concave polygons. To achieve that, you
+        should consider stacking several convex polygons next to one another.
         """
         # preserve the original
         points = list(points)
-
         # get a list of all of the points that bound the polygon
         edges = []
         prev = origin = points.pop(0)
