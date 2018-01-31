@@ -170,10 +170,24 @@ class OPCBuffer(object):
         self.buf = np.concatenate((b, a)).reshape((self.width, self.height, 3))
 
     def _scroll_up(self, count):
-        raise NotImplementedError
+        buf = self.buf.transpose(1, 0, 2)
+        a = buf[:-1, :].flatten()
+        b = buf[-1, :].flatten()
+        self.buf = (np
+                .concatenate((b, a))
+                .reshape((self.height, self.width, 3))
+                .transpose(1, 0, 2)
+                )
 
     def _scroll_down(self, count):
-        raise NotImplementedError
+        buf = self.buf.transpose(1, 0, 2)
+        a = buf[0, :].flatten()
+        b = buf[1:, :].flatten()
+        self.buf = (np
+                .concatenate((b, a))
+                .reshape((self.height, self.width, 3))
+                .transpose(1, 0, 2)
+                )
 
     @timefunc
     def scroll(self, direction, count=1):
