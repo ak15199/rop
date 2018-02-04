@@ -15,6 +15,7 @@ from opc.colors import GRAY50, BLUE
 from opc.error import TtyTooSmall
 from opc.matrix import OPCMatrix
 import opc.utils.prof as prof
+from mwt import mwt
 
 DFLT_FLIPTIME_SECS = 30
 DFLT_CYCLE_COUNT = None
@@ -44,6 +45,50 @@ def exceptionHandler(etype, evalue, etraceback):
         print "%s (see log for details)" % evalue
 
 
+def runart(art, name, args, matrix):
+    if args.profile:
+        logging.info("Start %s"%name)
+
+    matrix.setFirmwareConfig()
+    matrix.hq(False)
+    matrix.clear()
+    art.start(matrix)
+
+    time_sound = 0  # sound as in 'sound as a pound'
+    time_alarm = 0
+    start_time = time()
+
+    while time()-start_time < args.fliptime:
+        cycle_time = time()
+        art.refresh(matrix)
+        matrix.show()
+
+        # interval is between refreshes, but we take time to actually
+        # render. Account for that here.
+        debt_time = time()-cycle_time
+        sleep_time = (art.interval()/1000.0) - debt_time
+        if sleep_time > 0:
+            sleep(sleep_time)
+            time_sound += 1
+        else:
+            time_alarm += 1
+
+    # timer overrun alarms are an indication that the art has higher
+    # expectations of the hardware than is reasonable. If you see a
+    # lot of these, then consider performance tuning, turning up the
+    # art's interval, or buying better hardware
+    pc_overrun = 100*time_alarm/(time_sound+time_alarm)
+    if pc_overrun > 0:
+        logging.info("%s: %d%% timer overrun alarms" % (name, pc_overrun))
+
+    if args.profile:
+        fmt = "%-25s %10s %10s %10s %10s"
+        logging.info(fmt%("Cache", "Length", "Hits", "Misses", "Timeouts"))
+        stats = mwt.stats()
+        for stat in stats:
+            logging.info(fmt%(stat["cache"], stat["length"], stat["hits"], stat["misses"], stat["timeouts"]))
+
+
 @prof.timereference
 def run(arts, args):
     global matrix
@@ -51,42 +96,13 @@ def run(arts, args):
     cycleCount = 0
 
     while args.count is None or cycleCount < args.count:
+        t=time()
+
         cycleCount += 1
         seed(time())
 
         for name, art in arts.iteritems():
-            matrix.setFirmwareConfig()
-            matrix.hq(False)
-            matrix.clear()
-            art.start(matrix)
-
-            time_sound = 0  # sound as in 'sound as a pound'
-            time_alarm = 0
-            start_time = time()
-
-            while time()-start_time < args.fliptime:
-                cycle_time = time()
-                art.refresh(matrix)
-                matrix.show()
-
-                # interval is between refreshes, but we take time to actually
-                # render. Account for that here.
-                debt_time = time()-cycle_time
-                sleep_time = (art.interval()/1000.0) - debt_time
-                if sleep_time > 0:
-                    sleep(sleep_time)
-                    time_sound += 1
-                else:
-                    time_alarm += 1
-
-            # timer overrun alarms are an indication that the art has higher
-            # expectations of the hardware than is reasonable. If you see a
-            # lot of these, then consider performance tuning, turning up the
-            # art's interval, or buying better hardware
-            pc_overrun = 100*time_alarm/(time_sound+time_alarm)
-            if pc_overrun > 0:
-                logging.info("%s: %d%% timer overrun alarms" %
-                             (name, pc_overrun))
+            runart(art, name, args, matrix)
 
 
 def _v(attr, default):
