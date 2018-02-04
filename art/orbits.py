@@ -112,7 +112,6 @@ class Art(ArtBaseClass):
         self.scale = matrix.smallest / (2 * AU)
         self.cx, self.cy = matrix.width/2.0, matrix.height/2.0
         self.simulation = Simulation()
-        print self.cx, self.cy
 
     def start(self, matrix):
         matrix.clear()

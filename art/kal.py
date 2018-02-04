@@ -33,7 +33,6 @@ class Art(ArtBaseClass):
         # freq will have a value of 1 for kilopix displays and hold a
         # larger value for smaller displays (up to 4)
         self.freq = int(min(4, max(1, 1024.0/matrix.numpix)))
-        print self.freq
         self.clock = 0
 
         # create mask
