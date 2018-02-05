@@ -119,6 +119,10 @@ class OPCMatrix(object):
             self.client.sysEx(0x0001, 0x0002, data)
 
     @timefunc
+    def setGlobalColorCorrection(self, gamma=2.5, r=0.6, g=0.6, b=0.6):
+        self.client.setGlobalColorCorrection(gamma, r, g, b)
+
+    @timefunc
     def clone(self):
         return deepcopy(self)
 
