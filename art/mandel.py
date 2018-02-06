@@ -1,6 +1,7 @@
 from ._baseclass import ArtBaseClass
 
 from opc.hue import hsvToRgb
+from opc.matrix import HQ
 from .utils.fractools import Mandelbrot, Region
 
 from copy import copy
@@ -15,15 +16,16 @@ class Art(ArtBaseClass):
     description = "Auto-zooming mandelbrot"
 
     def __init__(self, matrix, config):
-        self.mandel = Mandelbrot(matrix.width, matrix.height, ITERSTEPS)
-        # this gives a pretty good view of the artifact at max zoom
-        self.origin = Region(-2.0, -1.5, 1.0, 1.5)
-        self._begin(matrix)
+        with HQ(matrix):
+            self.mandel = Mandelbrot(matrix.width, matrix.height, ITERSTEPS)
+            # this gives a pretty good view of the artifact at max zoom
+            self.origin = Region(-2.0, -1.5, 1.0, 1.5)
+            self._begin(matrix)
 
-        self.i = 0
+            self.i = 0
 
     def start(self, matrix):
-        pass
+        matrix.hq()
 
     def _begin(self, matrix):
         self.target = copy(self.origin)
@@ -88,4 +90,4 @@ class Art(ArtBaseClass):
         self.stateExecute = self.stateExecute(matrix)
 
     def interval(self):
-        return 100
+        return 250

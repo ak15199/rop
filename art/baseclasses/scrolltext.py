@@ -29,7 +29,7 @@ class ScrollText(ArtBaseClass):
         pass
 
     def refresh(self, matrix):
-        matrix.clear()
+        matrix.clear(self.bg)
 
         y = matrix.height/2 - 4
 

@@ -15,6 +15,8 @@ class Point(object):
 
     def update(self, matrix, expires):
         decay = 1-(float(self.age)/expires)
+        self.age += 1
+        color = (255,0,0)
         color = hsvToRgb(self.hue, 1, decay)
         matrix.drawPixel(self.x, self.y, color)
 
@@ -26,19 +28,15 @@ class Point(object):
         if self.y == 0 or self.y >= (matrix.height-1):
             self.dy = -self.dy
 
-    def expired(self, matrix, expires):
-        self.age += 1
-        if self.age >= expires:
-            matrix.drawPixel(self.x, self.y, BLACK)
-            return True
-
-        return False
+    def expire(self, matrix):
+        matrix.drawPixel(self.x, self.y, BLACK)
 
 
 class Gun(object):
 
     def __init__(self, matrix):
         self.points = []
+        self.expires = int(matrix.numpix/2)
         self.location = self._locationGenerator(matrix)
         self.hue = getHueGen(step=0.05, hue=random())
 
@@ -47,23 +45,26 @@ class Gun(object):
 
         while True:
             for x in range(matrix.width-1):
-                yield {"x": x, "y": 0, "dx": -1, "dy": 1}
+                yield x, y, -1, 1
+
             for y in range(0, matrix.height-1):
-                yield {"x": matrix.width-1, "y": y, "dx": -1, "dy": -1}
+                yield matrix.width-1,  y, -1, -1
+
             for x in range(matrix.width-1, 0, -1):
-                yield {"x": x, "y": matrix.height-1, "dx": 1, "dy": -1}
+                yield x, matrix.height-1, 1, -1
+
             for y in range(matrix.height-1, 0, -1):
-                yield {"x": 0, "y": y, "dx": 1, "dy": 1}
+                yield 0, y, 1,  1
 
     def fire(self, matrix):
-        location = self.location.next()
+        x, y, dx, dy = self.location.next()
 
-        point = Point(location["x"], location["y"], location["dx"],
-                      location["dy"], self.hue.next())
+        point = Point(x, y, dx, dy, self.hue.next())
         self.points.append(point)
 
-        expires = int(matrix.numpix/2)
-        self.points = [point for point in self.points
-                       if not point.expired(matrix, expires)]
+        if len(self.points) > self.expires:
+            point = self.points.pop(0)
+            point.expire(matrix)
+
         for point in self.points:
-            point.update(matrix, expires)
+            point.update(matrix, self.expires)

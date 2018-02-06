@@ -2,7 +2,7 @@ from .baseclasses.scrolltext import ScrollText
 
 import requests
 
-from opc.colors import rgb
+from opc.colors import rgb, WHITE
 
 URL = "http://content.guardianapis.com/search?section=news&limit=20&api-key="
 
@@ -11,7 +11,7 @@ class Art(ScrollText):
 
     description = "Get the news headlines"
 
-    fg = (192, 192, 255)
+    fg = WHITE
     bg = rgb["firebrick"]
 
     def _fetchHeadlines(self):

@@ -18,7 +18,7 @@ class Art(ArtBaseClass):
 
             self.pens = []
             for pen in range(pencount):
-                speed = float(4*pen)/pencount
+                speed = float(2*pen)/pencount
 
                 # height is longer than the height of the screen, so drops stay
                 # off screen for a little while
@@ -46,4 +46,4 @@ class Art(ArtBaseClass):
             pen.clock(matrix)
 
     def interval(self):
-        return 60
+        return 90

@@ -23,7 +23,7 @@ class Blobs(ArtBaseClass):
                     matrix.width, matrix.height,
                     matrix.width/4 + random()*matrix.width/2,
                     matrix.height/4 + random()*matrix.height/2,
-                    dx=dx, dy=dy, radius=matrix.width/SIZE,
+                    dx=dx, dy=dy, radius=matrix.smallest/SIZE,
                     huedelta=uniform(0.005, 0.001),
                     )
                 pen.setBumpStrategy(pen.reverse, x=True, y=True)

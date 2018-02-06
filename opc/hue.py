@@ -1,23 +1,23 @@
 import colorsys
 from math import fmod
-from utils.mwt import MWT
+from mwt import mwt
 from utils.prof import timefunc
 
 
-@MWT(timeout=20)
+@mwt(timeout=20)
 @timefunc
 def hsvToRgb(h, s=1.0, v=1.0):
     r, g, b = colorsys.hsv_to_rgb(h, s, v)
     return r*255, g*255, b*255
 
 
-@MWT(timeout=20)
+@mwt(timeout=20)
 @timefunc
 def rgbToHsv(r, g, b):
     return colorsys.rgb_to_hsv(r/255, g/255, b/255)
 
 
-@MWT(timeout=20)
+@mwt(timeout=20)
 def hue(shade):
     hue = shade * 255
     if hue < 85:

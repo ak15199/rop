@@ -20,9 +20,9 @@ class Image(object):
     def translate(self, matrix, scale=0, x=0, y=0):
         i = self.image.copy()
         if scale == 0:
-            i = self.image.resize((matrix.width, matrix.height), PI.ANTIALIAS)
+            i = self.image.resize((matrix.height, matrix.width), PI.ANTIALIAS)
         else:
-            i = self.image.resize((int(self.width/scale),
-                                   int(self.height/scale)), PI.ANTIALIAS)
+            i = self.image.resize((int(self.height/scale),
+                                   int(self.width/scale)), PI.ANTIALIAS)
 
-        return np.asarray(i.crop((x, y, x+matrix.width, y+matrix.height)))
+        return np.asarray(i.crop((y, x, y+matrix.height, x+matrix.width)))
