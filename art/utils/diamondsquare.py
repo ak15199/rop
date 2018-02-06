@@ -7,7 +7,7 @@ from random import random
 import sys
 try:
     from exceptions import AttributeError
-except ModuleNotFoundError:
+except ImportError:
     pass
 
 from art.utils.array import array

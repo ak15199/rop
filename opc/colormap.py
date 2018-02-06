@@ -2,7 +2,7 @@ from .utils import idw
 
 try:
     from exceptions import AttributeError
-except ModuleNotFoundError:
+except ImportError:
     pass
 import numpy as np
 

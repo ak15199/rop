@@ -8,7 +8,7 @@ from random import seed
 import sys
 try:
     from exceptions import KeyboardInterrupt
-except ModuleNotFoundError:
+except ImportError:
     pass
 from time import sleep, time
 from traceback import format_exception
