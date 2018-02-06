@@ -1,7 +1,7 @@
 import colorsys
 from math import fmod
 from mwt import mwt
-from utils.prof import timefunc
+from .utils.prof import timefunc
 
 
 @mwt(timeout=20)
@@ -36,7 +36,7 @@ def getColorGen(step=0.05, hue=0, sat=1, val=1):
     """
     hue = getHueGen(step, hue)
     while True:
-        yield hsvToRgb(hue.next(), sat, val)
+        yield hsvToRgb(next(hue), sat, val)
 
 
 def getHueGen(step=0.05, hue=0):

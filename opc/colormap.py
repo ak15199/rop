@@ -1,6 +1,9 @@
-from utils import idw
+from .utils import idw
 
-from exceptions import AttributeError
+try:
+    from exceptions import AttributeError
+except ModuleNotFoundError:
+    pass
 import numpy as np
 
 

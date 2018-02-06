@@ -46,7 +46,7 @@ class Vectors(object):
 
         pointgen = self.positionGenerator(matrix)
         huegen = getColorGen(step=0.15, hue=random())
-        self.vecs = [Vector(pointgen.next(), huegen.next())
+        self.vecs = [Vector(next(pointgen), next(huegen))
                      for v in range(count)]
 
     def positionGenerator(self, matrix):

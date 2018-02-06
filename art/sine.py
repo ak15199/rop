@@ -27,8 +27,8 @@ class Art(ArtBaseClass):
             y = matrix.midHeight + \
                 matrix.midHeight * math.sin(angle+self.phase)
 
-            matrix.drawLine(x, y, x, y-offset, self.hue1.next())
-            matrix.drawLine(x, y, x, y+offset, self.hue2.next())
+            matrix.drawLine(x, y, x, y-offset, next(self.hue1))
+            matrix.drawLine(x, y, x, y+offset, next(self.hue2))
 
         self.phase += 0.05
 

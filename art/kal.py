@@ -72,7 +72,7 @@ class Art(ArtBaseClass):
             color = WHITE
         else:
             offset = int(random()*4)/4.0 if random() < 0.5 else 0
-            color = hsvToRgb(offset+self.hue.next(), 1, 1)
+            color = hsvToRgb(offset+next(self.hue), 1, 1)
 
         if random() < 0.5:
             matrix.drawRect(x, y, z, z, color)

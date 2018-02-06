@@ -1,6 +1,6 @@
 from ._baseclass import ArtBaseClass
 
-from utils.pen import Pen
+from .utils.pen import Pen
 
 PENS = 4
 

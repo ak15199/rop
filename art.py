@@ -6,8 +6,10 @@ logging.basicConfig(filename='art.log', level=logging.DEBUG)
 import argparse
 from random import seed
 import sys
-if sys.version_info < (3,0,0):
+try:
     from exceptions import KeyboardInterrupt
+except ModuleNotFoundError:
+    pass
 from time import sleep, time
 from traceback import format_exception
 
@@ -104,7 +106,7 @@ def run(arts, args):
         cycleCount += 1
         seed(time())
 
-        for name, art in arts.iteritems():
+        for name, art in arts.items():
             runart(art, name, args, matrix)
 
 

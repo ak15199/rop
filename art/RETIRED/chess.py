@@ -21,7 +21,7 @@ class Art(ArtBaseClass):
         matrix.clear(C_BACKGROUND)
 
     def refresh(self, matrix):
-        hue = self.hue.next()
+        hue = next(self.hue)
 
         # pixels per squre 
         pps = int((sqrt(matrix.numpix)-1)/GRIDSIZE)

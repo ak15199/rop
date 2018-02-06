@@ -1,4 +1,4 @@
-from pen import Pen
+from .pen import Pen
 from math import sin, cos, pi, sqrt
 from random import random
 

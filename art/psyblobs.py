@@ -1,6 +1,6 @@
 from .baseclasses.blobs import Blobs
 
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 class Art(Blobs):
 #class Art(ArtBaseClass):

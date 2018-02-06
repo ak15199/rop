@@ -47,7 +47,7 @@ class Art(ArtBaseClass):
 
     def refresh(self, matrix):
         self.theta += 0.05
-        color = self.hue.next()
+        color = next(self.hue)
 
         matrix.clear()
         matrix.fillPoly(self.poly(matrix, 0), color)

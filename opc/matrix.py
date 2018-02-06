@@ -1,5 +1,6 @@
 from .drivers import driver
 from copy import deepcopy
+from functools import reduce
 import operator
 import numpy as np
 
@@ -165,9 +166,9 @@ class OPCMatrix(object):
         Shift any of hue, saturation, and value on the matrix, specifying
         the attributes that you'd like to adjust
         """
-        hsv = nphue.rgb_to_hsv(self.buf.buf)
+        hsv = rgb_to_hsv(self.buf.buf)
         mod = hsv * np.array([dh, ds, dv])
-        rgb = nphue.hsv_to_rgb(mod)
+        rgb = hsv_to_rgb(mod)
 
         self.buf.buf = rgb
 
@@ -245,8 +246,8 @@ class OPCMatrix(object):
         Exposed helper method that sets a given pixel in the unrolled strip
         of LEDs.
         """
-        x = z / self.height
-        y = z % self.height
+        x = int(z / self.height)
+        y = int(z % self.height)
 
         self.buf.buf[x, y] = color
 

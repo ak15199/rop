@@ -24,7 +24,7 @@ class Art(ArtBaseClass):
         matrix.shift(.9, 1, .9)
         self.phase_z += DELTA_Z
 
-        color = self.color.next()
+        color = next(self.color)
         xcenter = matrix.width/2.0
         ycenter = matrix.height/2.0
         theta = sin(self.phase_z)

@@ -24,10 +24,10 @@ class Art(ArtBaseClass):
 
     def refresh(self, matrix):
         try:
-            pos = self.random.next()
+            pos = next(self.random)
         except:
             self.random = compoundLfsr(matrix.numpix)
-            pos = self.random.next()
+            pos = next(self.random)
 
         # gently transition through all hues over HUEINCYCLES fills
         self.hue += 1.0/(matrix.numpix*HUEINCYCLES)

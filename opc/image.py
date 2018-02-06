@@ -1,7 +1,10 @@
 import numpy as np
 from PIL import Image as PI
-import StringIO
-from utils.prof import timefunc
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+from .utils.prof import timefunc
 
 
 class Image(object):

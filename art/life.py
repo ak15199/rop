@@ -81,7 +81,7 @@ class Art(object):
                 else:
                     next[x, y] = False
 
-        for color, pixels in pixelset.iteritems():
+        for color, pixels in pixelset.items():
             if len(pixels):
                 matrix.drawPixels(pixels, self._hue(color))
 

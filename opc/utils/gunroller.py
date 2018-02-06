@@ -1,3 +1,4 @@
+from functools import reduce
 import numpy as np
 from operator import mul
 
@@ -10,7 +11,7 @@ class GunRoller(object):
 
     def unroll(self):
         count = reduce(mul, self.shape, 1)
-        reshaped = self.subject.reshape((count/3, 3))
+        reshaped = self.subject.reshape((int(count/3), 3))
         rotated = np.rot90(reshaped)
 
         return rotated

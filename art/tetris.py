@@ -56,7 +56,7 @@ class Tetrimino(object):
 
         for y in self.order[rotation]["y"]:
             for x in self.order[rotation]["x"]:
-                if stream.next():
+                if next(stream):
                     block[x][y] = self.color
 
         return block
@@ -83,7 +83,7 @@ class InPlay(object):
         self.tetrimino = tetriminos[randrange(len(tetriminos))]
         self.rotation = randrange(1)
 
-        self.x = width/2
+        self.x = int(width/2)
         self.y = height
 
     def rotateClock(self):

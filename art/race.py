@@ -53,7 +53,7 @@ class Art(ArtBaseClass):
     def refresh(self, matrix):
         matrix.shift(.9, .9, .9)
 
-        hue = self.hue.next()
+        hue = next(self.hue)
         for racer in self.racers:
             x, y = racer.next(self.clock)
             matrix.drawPixel(x, y, hue)

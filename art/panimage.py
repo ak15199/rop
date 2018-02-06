@@ -57,10 +57,10 @@ class Art(ArtBaseClass):
 
     def refresh(self, matrix):
         try:
-            x, y = self.position.next()
+            x, y = next(self.position)
         except:
             self._load(matrix)
-            x, y = self.position.next()
+            x, y = next(self.position)
 
         buf = self.image.translate(matrix, scale=1, x=x, y=y)
         matrix.copyBuffer(buf)
