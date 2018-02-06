@@ -1,9 +1,9 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from opc.hue import getColorGen
 
 from math import sin, cos, pi
-from utils.frange import frange
+from .utils.frange import frange
 
 
 DELTA_Z = 0.02

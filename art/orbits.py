@@ -1,4 +1,4 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from opc.colors import YELLOW, GRAY50, RY2, BLUE
 from math import sin, cos, atan2, sqrt

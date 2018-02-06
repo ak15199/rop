@@ -1,4 +1,4 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from math import radians, sqrt, sin, cos, ceil
 from random import random

@@ -1,5 +1,5 @@
 import numpy as np
-from utils.prof import timefunc
+from .utils.prof import timefunc
 
 # see:
 # http://stackoverflow.com/questions/7274221/changing-image-hue-with-python-pil

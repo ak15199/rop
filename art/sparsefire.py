@@ -1,6 +1,6 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
-from utils.fire import Gun
+from .utils.fire import Gun
 
 
 class Art(ArtBaseClass):

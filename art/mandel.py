@@ -1,7 +1,7 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from opc.hue import hsvToRgb
-from utils.fractools import Mandelbrot, Region
+from .utils.fractools import Mandelbrot, Region
 
 from copy import copy
 

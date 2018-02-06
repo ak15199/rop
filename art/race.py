@@ -1,8 +1,8 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from math import sin, cos, pi
 from opc.hue import getColorGen
-from utils.frange import frange
+from .utils.frange import frange
 
 
 class Polar(object):

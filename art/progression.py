@@ -10,7 +10,8 @@ class Art(ArtBaseClass):
     description = "Slow transition of hues across the display"
 
     def __init__(self, matrix, config):
-        self.base = 0
+	self.palette = self._build()
+        self.index = 0
 
     def start(self, matrix):
         pass
@@ -28,3 +29,6 @@ class Art(ArtBaseClass):
 
     def interval(self):
         return 100
+
+
+

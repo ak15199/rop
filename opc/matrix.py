@@ -1,14 +1,14 @@
-from drivers import select
+from .drivers import driver
 from copy import deepcopy
 import operator
 import numpy as np
 
-from colors import BLACK
-import nphue
+from .colors import BLACK
+from .nphue import rgb_to_hsv, hsv_to_rgb
 
-from buffer import OPCBuffer
+from .buffer import OPCBuffer
 
-from utils.prof import timefunc
+from .utils.prof import timefunc
 
 DTYPE = np.uint8
 
@@ -82,7 +82,7 @@ class OPCMatrix(object):
             self.buf_hq = self.buf_std
             self.internal = True
         else:
-            module = select.driver(address)
+            module = driver(address)
             self.client = module.Driver(width, height, address)
             # only "real" displays get a high quality option
             self.buf_hq = OPCBuffer(width*self.HQMULT, height*self.HQMULT)

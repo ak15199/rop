@@ -1,8 +1,8 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from opc.colors import CYAN, BLUE, RY2, YELLOW, GREEN, MAGENTA, RED, GRAY40
 
-from utils.array import array
+from .utils.array import array
 
 from random import randrange
 
@@ -231,7 +231,7 @@ class Game(object):
                   GREEN: 54, MAGENTA: 39, RED: 99}
 
         self.tetriminos = [Tetrimino(color, bits)
-                           for color, bits in shapes.iteritems()]
+                           for color, bits in shapes.items()]
 
         self.width = width
         self.height = height

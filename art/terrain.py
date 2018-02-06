@@ -1,4 +1,4 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from collections import OrderedDict
 from math import sin, cos
@@ -7,7 +7,7 @@ from opc.colormap import Colormap
 from opc.colors import rgb
 from opc.matrix import OPCMatrix
 
-from utils.diamondsquare import DiamondSquareAlgorithm
+from .utils.diamondsquare import DiamondSquareAlgorithm
 
 
 SCALE = 8

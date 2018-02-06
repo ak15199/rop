@@ -1,6 +1,6 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
-from utils.shrapnel import Shrapnel
+from .utils.shrapnel import Shrapnel
 from math import sqrt
 
 

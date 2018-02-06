@@ -1,4 +1,4 @@
-from baseclasses.scrolltext import ScrollText
+from .baseclasses.scrolltext import ScrollText
 
 from opc.colors import BLUE
 from random import randint

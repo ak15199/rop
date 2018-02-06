@@ -1,4 +1,4 @@
-from baseclasses.blobs import Blobs
+from .baseclasses.blobs import Blobs
 
 
 class Art(Blobs):

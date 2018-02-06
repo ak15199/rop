@@ -18,9 +18,9 @@ class Phase(object):
         h = self.matrix.height
 
         self.matrix.clear(self.color)
-        for x in range(0, w, w/4):
+        for x in range(0, w, int(w/4)):
             self.matrix.fillRect(x, 0, w/8, h, BLACK)
-        for y in range(0, h, h/4):
+        for y in range(0, h, int(h/4)):
             self.matrix.fillRect(0, y, w, h/8, BLACK)
 
         self.matrix.rotate(self.angle)
