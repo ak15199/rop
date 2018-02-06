@@ -1,4 +1,4 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from opc.colors import WHITE
 from opc.hue import hsvToRgb

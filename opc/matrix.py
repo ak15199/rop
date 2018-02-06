@@ -1,15 +1,16 @@
-from drivers import select
+from .drivers import driver
 from copy import deepcopy
+from functools import reduce
 import operator
 import numpy as np
 
-from colors import BLACK
-import nphue
+from .colors import BLACK
+from .nphue import rgb_to_hsv, hsv_to_rgb
 
-from buffer import OPCBuffer
+from .buffer import OPCBuffer
 
-from utils.prof import timefunc
-from utils.wrapexception import wrapexception
+from .utils.prof import timefunc
+from .utils.wrapexception import wrapexception
 
 DTYPE = np.uint8
 
@@ -88,7 +89,7 @@ class OPCMatrix(object):
             self.buf_hq = self.buf_std
             self.internal = True
         else:
-            module = select.driver(address)
+            module = driver(address)
             self.client = module.Driver(width, height, address)
             # only "real" displays get a high quality option
             self.buf_hq = OPCBuffer(width*self.HQMULT, height*self.HQMULT)
@@ -129,7 +130,7 @@ class OPCMatrix(object):
         self.client.setGlobalColorCorrection(gamma, bright, bright, bright)
 
     @timefunc
-    def setGlobalColorCorrection(self, gamma, r, g, b):
+    def setGlobalColorCorrection(self, gamma=2.5, r=0.6, g=0.6, b=0.6):
         self.client.setGlobalColorCorrection(gamma, r, g, b)
 
     @timefunc
@@ -169,9 +170,9 @@ class OPCMatrix(object):
         Shift any of hue, saturation, and value on the matrix, specifying
         the attributes that you'd like to adjust
         """
-        hsv = nphue.rgb_to_hsv(self.buf.buf)
+        hsv = rgb_to_hsv(self.buf.buf)
         mod = hsv * np.array([dh, ds, dv])
-        rgb = nphue.hsv_to_rgb(mod)
+        rgb = hsv_to_rgb(mod)
 
         self.buf.buf = rgb
 
@@ -249,8 +250,8 @@ class OPCMatrix(object):
         Exposed helper method that sets a given pixel in the unrolled strip
         of LEDs.
         """
-        x = z / self.height
-        y = z % self.height
+        x = int(z / self.height)
+        y = int(z % self.height)
 
         self.buf.buf[x, y] = color
 

@@ -56,9 +56,9 @@ class Gun(object):
                 yield 0, y, 1,  1
 
     def fire(self, matrix):
-        x, y, dx, dy = self.location.next()
+        x, y, dx, dy = next(self.location)
 
-        point = Point(x, y, dx, dy, self.hue.next())
+        point = Point(x, y, dx, dy, next(self.hue))
         self.points.append(point)
 
         if len(self.points) > self.expires:

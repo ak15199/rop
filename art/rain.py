@@ -1,8 +1,8 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from random import random, randrange
 from math import sqrt
-from utils.pen import Pen
+from .utils.pen import Pen
 
 from opc.matrix import HQ
 

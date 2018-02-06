@@ -1,4 +1,4 @@
-from baseclasses.bilinear import Bilinear
+from .baseclasses.bilinear import Bilinear
 
 
 class Art(Bilinear):

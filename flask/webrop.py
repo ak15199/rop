@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os.path
 from flask import Flask, Response, jsonify
 
@@ -39,7 +41,7 @@ def convertToWebHex(data):
 
 @app.route("/refresh.json")
 def json_refresh():
-    hexdata = convertToWebHex(generator.next())
+    hexdata = convertToWebHex(next(generator))
     return jsonify(hexdata)
 
 
@@ -50,7 +52,7 @@ def frameGenerator(arts, matrix):
         cycleCount += 1
         seed(time())
 
-        for name, art in arts.iteritems():
+        for name, art in arts.items():
             matrix.setFirmwareConfig()
             art.start(matrix)
 
@@ -92,7 +94,7 @@ def initialize():
     arts = ImportPlugins("art", ["template.py"], [], matrix)
     if len(arts) == 0:
         matrix.terminate()
-        print "Couldn't find any art to execute"
+        print("Couldn't find any art to execute")
         exit(1)
 
     generator = frameGenerator(arts, matrix)

@@ -1,4 +1,4 @@
-from baseclasses.flow import Flow
+from .baseclasses.flow import Flow
 
 
 class Art(Flow):

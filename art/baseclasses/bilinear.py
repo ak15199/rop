@@ -39,7 +39,7 @@ class Bilinear(ArtBaseClass):
         return tuple([self._bilinearInterp(gun, px, py) for gun in rgb])
 
     def _rotate(self, array):
-        return zip(*array[::-1])
+        return list(zip(*array[::-1]))
 
     def refresh(self, matrix):
 

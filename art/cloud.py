@@ -1,4 +1,4 @@
-from baseclasses.diamondsquare import DiamondSquare
+from .baseclasses.diamondsquare import DiamondSquare
 
 
 class Art(DiamondSquare):

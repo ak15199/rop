@@ -1,4 +1,4 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from math import sqrt
 from random import random
@@ -19,7 +19,7 @@ class Art(ArtBaseClass):
         matrix.hq(True)
 
     def refresh(self, matrix):
-        color = self.hue.next()
+        color = next(self.hue)
         width = matrix.smallest*0.45
         hole  = matrix.smallest*0.25
 

@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import config
 import logging
 import os.path
@@ -29,7 +31,7 @@ class Feed(object):
 
         if len(arts) == 0:
             matrix.terminate()
-            print "Couldn't find any art to execute"
+            print("Couldn't find any art to execute")
             exit(1)
 
         self.generator = self._frameGenerator(arts, matrix)
@@ -39,7 +41,7 @@ class Feed(object):
         while True:
             seed(time())
 
-            for name, art in arts.iteritems():
+            for name, art in arts.items():
                 matrix.hq(False)
                 matrix.clear()
                 try:
@@ -75,7 +77,7 @@ class Feed(object):
 
     def produce(self):
         if self.packet is None or time() > self.packet["expires"]:
-            frame = self.generator.next()
+            frame = next(self.generator)
             data = [
                 [self._webHex(pix) for pix in row] for row in frame["data"]
             ]

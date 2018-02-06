@@ -1,4 +1,4 @@
-from baseclasses.scrolltext import ScrollText
+from .baseclasses.scrolltext import ScrollText
 
 import requests
 

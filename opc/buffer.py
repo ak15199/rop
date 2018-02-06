@@ -2,8 +2,8 @@ from PIL import Image, ImageFilter
 
 import numpy as np
 
-from colors import BLACK
-from utils.prof import timefunc
+from .colors import BLACK
+from .utils.prof import timefunc
 
 DTYPE = np.uint8
 

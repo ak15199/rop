@@ -122,7 +122,7 @@ class LfsrBucket(object):
             return candidate.get(level+1)
         except AttributeError:
             try:
-                return candidate.next()
+                return next(candidate)
             except StopIteration:
                 return None
 

@@ -1,8 +1,8 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from opc.colors import CYAN, BLUE, RY2, YELLOW, GREEN, MAGENTA, RED, GRAY40
 
-from utils.array import array
+from .utils.array import array
 
 from random import randrange
 
@@ -56,7 +56,7 @@ class Tetrimino(object):
 
         for y in self.order[rotation]["y"]:
             for x in self.order[rotation]["x"]:
-                if stream.next():
+                if next(stream):
                     block[x][y] = self.color
 
         return block
@@ -83,7 +83,7 @@ class InPlay(object):
         self.tetrimino = tetriminos[randrange(len(tetriminos))]
         self.rotation = randrange(1)
 
-        self.x = width/2
+        self.x = int(width/2)
         self.y = height
 
     def rotateClock(self):
@@ -231,7 +231,7 @@ class Game(object):
                   GREEN: 54, MAGENTA: 39, RED: 99}
 
         self.tetriminos = [Tetrimino(color, bits)
-                           for color, bits in shapes.iteritems()]
+                           for color, bits in shapes.items()]
 
         self.width = width
         self.height = height

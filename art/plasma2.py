@@ -1,7 +1,7 @@
 from opc.colormap import Colormap
 from opc.colors import BLACK, BLUE, YELLOW, RED, GREEN
 
-from baseclasses.diamondsquare import DiamondSquare
+from .baseclasses.diamondsquare import DiamondSquare
 
 
 class Art(DiamondSquare):

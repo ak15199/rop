@@ -1,4 +1,4 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from opc.hue import hsvToRgb
 from opc.matrix import HQ

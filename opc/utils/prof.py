@@ -48,7 +48,7 @@ def _totaltime():
     global records
 
     peak = 0
-    for func, record in records.iteritems():
+    for func, record in records.items():
         try:
             peak = max(peak, sum(record.times))
         except:

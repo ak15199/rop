@@ -1,4 +1,4 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from opc import colors
 from opc.hue import hsvToRgb
@@ -89,7 +89,7 @@ class Art(ArtBaseClass):
         return self.value <= 0
 
     def refresh(self, matrix):
-        keys = self.filling.keys()
+        keys = list(self.filling.keys())
         count = min(self.perCycle, len(keys))
         shuffle(keys)
 

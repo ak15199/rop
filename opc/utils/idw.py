@@ -1,4 +1,4 @@
-from gunroller import GunRoller
+from .gunroller import GunRoller
 
 
 def _relative(sample, base, distance, default):

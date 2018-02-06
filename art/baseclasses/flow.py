@@ -14,7 +14,7 @@ class Flow(ArtBaseClass):
         self.base = 0
         self.offset = 0
         self.usecount = []
-        self.blocksize = matrix.numpix/(self.huecount-1)
+        self.blocksize = int(matrix.numpix/(self.huecount-1))
 
         self.hues = []
         for hue in range(0, self.huecount):
@@ -36,12 +36,12 @@ class Flow(ArtBaseClass):
             return hsvToRgb(hue/255)
 
         index = ((self.base+self.offset)/self.blocksize) % self.huecount
-        hue = self.hues[index]
+        hue = self.hues[int(index)]
 
         phase = (self.base+self.offset) % self.blocksize
         value = self.sinlut[phase]
 
-        self.usecount[index] += 1
+        self.usecount[int(index)] += 1
 
         return hsvToRgb(hue, 1, value)
 

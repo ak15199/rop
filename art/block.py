@@ -1,4 +1,4 @@
-from _baseclass import ArtBaseClass
+from ._baseclass import ArtBaseClass
 
 from opc.hue import hsvToRgb
 
@@ -13,8 +13,8 @@ class Rectangle(object):
 
         self.x = randrange(0, matrix.width)
         self.y = randrange(0, matrix.height)
-        self.w = randrange(matrix.width/8, matrix.width/2)
-        self.h = randrange(matrix.height/8, matrix.height/2)
+        self.w = randrange(int(matrix.width/8), int(matrix.width/2))
+        self.h = randrange(int(matrix.height/8), int(matrix.height/2))
 
     def update(self, matrix):
         self.value += 0.2

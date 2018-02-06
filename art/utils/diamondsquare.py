@@ -4,7 +4,11 @@ from opc.nphue import h_to_rgb
 import numpy as np
 
 from random import random
-from exceptions import AttributeError
+import sys
+try:
+    from exceptions import AttributeError
+except ModuleNotFoundError:
+    pass
 
 from art.utils.array import array
 from opc.utils.prof import timefunc
@@ -19,9 +23,9 @@ class DiamondSquareAlgorithm(object):
         self.width = width
         self.height = height
         if featureSize is None:
-            self.featureSize = (self.width+self.height)/4
+            self.featureSize = int((self.width+self.height)/4)
         else:
-            self.featureSize = featureSize
+            self.featureSize = int(featureSize)
 
         self.values = array([self.width, self.height], 0.0)
 
@@ -32,7 +36,7 @@ class DiamondSquareAlgorithm(object):
         self.values[x % self.width][y % self.height] = value
 
     def _sampleSquare(self, x, y, size, value):
-        hs = size / 2
+        hs = int(size / 2)
 
         a = self._getSample(x - hs, y - hs)
         b = self._getSample(x + hs, y - hs)
@@ -42,7 +46,7 @@ class DiamondSquareAlgorithm(object):
         self._setSample(x, y, ((a + b + c + d) / 4.0) + value)
 
     def _sampleDiamond(self, x, y, size, value):
-        hs = size / 2
+        hs = int(size / 2)
 
         a = self._getSample(x - hs, y)
         b = self._getSample(x + hs, y)
@@ -55,7 +59,8 @@ class DiamondSquareAlgorithm(object):
         return 2*random() - 1
 
     def _diamondSquare(self, stepsize, scale):
-        halfstep = stepsize / 2
+        stepsize = int(stepsize)
+        halfstep = int(stepsize/2)
 
         for y in range(0, self.height+halfstep, stepsize):
             for x in range(0, self.width+halfstep, stepsize):

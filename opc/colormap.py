@@ -1,6 +1,9 @@
-from utils import idw
+from .utils import idw
 
-from exceptions import AttributeError
+try:
+    from exceptions import AttributeError
+except ModuleNotFoundError:
+    pass
 import numpy as np
 
 
@@ -34,7 +37,7 @@ class Colormap(object):
         self.size = sum(palette.values())
         self.cmap = np.empty((self.size, 3), dtype=np.uint8)
 
-        for color, count in palette.iteritems():
+        for color, count in palette.items():
             if oldcolor is None:
                 oldcolor = color
 

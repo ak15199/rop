@@ -1,10 +1,15 @@
+from __future__ import print_function
+
 import logging
 logging.basicConfig(filename='art.log', level=logging.DEBUG)
 
 import argparse
-from exceptions import KeyboardInterrupt
 from random import seed
 import sys
+try:
+    from exceptions import KeyboardInterrupt
+except ModuleNotFoundError:
+    pass
 from time import sleep, time
 from traceback import format_exception
 
@@ -42,7 +47,7 @@ def exceptionHandler(etype, evalue, etraceback):
         logging.error('Exception: '+line.rstrip('\n'))
 
     if etype is not KeyboardInterrupt:
-        print "%s (see log for details)" % evalue
+        print("%s (see log for details)" % evalue)
 
 
 def runart(art, name, args, matrix):
@@ -103,7 +108,7 @@ def run(arts, args):
         cycleCount += 1
         seed(time())
 
-        for name, art in arts.iteritems():
+        for name, art in arts.items():
             runart(art, name, args, matrix)
 
 
@@ -161,7 +166,7 @@ def main():
                          matrix, config.config)
     if len(arts) == 0:
         matrix.terminate()
-        print "Couldn't find any art to execute"
+        print("Couldn't find any art to execute")
         exit(1)
 
     run(arts, args)

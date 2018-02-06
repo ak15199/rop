@@ -35,7 +35,7 @@ def ImportPlugins(dir, excludes, includes, progress, matrix, config):
                 globals(),
                 locals(),
                 ["Art"],
-                -1)
+                0)
             obj = module.Art(matrix, config)
 
             desc = getattr(obj, "description", None)
