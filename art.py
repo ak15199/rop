@@ -127,11 +127,11 @@ def progress(index, total):
 
     matrix.clear()
 
-    width = matrix.width-2
-    offset = float(width*index)/total
+    height = matrix.height-2
+    offset = float(height*index)/total
 
-    matrix.fillRect(1, matrix.midHeight-1, width, 2, GRAY50)
-    matrix.fillRect(1, matrix.midHeight-1, offset, 2, BLUE)
+    matrix.fillRect(matrix.midWidth-1, 1, 2, height, GRAY50)
+    matrix.fillRect(matrix.midWidth-1, 1, 2, offset, BLUE)
 
     matrix.show()
 
