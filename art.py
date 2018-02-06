@@ -82,11 +82,13 @@ def runart(art, name, args, matrix):
         logging.info("%s: %d%% timer overrun alarms" % (name, pc_overrun))
 
     if args.profile:
-        fmt = "%-25s %10s %10s %10s %10s"
-        logging.info(fmt%("Cache", "Length", "Hits", "Misses", "Timeouts"))
+        fmt = "%-25s %10s %10s %10s %10s %10s %10s"
+        logging.info(fmt%("Cache", "Length", "Hits", "Misses", "Purged", "Timeouts", "HWM"))
         stats = mwt.stats()
         for stat in stats:
-            logging.info(fmt%(stat["cache"], stat["length"], stat["hits"], stat["misses"], stat["timeouts"]))
+            logging.info(fmt%(stat["cache"], stat["length"], stat["hits"], stat["misses"], stat["purged"], stat["timeouts"], stat["hwm"]))
+
+        mwt.reset()
 
 
 @prof.timereference
