@@ -1,6 +1,6 @@
 from opc.colors import BLACK
 from opc.hue import getHueGen, hsvToRgb
-from random import random
+from random import randint
 
 
 class Point(object):
@@ -16,7 +16,6 @@ class Point(object):
     def update(self, matrix, expires):
         decay = 1-(float(self.age)/expires)
         self.age += 1
-        color = (255,0,0)
         color = hsvToRgb(self.hue, 1, decay)
         matrix.drawPixel(self.x, self.y, color)
 
@@ -38,7 +37,7 @@ class Gun(object):
         self.points = []
         self.expires = int(matrix.numpix/2)
         self.location = self._locationGenerator(matrix)
-        self.hue = getHueGen(step=0.05, hue=random())
+        self.hue = getHueGen(step=0.05, hue=randint(0, 100)/100.0)
 
     def _locationGenerator(self, matrix):
         x, y = 0, 0
