@@ -40,12 +40,10 @@ class Art(ArtBaseClass):
     def __init__(self, matrix, config):
         self.count = matrix.width/3
         self.color = getColorGen(step=0.015, hue=random())
-        self.instances = []
         self.y = matrix.height
 
     def start(self, matrix):
-        #matrix.setFirmwareConfig(nointerp=True)
-        pass
+        self.instances = []
 
     def _vote(self, matrix):
         while True:
