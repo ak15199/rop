@@ -165,6 +165,24 @@ class OPCMatrix(object):
         return (self._clipx(x), self._clipy(y))
 
     @timefunc
+    def maskbelow(self, thresh, color):
+        """
+        Set (r, g, b) values below an average value of thresh
+        to value
+        """
+        keys = np.mean(self.buf.buf,2)<thresh
+        self.buf.buf[keys] = color
+
+    @timefunc
+    def maskabove(self, thresh, color):
+        """
+        Set (r, g, b) values above an average value of thresh
+        to value
+        """
+        keys = self.buf.buf[np.mean(self.buf.buf,2)>thresh]
+        self.buf.buf[keys] = color
+
+    @timefunc
     def shift(self, dh=1.0, ds=1.0, dv=1.0):
         """
         Shift any of hue, saturation, and value on the matrix, specifying
