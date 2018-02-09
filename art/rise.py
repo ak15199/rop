@@ -59,11 +59,11 @@ class Art(ArtBaseClass):
         matrix.fade(0.95)
         matrix.maskbelow(55, BLACK)
 
-        if len(self.instances)<self.count:
+        if len(self.instances)<self.count and random()<0.6:
             new = self._vote(matrix)
             self.instances.append(Instance(matrix, new, self.color.next()))
 
         self.instances = [instance for instance in self.instances if instance.next(matrix)]
 
     def interval(self):
-        return 100
+        return 80
