@@ -13,7 +13,7 @@ class Art(ArtBaseClass):
 
     def __init__(self, matrix, config):
         with HQ(matrix):
-            self.pieces = int(sqrt(matrix.numpix))
+            self.pieces = int(sqrt(matrix.numpix/2))
 
             cycles = int(sqrt(matrix.numpix)*2)
             self.shrapnel = [Shrapnel(matrix, cycles, saturation=random(),
@@ -35,4 +35,4 @@ class Art(ArtBaseClass):
                 shrap.reset(matrix)
 
     def interval(self):
-        return 50
+        return 80
