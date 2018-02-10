@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+import psutil
+
 import logging
 logging.basicConfig(filename='art.log', level=logging.DEBUG)
 
@@ -52,7 +54,8 @@ def exceptionHandler(etype, evalue, etraceback):
 
 def runart(art, name, args, matrix):
     if args.profile:
-        logging.info("Start %s"%name)
+        mem = psutil.virtual_memory()
+        logging.info("Start %s (%s free mem) ------"%(name, mem.available))
 
     matrix.setFirmwareConfig()
     matrix.hq(False)
@@ -154,7 +157,10 @@ def main():
     args = parser.parse_args()
 
     if args.profile:
-        prof.on()
+        if args.count:
+            prof.on()
+        else:
+            logging.error("Will not profile without --count being set")
 
     matrix = OPCMatrix(
         _v("WIDTH", 16), _v("HEIGHT", 16),
