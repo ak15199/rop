@@ -24,13 +24,13 @@ class Art(ArtBaseClass):
 
         for x in range(matrix.width):
             angle = 2 * math.pi * x/matrix.width
-            y = matrix.midHeight + \
-                matrix.midHeight * math.sin(angle+self.phase)
+            y = offset + offset * math.sin(angle+self.phase)
 
-            matrix.drawLine(x, y, x, y-offset, next(self.hue1))
-            matrix.drawLine(x, y, x, y+offset, next(self.hue2))
+            matrix.drawLine(x, 0, x, y, next(self.hue1))
+            matrix.drawLine(x, y, x, matrix.height-1, next(self.hue2))
 
-        self.phase += 0.05
+        matrix.blur(radius=4)
+        self.phase += 0.02
 
     def interval(self):
-        return 100
+        return 70
