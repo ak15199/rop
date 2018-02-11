@@ -59,7 +59,7 @@ class Art(ArtBaseClass):
 
         if len(self.instances)<self.count and random()<0.6:
             new = self._vote(matrix)
-            self.instances.append(Instance(matrix, new, self.color.next()))
+            self.instances.append(Instance(matrix, new, next(self.color)))
 
         self.instances = [instance for instance in self.instances if instance.next(matrix)]
 

@@ -10,7 +10,7 @@ class Art(ArtBaseClass):
     description = "Barber-pole-esque (dirty)"
 
     def __init__(self, matrix, config):
-        self.width = matrix.width/4
+        self.width = int(matrix.width/4)
         self.hue = 0
 
     def start(self, matrix):

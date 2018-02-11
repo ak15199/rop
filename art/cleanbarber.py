@@ -21,7 +21,7 @@ class Art(ArtBaseClass):
         matrix.scroll("up")
         matrix.scroll("right")
 
-        matrix.drawLine(0, 0, self.width, 0, self.color.next())
+        matrix.drawLine(0, 0, self.width, 0, next(self.color))
 
     def interval(self):
         return 120
