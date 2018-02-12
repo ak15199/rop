@@ -1,3 +1,6 @@
+import logging
+
+
 typeface_bbc = {
     "description": "Typeface from the Acorn BBC Computer",
     "geometry": {"width": 8, "height": 8},
@@ -54,6 +57,19 @@ typeface_bbc = {
 }
 
 
+class WidthCache(object):
+
+    def __init__(self, space):
+        self.width = {}
+        self.width[' '] = space
+
+    def add(self, char, width):
+        self.width[char] = width
+
+    def get(self, char):
+        return self.width[char]
+
+
 class OPCText(object):
     """
     This implementation assumes an 8x8 pixel grid per character, with one
@@ -62,9 +78,11 @@ class OPCText(object):
 
     def __init__(self, typeface):
         self.typeface = typeface
+        self.widthcache = WidthCache(space=5)
 
     def drawHalfChar(self, matrix, x, y, char, offset, fg, bg):
         word = self.typeface["bitmaps"][2*char+offset]
+        width = 0  # how many bits over is rightmost 'on' pixel
 
         ybase = y + 4*(1-offset)
         for window in range(4):
@@ -73,18 +91,26 @@ class OPCText(object):
             for bit in reversed(range(8)):
                 if byte & 1 == 1:
                     matrix.drawPixel(x+bit, ybase + window, fg)
+                    width = max(width, bit)
                 else:
                     matrix.drawPixel(x+bit, ybase + window, bg)
 
                 byte = byte >> 1
 
-    def drawChar(self, matrix, x, y, char, fg, bg):
-        char = ord(char) - 32  # printable ASCII starts at index 32
-        self.drawHalfChar(matrix, x, y, char, 0, fg, bg)
-        self.drawHalfChar(matrix, x, y, char, 1, fg, bg)
+        return width
+
+    def drawChar(self, matrix, x, y, c, fg, bg):
+        char = ord(c) - 32  # printable ASCII starts at index 32
+        width1 = self.drawHalfChar(matrix, x, y, char, 0, fg, bg)
+        width2 = self.drawHalfChar(matrix, x, y, char, 1, fg, bg)
+
+        if char:
+            self.widthcache.add(c,  max(width1, width2)+1)  # include 1px border
 
     def drawText(self, matrix, x, y, string, fg, bg):
         offset = 0
+        right = 8
+
         for char in list(string):
             xpos = x+offset
             if xpos >= -7:
@@ -96,6 +122,6 @@ class OPCText(object):
                 else:
                     return None
 
-            offset += 8
+            offset += self.widthcache.get(char)
 
         return xpos + 8
