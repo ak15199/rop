@@ -1,9 +1,6 @@
 import numpy as np
 from PIL import Image as PI
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import BytesIO
 from .utils.prof import timefunc
 
 
@@ -15,7 +12,7 @@ class Image(object):
             self.image = image
 
         if bytestream is not None:
-            self.image = PI.open(StringIO.StringIO(bytestream))
+            self.image = PI.open(BytesIO(bytestream))
 
         self.width, self.height = self.image.size
 

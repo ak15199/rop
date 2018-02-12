@@ -1,6 +1,9 @@
 from ._baseclass import ArtBaseClass
 
 import requests
+from thread import start_new_thread, allocate_lock
+
+import logging
 
 from opc.image import Image
 
@@ -40,29 +43,52 @@ class Art(ArtBaseClass):
         h = matrix.height*16
         self.url = "http://lorempixel.com/%s/%d/" % (w, h)
 
+        self.image_active = None
+        self._load()
+
     def start(self, matrix):
         matrix.clear()
 
-    def _load(self, matrix):
+    def _load(self):
+        self.image_loaded = None
+        start_new_thread(Art._loadthread, (self,))
+
+    def _consume(self, matrix):
+        if not self.image_loaded:
+            return False
+
+        self.image_active = self.image_loaded
+        self._load()
+
+        self.position = position(matrix, self.image_active)
+
+        return True
+
+    def _loadthread(self):
+        logging.info("_loadthread begin")
         try:
             r = requests.get(self.url)
             if r.status_code == 200:
-                self.image = Image(bytestream=r.content)
+                self.image_loaded = Image(bytestream=r.content)
             else:
-                self.image = Image(filename="assets/images/lena.jpg")
-        except Exception:
-            self.image = Image(filename="assets/images/lena.jpg")
-
-        self.position = position(matrix, self.image)
+                logging.error("_loadthread   code %d, using fallback"%r.status_code)
+                self.image_loaded = Image(filename="assets/images/lena.jpg")
+        except Exception as e:
+            logging.error("_loadthread   exception '%s', using fallback"%str(e))
+            self.image_loaded = Image(filename="assets/images/lena.jpg")
 
     def refresh(self, matrix):
+        if not self.image_active:  # no image is active
+            if not self._consume(matrix):  # can we get a fresh image?
+                return  # return and re-try next cycle if still pending
+
         try:
             x, y = next(self.position)
         except:
-            self._load(matrix)
-            x, y = next(self.position)
+            self.image_active = False  # borked over image end
+            return # try and load new image next cycle
 
-        buf = self.image.translate(matrix, scale=1, x=x, y=y)
+        buf = self.image_active.translate(matrix, scale=1, x=x, y=y)
         matrix.copyBuffer(buf)
 
     def interval(self):
