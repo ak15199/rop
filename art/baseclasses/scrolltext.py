@@ -26,7 +26,7 @@ class ScrollText(ArtBaseClass):
         raise NotImplementedError
 
     def start(self, matrix):
-        pass
+        matrix.setFirmwareConfig(nointerp=True)
 
     def refresh(self, matrix):
         matrix.clear(self.bg)

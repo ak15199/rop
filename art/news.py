@@ -11,7 +11,7 @@ class Art(ScrollText):
 
     description = "Get the news headlines"
 
-    fg = WHITE
+    fg = (224, 224, 224)
     bg = rgb["firebrick"]
 
     def _fetchHeadlines(self):
