@@ -1,7 +1,11 @@
 from ._baseclass import ArtBaseClass
 
 import requests
-from thread import start_new_thread, allocate_lock
+
+try:
+    from thread import start_new_thread, allocate_lock
+except:
+    from _thread import start_new_thread, allocate_lock
 
 import logging
 
