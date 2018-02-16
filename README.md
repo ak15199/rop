@@ -5,7 +5,8 @@ This project is designed to generate a number of distinctive animations on a
 grid of LEDs via OPC, to a FadeCandy board.
 
 If you're not already familiar, go check out
-https://github.com/scanlime/fadecandy for more background on this project.
+[FadeCandy](https://github.com/scanlime/fadecandy) for more background on
+this project.
 
 Here's a test picture of the plasma art running on a physical array:
 
@@ -63,7 +64,7 @@ It's also possible to limit number of cycles that `art.py` runs through, adjust
 the duration that each art is displayed before moving on to the next, or to
 switch on profiling. Run with `--help` for more information.
 
-The directories are
+The directories are:
 
     .                  application directory
     ./art              contains classes for each of the animations.
@@ -78,7 +79,7 @@ The directories are
 
 To help get up to speed on the library, you can use `pydoc`. For example:
 
-  % pydoc opc.matrix
+    % pydoc opc.matrix
 
 Check out the existing animations for use as examples, and please commit back
 code that you create!
@@ -90,7 +91,7 @@ If you don't have a physical display, or a suitable terminal, then it's still
 possible to see what's going on by looking at the animations as a web page. For
 this, you'll need to run the bundled `Flask` app like this:
 
-  % python webrop.py
+    % python webrop.py
 
 You should then be able to go visit the web page at ``http://localhost:5000``
 
