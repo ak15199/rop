@@ -9,7 +9,8 @@ class RopDriver(object):
     def putPixels(self, channel, *sources):
         raise NotImplementedError
 
-    def sysEx(self, systemId, commandId, msg):
+    def setFirmwareConfig(self, nodither=False, nointerp=False,
+                          manualled=False, ledonoff=True):
         raise NotImplementedError
 
     def setGlobalColorCorrection(self, gamma, r, g, b):

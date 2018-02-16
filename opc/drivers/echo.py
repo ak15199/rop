@@ -12,7 +12,8 @@ class Driver(RopDriver):
     def putPixels(self, channel, pixels):
         return pixels
 
-    def sysEx(self, systemId, commandId, msg):
+    def setFirmwareConfig(self, nodither=False, nointerp=False,
+                          manualled=False, ledonoff=True):
         pass
 
     def setGlobalColorCorrection(self, gamma, r, g, b):

@@ -22,7 +22,7 @@
 #
 # This code is modified from the original.
 
-from drivers.baseclass import RopDriver
+from opc.drivers.baseclass import RopDriver
 import json
 import numpy
 import os
@@ -91,14 +91,23 @@ class Driver(RopDriver):
             parts.append(source)
 
         parts.insert(0, struct.pack('>BBH', channel, 0, bytes))
-        self.send(''.join(parts))
+        self.send(b''.join(parts))
 
-    def sysEx(self, systemId, commandId, msg):
-        self.send(struct.pack(">BBHHH", 0, 0xFF, len(msg) + 4, systemId,
-                  commandId) + msg)
+    def _sysEx(self, systemId, commandId, message):
+        self.send(struct.pack(">BBHHH", 0, 0xFF,
+            len(message) + 4,
+            systemId,
+            commandId) + bytearray(message, 'utf8')
+            )
+
+    def setFirmwareConfig(self, nodither=False, nointerp=False,
+                          manualled=False, ledonoff=True):
+        data = chr(nodither | (nointerp << 1) | (manualled << 2) |
+                   (ledonoff << 3))
+        self._sysEx(0x0001, 0x0002, data)
 
     def setGlobalColorCorrection(self, gamma, r, g, b):
-        self.sysEx(1, 1, json.dumps({'gamma': gamma, 'whitepoint': [r, g, b]}))
+        self._sysEx(1, 1, json.dumps({'gamma': gamma, 'whitepoint': [r, g, b]}))
 
     def terminate(self):
         pass

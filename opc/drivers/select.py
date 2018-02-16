@@ -1,10 +1,12 @@
 import pkgutil
+from os.path import dirname
 
 
 def driver(address):
+    here = dirname(__file__)
     driver = address.split(":")[0]
     drivers = {name: loader for loader, name, ispkg in
-               pkgutil.iter_modules(["opc/drivers"]) if
+               pkgutil.iter_modules([here]) if
                not ispkg}
 
     try:

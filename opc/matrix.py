@@ -121,9 +121,7 @@ class OPCMatrix(object):
                           manualled=False, ledonoff=True):
 
         if self.client is not None:
-            data = chr(nodither | (nointerp << 1) | (manualled << 2) |
-                       (ledonoff << 3))
-            self.client.sysEx(0x0001, 0x0002, data)
+            self.client.setFirmwareConfig(nodither, nointerp, manualled, ledonoff)
 
     @timefunc
     def setBrightness(self, gamma, bright):
