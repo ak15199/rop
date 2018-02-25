@@ -82,6 +82,7 @@ class OPCText(object):
 
     def drawHalfChar(self, matrix, x, y, char, offset, fg, bg):
         word = self.typeface["bitmaps"][2*char+offset]
+
         width = 0  # how many bits over is rightmost 'on' pixel
 
         ybase = y + 4*(1-offset)
@@ -100,7 +101,11 @@ class OPCText(object):
         return width
 
     def drawChar(self, matrix, x, y, c, fg, bg):
-        char = ord(c) - 32  # printable ASCII starts at index 32
+        if ord(c)>127:
+            char = 127 - 32
+        else:
+            char = ord(c) - 32  # printable ASCII starts at index 32
+
         width1 = self.drawHalfChar(matrix, x, y, char, 0, fg, bg)
         width2 = self.drawHalfChar(matrix, x, y, char, 1, fg, bg)
 
@@ -117,7 +122,7 @@ class OPCText(object):
                 if xpos-7 < matrix.width:
                     try:
                         self.drawChar(matrix, xpos, y, char, fg, bg)
-                    except IndexError:  # when char has no bitmap
+                    except KeyError:  # when char has no bitmap
                         self.drawChar(matrix, xpos, y, chr(127), fg, bg)
                 else:
                     return None
