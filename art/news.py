@@ -3,7 +3,6 @@ from .baseclasses.scrolltext import ScrollText
 from datetime import date
 import requests
 
-from opc.colors import rgb, WHITE
 
 API_ENDPOINT = 'http://content.guardianapis.com/search'
 
@@ -13,7 +12,7 @@ class Art(ScrollText):
     description = "Get the news headlines"
 
     fg = (224, 224, 224)
-    bg = rgb["firebrick"]
+    bg = (174, 0, 0)
 
     def _fetchHeadlines(self):
         today = date.today().strftime('%Y-%m-%d')
