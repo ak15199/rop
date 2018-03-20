@@ -168,6 +168,8 @@ def main():
         _v("FLIPUP", False), _v("FLIPLR", False)
         )
 
+    progress(0, 10)
+
     arts = ImportPlugins("art", [], args.art, progress,
                          matrix, config.config)
     if len(arts) == 0:
