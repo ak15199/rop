@@ -7,18 +7,22 @@ import numpy as np
 
 class Channel(object):
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, locked):
         ones = np.ones(matrix.numpix).reshape((matrix.height, matrix.width))
         self.x = ones*np.arange(matrix.width)
         self.y = np.flipud(np.rot90(np.rot90(ones)*np.arange(matrix.height)))
 
         self.base = random()*128000
+        if locked:
+            self.delta = 0.7
+        else:
+            self.delta = random()*0.5+0.2 
 
     def _dist(self, a, b, c, d):
         return np.sqrt((c-a)*(c-a)+(d-b)*(d-b))
 
     def refresh(self):
-        self.base += 0.7
+        self.base += self.delta
 
         xb = self.x + self.base
         yb = self.y + self.base
@@ -37,8 +41,9 @@ class Art(ArtBaseClass):
     description = "Plasma by RGB channel"
 
     def __init__(self, matrix, config):
+        locked = random()<0.5
         with HQ(matrix):
-            self.channels = [Channel(matrix) for channel in range(3)]
+            self.channels = [Channel(matrix, locked) for channel in range(3)]
 
     def start(self, matrix):
         matrix.hq()
