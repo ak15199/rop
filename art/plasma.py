@@ -26,10 +26,10 @@ class Art(ArtBaseClass):
         xb = self.x + self.base
         yb = self.y + self.base
 
-        c1 = self._dist(xb, self.y, 128.0, 128.0) / 8.0
-        c2 = self._dist(self.y, self.y, 64.0, 64.0) / 8.0
-        c3 = self._dist(self.x, yb / 7, 192.0, 64) / 7.0
-        c4 = self._dist(self.y, self.x, 192.0, 100.0) / 8.0
+        c1 = self._dist(xb, self.y, 128.0, 128.0) / (matrix.smallest/2)
+        c2 = self._dist(self.y, self.y, 64.0, 64.0) / (matrix.smallest/2)
+        c3 = self._dist(self.x, yb / 7, 192.0, 64) / (matrix.smallest/2)
+        c4 = self._dist(self.y, self.x, 192.0, 100.0) / (matrix.smallest/2)
 
         hue = np.sum(np.sin(c) for c in (c1, c2, c3, c4))
         hue = np.fmod(np.fabs(1+hue/2), 1.0)
