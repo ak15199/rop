@@ -1,5 +1,4 @@
 from .drivers import driver
-from copy import deepcopy
 from functools import reduce
 import operator
 import numpy as np
@@ -99,8 +98,24 @@ class OPCMatrix(object):
         self.setCursor()
 
     @timefunc
+    def clone(self):
+        """Return a copy of the matrix as a new matrix
+        """
+        copy = OPCMatrix(
+                self.width, self.height, 
+                address=None,
+                zigzag=self.zigzag, flipud=self.flipud, fliplr=self.fliplr
+                )
+
+        if self.ishq:
+            copy.hq()
+
+        return copy
+
+    @timefunc
     def hq(self, ishq=True):
-        """Switches HQ mode on or off. Clears the display on switch-on"""
+        """Switches HQ (supersampling) mode on or off. Clears the
+        display on switch-on"""
         if ishq and not self.internal:
             self.ishq = ishq
             self.buf = self.buf_hq
@@ -130,10 +145,6 @@ class OPCMatrix(object):
     @timefunc
     def setGlobalColorCorrection(self, gamma=2.5, r=0.6, g=0.6, b=0.6):
         self.client.setGlobalColorCorrection(gamma, r, g, b)
-
-    @timefunc
-    def clone(self):
-        return deepcopy(self)
 
     @timefunc
     def copy(self, source, x=None, y=None):
