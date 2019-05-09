@@ -4,13 +4,13 @@ Introduction
 This project is designed to generate a number of distinctive animations on a
 grid of LEDs via OPC, to a FadeCandy board.
 
-If you're not already familiar, go check out
-[FadeCandy](https://github.com/scanlime/fadecandy) for more background on
-this project.
-
 Here's a test picture of the plasma art running on a physical array:
 
 ![example](http://i.imgur.com/KlEZBC8m.jpg)
+
+If you want a quick sample of what ROP can do in a terminal, you can follow this link to Asciinema:
+
+[![asciicast](https://asciinema.org/a/51HLupl32PvU5ecqg9kZGd4PM.svg?width=10)](https://asciinema.org/a/51HLupl32PvU5ecqg9kZGd4PM)
 
 Installation
 ------------
@@ -35,7 +35,8 @@ that the installation gets a hiccup:
 Getting Started
 ---------------
 
-To get started and display on your terminal, make sure that the terminal is at least 35x35 and simply run:
+To get started and display on your terminal, make sure that the terminal is at
+least 35x35 and run:
 
     % python art.py
 
@@ -84,33 +85,12 @@ To help get up to speed on the library, you can use `pydoc`. For example:
 Check out the existing animations for use as examples, and please commit back
 code that you create!
 
-Running from the Web
---------------------
-
-If you don't have a physical display, or a suitable terminal, then it's still
-possible to see what's going on by looking at the animations as a web page. For
-this, you'll need to run the bundled `Flask` app like this:
-
-    % python webrop.py
-
-You should then be able to go visit the web page at ``http://localhost:5000``
-
-If course, this is using the bundled development web server that comes with
-`Flask`. If you want to serve volumes of this stuff, then it'll be better to
-run under a production web server.
-
-Webrop is not generally maintained, so your mileage may vary.
-
-Project Pictures
-----------------
-
-A random assortment of images documenting the development of the hardware can
-be found on [Imgur](http://ak15199.imgur.com/all).
-
 Other People's Work
 -------------------
 
-The opc code is taken from https://github.com/scanlime/fadecandy.
+The opc code is taken from the copy embedded in FadeCandy. If you're not already
+familiar, go check out [FadeCandy](https://github.com/scanlime/fadecandy)
+for more background on the project.
 
 Hopefully attributions are correct. If you see one missing, then please let me
 know and I'll fix.
