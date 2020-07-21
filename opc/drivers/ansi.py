@@ -7,18 +7,27 @@ from opc.drivers.baseclass import RopDriver
 from opc.error import TtyTooSmall
 from opc.utils.prof import timefunc
 
-stdscr = None  # for flake8
+
+window = None  # for flake8
 
 
-def initCurses():
-    global stdscr
+def initCurses(width, height):
+    global window
 
-    stdscr = curses.initscr()
+    curses.initscr()
+    window = curses.newwin(2+height, 4+2*width, 1, 1)
     curses.start_color()
     curses.use_default_colors()
+    curses.curs_set(0)
+
+    window.border(0)
+    window.clear()
 
 
 def exitCurses():
+    curses.nocbreak()
+    window.keypad(False)
+    curses.echo()
     curses.endwin()
 
 
@@ -32,14 +41,12 @@ class Driver(RopDriver):
     MAP10 = " .-:=+*#%@"    # ten step asciiart gradient
 
     def __init__(self, width, height, address):
-        global stdscr
+        global window
 
         self.width = width
         self.height = height
 
-        initCurses()
-        stdscr.clear()
-        curses.curs_set(0)
+        initCurses(width, height)
 
         if curses.COLORS == 256:
             # initialize colors as the background, render spaces.
@@ -88,9 +95,9 @@ class Driver(RopDriver):
 
     @timefunc
     def _addstr(self, pixel):
-        global stdscr
+        global window
 
-        stdscr.addstr(self.chars[pixel[0]]*2, self.colors[pixel[1]])
+        window.addstr(self.chars[pixel[0]]*2, self.colors[pixel[1]])
 
     @timefunc
     def _char(self, pixels):
@@ -108,9 +115,8 @@ class Driver(RopDriver):
 
     @timefunc
     def _show(self, pixels):
-        global stdscr
+        global window
 
-        stdscr.addstr(0, 0, " + " + "--"*self.width + " +\n")
 
         """
           - sum the set on axis 2, then divide the result by 85. This'll
@@ -131,23 +137,23 @@ class Driver(RopDriver):
         char = self._char(pixels)
         color = self._color(self._colorindex(pixels))
 
+        y = 0
         encoded = np.dstack((char, color))
         for row in np.rot90(encoded):
-            stdscr.addstr(" | ")
+            y += 1
+            window.move(y, 2)
             for pixel in row:
                 self._addstr(pixel)
-            stdscr.addstr(" |\n")
 
-        stdscr.addstr(" + " + "--"*self.width + " +")
-        stdscr.refresh()
+        window.refresh()
 
     def putPixels(self, channel, pixels):
         try:
             self._show(pixels)
-        except curses.error:
-            ttyheight, ttywidth = stdscr.getmaxyx()
+        except curses.error as e:
+            ttyheight, ttywidth = window.getmaxyx()
             message = (
-                "Your screen (%d, %d) is too small to support this size"
+                '--'+str(e)+"-- Your screen (%d, %d) is too small to support this size"
                 " matrix (%d, %d)" %
                 (ttywidth, ttyheight, self.width, self.height)
                 )
