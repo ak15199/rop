@@ -86,7 +86,7 @@ def runart(art, name, args, matrix):
     # lot of these, then consider performance tuning, turning up the
     # art's interval, or buying better hardware
     pc_overrun = 100*time_alarm/(time_sound+time_alarm)
-    if pc_overrun > 0:
+    if pc_overrun >= 1:
         logging.info("%s: %d%% timer overrun alarms" % (name, pc_overrun))
 
     if args.profile:
