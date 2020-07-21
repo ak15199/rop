@@ -20,8 +20,8 @@ def initCurses(width, height):
     curses.use_default_colors()
     curses.curs_set(0)
 
-    window.border(0)
     window.clear()
+    window.border(0)
 
 
 def exitCurses():
