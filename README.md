@@ -18,7 +18,7 @@ Installation
 The code has been run on OSX with Python 2.7 and Python 3.6. There are a few
 extras you'll need before you can start. Typically you'd run something like:
 
-    # pip install -r requirements.txt
+    # pip3 install -r requirements.txt
 
 Or maybe - if you prefer - you'd install in a `virtualenv`. On the off-chance
 that the installation gets a hiccup:
@@ -38,12 +38,12 @@ Getting Started
 To get started and display on your terminal, make sure that the terminal is at
 least 35x35 and run:
 
-    % python art.py
+    % python3 art.py
 
 You can also pick a specific subset to render by listing the particular modules
 in the art directory, for example:
 
-    % python art.py rain.py fortune.py
+    % python3 art.py rain.py fortune.py
 
 Be aware that the down-sampled image when displaying to the terminal is super
 lossy, since it's reducing 24 bit color to a handful of ascii-art characters...
